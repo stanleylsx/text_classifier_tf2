@@ -7,7 +7,7 @@
 ## word2vec简介
 &emsp;&emsp;word2vec是google在2013年推出的一个NLP工具，它的特点是将词向量化，这样词与词之间就可以定量的去度量他们之间的关系，挖掘词之间的联系，word2vec有两种模型的实现，分别是CBOW和Skip-Gram模型，前者是通过上下文词向量推断中间的某个词向量，后者是推断特定词对应的上下文词向量，本质上都是基于DNN神经网络的神经网络的相关算法基础可以参考[这里](https://github.com/StanleyLsx/machinelearning#3)，这里讲了DNN、CNN、RNN的原理和相应的算法。word2vec的官方文档可以参考[这里](https://radimrehurek.com/gensim/index.html)，讲得比较好的还有刘建平的[博客](https://www.cnblogs.com/pinard/p/7160330.html)。
 ## 原理与训练
-&emsp;&emsp;关于中文nlp处理的步骤是:  
+&emsp;&emsp;关于中文nlp处理的步骤一般是:  
 * 分析需求，预测哪个列?二分类还是多分类?需要什么样的结果?  
 * 获得数据，一般可以直接来源于数据库，也可以间接通过爬虫实现，[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)便是本文中的数据来源。  
 * 文本预处理，一般先使用jiaba这个工具对句子或者文本进行分词，jieba默认采用的是贝叶斯概率去划分词。划分出来的词一般还要去掉停用词，项目中的stop_words.txt放的就是一些停用词。  
