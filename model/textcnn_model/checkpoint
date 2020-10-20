@@ -1,0 +1,6 @@
+model_checkpoint_path: "textcnn_model-2"
+all_model_checkpoint_paths: "textcnn_model-1"
+all_model_checkpoint_paths: "textcnn_model-2"
+all_model_checkpoint_timestamps: 1603186354.6881878
+all_model_checkpoint_timestamps: 1603186461.870804
+last_preserved_timestamp: 1603186324.790988
