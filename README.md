@@ -1,5 +1,5 @@
 # Comments Classifier
-此仓库是基于Tensorflow2.3的评论分类任务，使用Word2vec+TextCNN模型，代码支持二分类和多分类，项目做了个二元情感分类的demo。
+此仓库是基于Tensorflow2.3的评论分类任务，使用Word2vec+TextCNN模型，代码支持二分类和多分类，此项目做了个二元的情感分类。
 
 ## 环境
 * python 3.6.7
