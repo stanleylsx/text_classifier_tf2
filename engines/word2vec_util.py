@@ -31,7 +31,7 @@ class Word2VecUtils:
     def get_stop_words(self):
         stop_words_list = []
         try:
-            with open(self.stop_words, 'r') as stop_words_file:
+            with open(self.stop_words, 'r', encoding='utf-8') as stop_words_file:
                 for line in stop_words_file:
                     stop_words_list.append(line.strip())
         except FileNotFoundError:
