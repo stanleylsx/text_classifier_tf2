@@ -37,7 +37,8 @@ mode = 'train_word2vec'
 # 模式选择
 mode = 'train_textcnn'
 ```
-* 训练结果
+* 训练结果  
+
 ![train_results](https://img-blog.csdnimg.cn/20201021000109593.png)
 
 ### 测试
@@ -46,7 +47,8 @@ mode = 'train_textcnn'
 # 模式选择
 mode = 'interactive_predict'
 ```
-* 交互测试结果
+* 交互测试结果  
+
 ![test](https://img-blog.csdnimg.cn/20201021000109568.png)
 
 ## 参考
