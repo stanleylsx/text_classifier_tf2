@@ -21,10 +21,10 @@ textcnn_config = {
     'learning_rate': 0.001,  # 学习率
     'epoch': 30,  # 训练epoch
     'max_to_keep': 3,  # 最多保存max_to_keep个模型
-    'print_per_batch': 1000,  # 每print_per_batch打印
+    'print_per_batch': 20,  # 每print_per_batch打印
     'is_early_stop': True,  # 是否提前结束
     'patient': 8,
     'batch_size': 64,
     'max_sequence_length': 150,
-    'droupout_rate': 0.5,  # 遗忘率
+    'droupout_rate': 0.3,  # 遗忘率
 }

@@ -1,8 +1,8 @@
-model_checkpoint_path: "textcnn_model-6"
+model_checkpoint_path: "textcnn_model-5"
+all_model_checkpoint_paths: "textcnn_model-3"
 all_model_checkpoint_paths: "textcnn_model-4"
 all_model_checkpoint_paths: "textcnn_model-5"
-all_model_checkpoint_paths: "textcnn_model-6"
-all_model_checkpoint_timestamps: 1603208592.1578739
-all_model_checkpoint_timestamps: 1603208627.1129694
-all_model_checkpoint_timestamps: 1603208766.3166952
-last_preserved_timestamp: 1603208240.5681086
+all_model_checkpoint_timestamps: 1603265931.726615
+all_model_checkpoint_timestamps: 1603265973.3989692
+all_model_checkpoint_timestamps: 1603266036.69409
+last_preserved_timestamp: 1603265883.095924

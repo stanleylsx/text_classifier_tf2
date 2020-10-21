@@ -13,7 +13,7 @@ from tqdm import tqdm
 from engines.utils.metrics import cal_metrics
 from config import textcnn_config
 
-tf.keras.backend.set_floatx('float64')
+tf.keras.backend.set_floatx('float32')
 
 
 def train(data_manager, logger):

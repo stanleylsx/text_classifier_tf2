@@ -51,9 +51,7 @@ class DataManager:
                 index = np.random.randint(len(X))
                 X_batch.append(X[index])
                 y_batch.append(y[index])
-        X_batch = np.array(X_batch)
-        y_batch = np.array(y_batch)
-        return X_batch, y_batch
+        return np.array(X_batch, dtype=np.float32), np.array(y_batch, dtype=np.float32)
 
     def padding(self, sentence):
         """
@@ -86,9 +84,7 @@ class DataManager:
                     vector.append(embedding_unknown)
             X.append(vector)
             y.append(label)
-        X = np.array(X)
-        y = np.array(y)
-        return X, y
+        return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
 
     def get_training_set(self, train_val_ratio=0.9):
         """
@@ -99,11 +95,13 @@ class DataManager:
         # convert the data in matrix
         X, y = self.prepare(df_train['sentence'], df_train['label'])
         # shuffle the samples
+        self.logger.info('shuffling data...')
         num_samples = len(X)
         indices = np.arange(num_samples)
         np.random.shuffle(indices)
         X = X[indices]
         y = y[indices]
+        self.logger.info('getting validation data...')
         if self.dev_file is not None:
             X_train = X
             y_train = y
@@ -144,4 +142,4 @@ class DataManager:
                 vector.append(self.w2v_model[word].tolist())
             else:
                 vector.append(embedding_unknown)
-        return np.array([vector])
+        return np.array([vector], dtype=np.float32)
