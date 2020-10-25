@@ -39,7 +39,7 @@ mode = 'train_textcnn'
 ```
 * 训练结果  
 
-![train_results](https://img-blog.csdnimg.cn/20201021000109593.png)
+![train_results](https://img-blog.csdnimg.cn/20201025161338632.png)
 
 ### 测试
 训练好textcnn可以开始测试
