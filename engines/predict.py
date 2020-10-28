@@ -6,6 +6,7 @@
 # @Software: PyCharm
 import tensorflow as tf
 from engines.model import TextCNN
+from config import textcnn_config
 
 
 class Predictor:
@@ -16,8 +17,8 @@ class Predictor:
         embedding_dim = data_manager.embedding_dim
         self.logger = logger
         # 卷集核的个数
-        num_filters = 64
-        checkpoints_dir = 'model/textcnn_model'
+        num_filters = textcnn_config['num_filters']
+        checkpoints_dir = textcnn_config['checkpoints_dir']
         logger.info('loading model parameter')
         self.text_cnn_model = TextCNN(seq_length, num_filters, num_classes, embedding_dim)
         # 实例化Checkpoint，设置恢复对象为新建立的模型
