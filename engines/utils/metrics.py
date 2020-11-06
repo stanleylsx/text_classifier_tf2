@@ -5,7 +5,7 @@
 # @File : metrics.py 
 # @Software: PyCharm
 from sklearn import metrics
-from config import textcnn_config
+from config import classifier_config
 
 
 def cal_metrics(y_true, y_pred):
@@ -14,7 +14,7 @@ def cal_metrics(y_true, y_pred):
     """
     y_true = y_true.astype(int)
     y_pred = y_pred.numpy()
-    average = textcnn_config['metrics_average']
+    average = classifier_config['metrics_average']
     precision = metrics.precision_score(y_true, y_pred, average=average)
     recall = metrics.recall_score(y_true, y_pred, average=average)
     f1 = metrics.f1_score(y_true, y_pred, average=average)

@@ -8,10 +8,9 @@ import numpy as np
 import time
 import math
 import tensorflow as tf
-from engines.model import TextCNN
 from tqdm import tqdm
 from engines.utils.metrics import cal_metrics
-from config import textcnn_config
+from config import classifier_config
 
 tf.keras.backend.set_floatx('float32')
 
@@ -21,15 +20,17 @@ def train(data_manager, logger):
     num_classes = data_manager.max_label_number
     seq_length = data_manager.max_sequence_length
 
-    checkpoints_dir = textcnn_config['checkpoints_dir']
-    checkpoint_name = textcnn_config['checkpoint_name']
-    num_filters = textcnn_config['num_filters']
-    learning_rate = textcnn_config['learning_rate']
-    epoch = textcnn_config['epoch']
-    max_to_keep = textcnn_config['max_to_keep']
-    print_per_batch = textcnn_config['print_per_batch']
-    is_early_stop = textcnn_config['is_early_stop']
-    patient = textcnn_config['patient']
+    checkpoints_dir = classifier_config['checkpoints_dir']
+    checkpoint_name = classifier_config['checkpoint_name']
+    num_filters = classifier_config['num_filters']
+    learning_rate = classifier_config['learning_rate']
+    epoch = classifier_config['epoch']
+    max_to_keep = classifier_config['max_to_keep']
+    print_per_batch = classifier_config['print_per_batch']
+    is_early_stop = classifier_config['is_early_stop']
+    patient = classifier_config['patient']
+    hidden_dim = classifier_config['hidden_dim']
+    model = classifier_config['model']
 
     best_f1_val = 0.0
     best_at_epoch = 0
@@ -38,8 +39,16 @@ def train(data_manager, logger):
     very_start_time = time.time()
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     X_train, y_train, X_val, y_val = data_manager.get_training_set()
-    text_cnn_model = TextCNN(seq_length, num_filters, num_classes, embedding_dim)
-    checkpoint = tf.train.Checkpoint(model=text_cnn_model)
+    # 载入模型
+    if model == 'textcnn':
+        from engines.models.textcnn import TextCNN
+        model = TextCNN(seq_length, num_filters, num_classes, embedding_dim)
+    elif model == 'textrcnn':
+        from engines.models.textrcnn import TextRCNN
+        model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim)
+    else:
+        raise Exception('config model is not exist')
+    checkpoint = tf.train.Checkpoint(model=model)
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory=checkpoints_dir, checkpoint_name=checkpoint_name, max_to_keep=max_to_keep)
     num_iterations = int(math.ceil(1.0 * len(X_train) / batch_size))
@@ -56,14 +65,13 @@ def train(data_manager, logger):
         for iteration in tqdm(range(num_iterations)):
             X_train_batch, y_train_batch = data_manager.next_batch(X_train, y_train, start_index=iteration * batch_size)
             with tf.GradientTape() as tape:
-                X_train_batch = tf.expand_dims(X_train_batch, -1)
-                logits = text_cnn_model.call(X_train_batch, training=1)
+                logits = model.call(X_train_batch, training=1)
                 loss_vec = tf.keras.losses.sparse_categorical_crossentropy(y_pred=logits, y_true=y_train_batch)
                 loss = tf.reduce_mean(loss_vec)
             # 定义好参加梯度的参数
-            gradients = tape.gradient(loss, text_cnn_model.trainable_variables)
+            gradients = tape.gradient(loss, model.trainable_variables)
             # 反向传播，自动微分计算
-            optimizer.apply_gradients(zip(gradients, text_cnn_model.trainable_variables))
+            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
             if iteration % print_per_batch == 0 and iteration != 0:
                 predictions = tf.argmax(logits, axis=-1)
                 measures = cal_metrics(y_true=y_train_batch, y_pred=predictions)
@@ -77,8 +85,7 @@ def train(data_manager, logger):
         val_results = {'precision': 0, 'recall': 0, 'f1': 0}
         for iteration in tqdm(range(num_val_iterations)):
             X_val_batch, y_val_batch = data_manager.next_batch(X_val, y_val, iteration * batch_size)
-            X_val_batch = tf.expand_dims(X_val_batch, -1)
-            logits = text_cnn_model.call(X_val_batch)
+            logits = model.call(X_val_batch)
             predictions = tf.argmax(logits, axis=-1)
             measures = cal_metrics(y_true=y_val_batch, y_pred=predictions)
             for k, v in measures.items():

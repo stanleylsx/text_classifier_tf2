@@ -2,11 +2,11 @@
 # @Time : 2020/10/20 11:03 下午
 # @Author : lishouxian
 # @Email : gzlishouxian@gmail.com
-# @File : model.py 
+# @File : textcnn.py
 # @Software: PyCharm
 from abc import ABC
 import tensorflow as tf
-from config import textcnn_config
+from config import classifier_config
 
 
 class TextCNN(tf.keras.Model, ABC):
@@ -32,7 +32,7 @@ class TextCNN(tf.keras.Model, ABC):
                                             padding='valid',
                                             activation='relu')
         self.pool3 = tf.keras.layers.MaxPooling2D(pool_size=[seq_length-4+1, 1], padding='valid')
-        self.dropout = tf.keras.layers.Dropout(textcnn_config['droupout_rate'], name='dropout')
+        self.dropout = tf.keras.layers.Dropout(classifier_config['droupout_rate'], name='dropout')
         self.dense = tf.keras.layers.Dense(num_classes,
                                            activation='softmax',
                                            kernel_regularizer=tf.keras.regularizers.l2(0.1),
@@ -42,6 +42,7 @@ class TextCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
+        inputs = tf.expand_dims(inputs, -1)
         pooled_output = []
         con1 = self.conv1(inputs)
         pool1 = self.pool1(con1)

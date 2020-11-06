@@ -4,6 +4,11 @@
 # @Email : gzlishouxian@gmail.com
 # @File : config.py 
 # @Software: PyCharm
+
+
+# [train_classifier, interactive_predict, train_word2vec]
+mode = 'train_classifier'
+
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
     'train_data': 'data/w2v_data/comments_data.csv',  # 词向量训练用的数据
@@ -11,7 +16,8 @@ word2vec_config = {
     'word2vec_dim': 300,  # 词向量维度
 }
 
-textcnn_config = {
+classifier_config = {
+    'model': 'textrcnn',  # 模型选择
     'train_file': 'data/data/train_data.csv',  # 训练数据集
     'dev_file': 'data/data/dev_data.csv',  # 验证数据集
     'classes': {'negative': 0, 'positive': 1},  # 类别和对应的id
@@ -27,5 +33,6 @@ textcnn_config = {
     'batch_size': 64,
     'max_sequence_length': 150,
     'droupout_rate': 0.3,  # 遗忘率
+    'hidden_dim': 200,  # 隐藏层维度
     'metrics_average': 'binary',  # 若为二分类则使用binary，多分类使用micro或macro
 }

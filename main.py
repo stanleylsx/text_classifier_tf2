@@ -9,16 +9,15 @@ from engines.utils.logger import get_logger
 from engines.train import train
 from engines.predict import Predictor
 from engines.word2vec_util import Word2VecUtils
+from config import mode
 
 
 if __name__ == '__main__':
     logger = get_logger('./logs')
-    # 模式选择
-    mode = 'interactive_predict'
-    # 训练textcnn
-    if mode == 'train_textcnn':
+    # 训练分类器
+    if mode == 'train_classifier':
         data_manage = DataManager(logger)
-        logger.info('mode: train_textcnn')
+        logger.info('mode: train_classifier')
         train(data_manage, logger)
     # 测试分类
     elif mode == 'interactive_predict':

@@ -9,7 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from engines.word2vec_util import Word2VecUtils
-from config import word2vec_config, textcnn_config
+from config import word2vec_config, classifier_config
 
 
 class DataManager:
@@ -19,17 +19,17 @@ class DataManager:
 
         self.PADDING = '[PAD]'
 
-        self.train_file = textcnn_config['train_file']
-        self.dev_file = textcnn_config['dev_file']
+        self.train_file = classifier_config['train_file']
+        self.dev_file = classifier_config['dev_file']
         self.w2v_model = Word2Vec.load(word2vec_config['word2vec_model'])
         self.w2v_util = Word2VecUtils(logger)
         self.stop_words = self.w2v_util.get_stop_words()
 
-        self.batch_size = textcnn_config['batch_size']
-        self.max_sequence_length = textcnn_config['max_sequence_length']
+        self.batch_size = classifier_config['batch_size']
+        self.max_sequence_length = classifier_config['max_sequence_length']
         self.embedding_dim = self.w2v_model.vector_size
 
-        self.class_id = textcnn_config['classes']
+        self.class_id = classifier_config['classes']
         self.max_label_number = len(self.class_id)
 
         self.logger.info('dataManager initialed...')
