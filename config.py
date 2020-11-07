@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'train_classifier'
+mode = 'interactive_predict'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -17,12 +17,12 @@ word2vec_config = {
 }
 
 classifier_config = {
-    'model': 'textrcnn',  # 模型选择
+    'model': 'textcnn',  # 模型选择
     'train_file': 'data/data/train_data.csv',  # 训练数据集
     'dev_file': 'data/data/dev_data.csv',  # 验证数据集
     'classes': {'negative': 0, 'positive': 1},  # 类别和对应的id
-    'checkpoints_dir': 'model/textcnn_model',  # 模型保存的文件夹
-    'checkpoint_name': 'textcnn_model',  # 模型保存的名字
+    'checkpoints_dir': 'model/textrcnn_model',  # 模型保存的文件夹
+    'checkpoint_name': 'textrcnn_model',  # 模型保存的名字
     'num_filters': 64,  # 卷集核的个数
     'learning_rate': 0.001,  # 学习率
     'epoch': 30,  # 训练epoch

@@ -9,7 +9,7 @@ from engines.utils.logger import get_logger
 from engines.train import train
 from engines.predict import Predictor
 from engines.word2vec_util import Word2VecUtils
-from config import mode
+from config import mode, classifier_config
 
 
 if __name__ == '__main__':
@@ -18,11 +18,13 @@ if __name__ == '__main__':
     if mode == 'train_classifier':
         data_manage = DataManager(logger)
         logger.info('mode: train_classifier')
+        logger.info('model: {}'.format(classifier_config['model']))
         train(data_manage, logger)
     # 测试分类
     elif mode == 'interactive_predict':
         data_manage = DataManager(logger)
         logger.info('mode: predict_one')
+        logger.info('model: {}'.format(classifier_config['model']))
         predictor = Predictor(data_manage, logger)
         while True:
             logger.info('please input a sentence (enter [exit] to exit.)')
