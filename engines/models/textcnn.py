@@ -17,6 +17,12 @@ class TextCNN(tf.keras.Model, ABC):
         super(TextCNN, self).__init__()
         self.seq_length = seq_length
         self.embedding_dim = embedding_dim
+
+        if classifier_config['use_attention']:
+            self.attention_dim = classifier_config['attention_dim']
+            self.attention_W = tf.keras.layers.Dense(classifier_config['attention_dim'], activation='tanh')
+            self.attention_V = tf.keras.layers.Dense(1)
+
         self.conv1 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[2, self.embedding_dim],
                                             strides=1,
                                             padding='valid',
@@ -42,6 +48,23 @@ class TextCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
+        if classifier_config['use_attention']:
+            u_list = []
+            attn_z = []
+            attention_inputs = tf.split(tf.reshape(inputs, [-1, self.embedding_dim]), self.seq_length, axis=0)
+            for t in range(self.seq_length):
+                u_t = self.attention_W(attention_inputs[t])
+                u_list.append(u_t)
+
+            for t in range(self.seq_length):
+                z_t = self.attention_V(u_list[t])
+                attn_z.append(z_t)
+
+            attn = tf.concat(attn_z, axis=1)
+            alpha = tf.nn.softmax(attn)
+            alpha = tf.reshape(alpha, [-1, self.seq_length, 1])
+            inputs = alpha * inputs
+
         inputs = tf.expand_dims(inputs, -1)
         pooled_output = []
         con1 = self.conv1(inputs)
