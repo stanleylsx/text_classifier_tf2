@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
-from engines.word2vec_util import Word2VecUtils
+from engines.utils.word2vec import Word2VecUtils
 from config import word2vec_config, classifier_config
 
 

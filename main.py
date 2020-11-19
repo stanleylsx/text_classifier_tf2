@@ -8,7 +8,7 @@ from engines.data import DataManager
 from engines.utils.logger import get_logger
 from engines.train import train
 from engines.predict import Predictor
-from engines.word2vec_util import Word2VecUtils
+from engines.utils.word2vec import Word2VecUtils
 from config import mode, classifier_config
 
 
