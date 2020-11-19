@@ -48,7 +48,7 @@ mode = 'train_classifier'
 
 * att-textcnn训练结果  
 
-![train_results_att-textcnn](https://img-blog.csdnimg.cn/20201119113856376.png)
+![train_results_att-textcnn](https://img-blog.csdnimg.cn/20201119115846656.png)
 
 * textrcnn训练结果  
 
