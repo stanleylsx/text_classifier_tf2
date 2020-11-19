@@ -48,7 +48,7 @@ class TextCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
-        if classifier_config['use_attention']:
+        if classifier_config['use_attention'] and training:
             u_list = []
             attn_z = []
             attention_inputs = tf.split(tf.reshape(inputs, [-1, self.embedding_dim]), self.seq_length, axis=0)
