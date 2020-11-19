@@ -5,7 +5,6 @@
 # @File : predict.py
 # @Software: PyCharm
 import tensorflow as tf
-from engines.models.textcnn import TextCNN
 from config import classifier_config
 
 

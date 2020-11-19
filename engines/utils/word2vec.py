@@ -23,7 +23,7 @@ class Word2VecUtils:
 
     @staticmethod
     def processing_sentence(x, stop_words):
-        cut_word = jieba.cut(x.strip())
+        cut_word = jieba.cut(str(x).strip())
         if stop_words:
             words = [word for word in cut_word if word not in stop_words and word != ' ']
         else:
