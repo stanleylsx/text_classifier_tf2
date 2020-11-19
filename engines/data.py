@@ -9,7 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from engines.utils.word2vec import Word2VecUtils
-from config import word2vec_config, classifier_config
+from config import classifier_config
 
 
 class DataManager:
@@ -21,8 +21,9 @@ class DataManager:
 
         self.train_file = classifier_config['train_file']
         self.dev_file = classifier_config['dev_file']
-        self.w2v_model = Word2Vec.load(word2vec_config['word2vec_model'])
         self.w2v_util = Word2VecUtils(logger)
+        self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
+
         self.stop_words = self.w2v_util.get_stop_words()
 
         self.batch_size = classifier_config['batch_size']

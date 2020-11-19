@@ -8,6 +8,7 @@ import pandas as pd
 from gensim.models.word2vec import Word2Vec
 from config import word2vec_config
 import jieba
+import os
 
 
 class Word2VecUtils:
@@ -15,7 +16,9 @@ class Word2VecUtils:
         self.logger = logger
         self.stop_words = word2vec_config['stop_words']
         self.train_data = word2vec_config['train_data']
-        self.model_dir = word2vec_config['word2vec_model']
+        model_dir = word2vec_config['model_dir']
+        model_name = word2vec_config['model_name']
+        self.model_path = os.path.join(model_dir, model_name)
         self.dim = word2vec_config['word2vec_dim']
 
     @staticmethod
@@ -52,4 +55,4 @@ class Word2VecUtils:
         w2v_model = Word2Vec(size=self.dim, workers=10, min_count=3)
         w2v_model.build_vocab(all_cut_sentence)
         w2v_model.train(all_cut_sentence, total_examples=w2v_model.corpus_count, epochs=100)
-        w2v_model.save(self.model_dir)
+        w2v_model.save(self.model_path)
