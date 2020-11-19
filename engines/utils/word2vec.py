@@ -44,6 +44,8 @@ class Word2VecUtils:
         # 切词
         self.logger.info('Cut sentence...')
         train_df['sentence'] = train_df.sentence.apply(self.processing_sentence, args=(stop_words,))
+        # 删掉缺失的行
+        train_df.dropna(inplace=True)
         all_cut_sentence = train_df.sentence.to_list()
         # 训练词向量
         self.logger.info('Training word2vec...')
