@@ -17,8 +17,10 @@
 ### Word2vec
 可以参考我的博客文章[01-NLP介绍和词向量](https://lishouxian.cn/2020/04/06/NLP%E4%BB%8B%E7%BB%8D%E5%92%8C%E8%AF%8D%E5%90%91%E9%87%8F/#WordNet)和[02-词向量第二部分和词义](https://lishouxian.cn/2020/04/13/%E8%AF%8D%E5%90%91%E9%87%8F%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%E5%92%8C%E8%AF%8D%E4%B9%89/)    
 也可看博客[刘建平Pinard](https://www.cnblogs.com/pinard/p/7160330.html)和文章[技术干货 | 漫谈Word2vec之skip-gram模型](https://mp.weixin.qq.com/s/reT4lAjwo4fHV4ctR9zbxQ?)
+
 ### TextCNN
 ![textcnn](https://img-blog.csdnimg.cn/20201021000109653.png)
+
 ### TextRCNN
 ![textrcnn](https://img-blog.csdnimg.cn/20201107140825534.png)
 
@@ -43,6 +45,10 @@ mode = 'train_classifier'
 * textcnn训练结果  
 
 ![train_results_textcnn](https://img-blog.csdnimg.cn/2020110713592572.png)
+
+* att-textcnn训练结果  
+
+![train_results_att-textcnn](https://img-blog.csdnimg.cn/20201119113856376.png)
 
 * textrcnn训练结果  
 

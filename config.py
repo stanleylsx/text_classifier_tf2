@@ -34,7 +34,7 @@ classifier_config = {
     'patient': 8,
     'batch_size': 64,
     'max_sequence_length': 150,
-    'droupout_rate': 0.4,  # 遗忘率
+    'droupout_rate': 0.3,  # 遗忘率
     'hidden_dim': 200,  # 隐藏层维度
     'metrics_average': 'binary',  # 若为二分类则使用binary，多分类使用micro或macro
 }
