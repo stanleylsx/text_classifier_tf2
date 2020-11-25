@@ -12,7 +12,7 @@ def cal_metrics(y_true, y_pred):
     """
     指标计算
     """
-    y_true = y_true.astype(int)
+    y_true = y_true.numpy()
     y_pred = y_pred.numpy()
     average = classifier_config['metrics_average']
     precision = metrics.precision_score(y_true, y_pred, average=average)

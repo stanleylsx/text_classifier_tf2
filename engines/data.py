@@ -6,6 +6,7 @@
 # @Software: PyCharm
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from engines.utils.word2vec import Word2VecUtils
@@ -76,7 +77,7 @@ class DataManager:
         for record in tqdm(zip(sentences, labels)):
             sentence = self.w2v_util.processing_sentence(record[0], self.stop_words)
             sentence = self.padding(sentence)
-            label = record[1]
+            label = tf.one_hot(record[1], depth=self.max_label_number)
             vector = []
             for word in sentence:
                 if word in self.w2v_model.wv.vocab:

@@ -66,7 +66,7 @@ def train(data_manager, logger):
             X_train_batch, y_train_batch = data_manager.next_batch(X_train, y_train, start_index=iteration * batch_size)
             with tf.GradientTape() as tape:
                 logits = model.call(X_train_batch, training=1)
-                loss_vec = tf.keras.losses.sparse_categorical_crossentropy(y_pred=logits, y_true=y_train_batch)
+                loss_vec = tf.keras.losses.categorical_crossentropy(y_pred=logits, y_true=y_train_batch)
                 loss = tf.reduce_mean(loss_vec)
             # 定义好参加梯度的参数
             gradients = tape.gradient(loss, model.trainable_variables)
@@ -74,6 +74,7 @@ def train(data_manager, logger):
             optimizer.apply_gradients(zip(gradients, model.trainable_variables))
             if iteration % print_per_batch == 0 and iteration != 0:
                 predictions = tf.argmax(logits, axis=-1)
+                y_train_batch = tf.argmax(y_train_batch, axis=-1)
                 measures = cal_metrics(y_true=y_train_batch, y_pred=predictions)
                 res_str = ''
                 for k, v in measures.items():
@@ -87,6 +88,7 @@ def train(data_manager, logger):
             X_val_batch, y_val_batch = data_manager.next_batch(X_val, y_val, iteration * batch_size)
             logits = model.call(X_val_batch)
             predictions = tf.argmax(logits, axis=-1)
+            y_val_batch = tf.argmax(y_val_batch, axis=-1)
             measures = cal_metrics(y_true=y_val_batch, y_pred=predictions)
             for k, v in measures.items():
                 val_results[k] += v
