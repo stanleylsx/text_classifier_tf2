@@ -18,19 +18,19 @@ word2vec_config = {
 }
 
 classifier_config = {
-    'model': 'textrcnn',  # 模型选择
+    'model': 'textcnn',  # 模型选择
     'train_file': 'data/data/train_data.csv',  # 训练数据集
     'dev_file': 'data/data/dev_data.csv',  # 验证数据集
     'classes': {'negative': 0, 'positive': 1},  # 类别和对应的id
-    'checkpoints_dir': 'model/textrcnn_model',  # 模型保存的文件夹
-    'checkpoint_name': 'textrcnn_model',  # 模型保存的名字
+    'checkpoints_dir': 'model/att-textcnn_model',  # 模型保存的文件夹
+    'checkpoint_name': 'att-textcnn_model',  # 模型保存的名字
     'num_filters': 64,  # 卷集核的个数
     'learning_rate': 0.001,  # 学习率
     'epoch': 30,  # 训练epoch
     'max_to_keep': 1,  # 最多保存max_to_keep个模型
     'print_per_batch': 20,  # 每print_per_batch打印
     'is_early_stop': True,  # 是否提前结束
-    'use_attention': False,  # 是否引入attention
+    'use_attention': True,  # 是否引入attention
     'attention_dim': 300,  # attention大小
     'patient': 8,
     'batch_size': 64,
