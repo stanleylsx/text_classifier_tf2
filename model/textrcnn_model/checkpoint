@@ -1,4 +1,4 @@
-model_checkpoint_path: "textrcnn_model-4"
-all_model_checkpoint_paths: "textrcnn_model-4"
-all_model_checkpoint_timestamps: 1604726601.1722367
-last_preserved_timestamp: 1604719218.9995246
+model_checkpoint_path: "textrcnn_model-2"
+all_model_checkpoint_paths: "textrcnn_model-2"
+all_model_checkpoint_timestamps: 1606320900.7653923
+last_preserved_timestamp: 1606320645.2278078
