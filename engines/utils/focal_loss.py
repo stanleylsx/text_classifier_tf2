@@ -15,10 +15,7 @@ class FocalLoss(tf.keras.losses.Loss):
 
     def call(self, y_true, y_pred):
         y_pred = tf.nn.softmax(y_pred, axis=-1)
-        eps = tf.keras.backend.epsilon()
-        y_pred = tf.clip_by_value(y_pred, eps, 1.0)
         y_true = tf.cast(y_true, tf.float32)
-
         loss = -y_true * tf.math.pow(1 - y_pred, self.gamma) * tf.math.log(y_pred)
         loss = tf.reduce_sum(loss, axis=1)
         return loss
