@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'interactive_predict'
+mode = 'train_classifier'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -38,4 +38,5 @@ classifier_config = {
     'droupout_rate': 0.3,  # 遗忘率
     'hidden_dim': 200,  # 隐藏层维度
     'metrics_average': 'binary',  # 若为二分类则使用binary，多分类使用micro或macro
+    'use_focal_loss': False  # 类别样本比例失衡的时候可以考虑使用
 }

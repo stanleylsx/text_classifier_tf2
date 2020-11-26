@@ -9,6 +9,7 @@ import time
 import math
 import tensorflow as tf
 from tqdm import tqdm
+from engines.utils.focal_loss import FocalLoss
 from engines.utils.metrics import cal_metrics
 from config import classifier_config
 
@@ -37,6 +38,7 @@ def train(data_manager, logger):
     unprocessed = 0
     batch_size = data_manager.batch_size
     very_start_time = time.time()
+    loss_obj = FocalLoss() if classifier_config['use_focal_loss'] else None
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     X_train, y_train, X_val, y_val = data_manager.get_training_set()
     # 载入模型
@@ -66,7 +68,10 @@ def train(data_manager, logger):
             X_train_batch, y_train_batch = data_manager.next_batch(X_train, y_train, start_index=iteration * batch_size)
             with tf.GradientTape() as tape:
                 logits = model.call(X_train_batch, training=1)
-                loss_vec = tf.keras.losses.categorical_crossentropy(y_pred=logits, y_true=y_train_batch)
+                if classifier_config['use_focal_loss']:
+                    loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                else:
+                    loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
                 loss = tf.reduce_mean(loss_vec)
             # 定义好参加梯度的参数
             gradients = tape.gradient(loss, model.trainable_variables)
