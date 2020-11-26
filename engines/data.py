@@ -32,6 +32,7 @@ class DataManager:
         self.embedding_dim = self.w2v_model.vector_size
 
         self.class_id = classifier_config['classes']
+        self.class_list = [name for name, index in classifier_config['classes'].items()]
         self.max_label_number = len(self.class_id)
 
         self.logger.info('dataManager initialed...')
@@ -93,6 +94,7 @@ class DataManager:
         获取训练数据集、验证集
         """
         df_train = pd.read_csv(self.train_file)
+        df_train = df_train.loc[df_train.label.isin(self.class_list)]
         df_train['label'] = df_train.label.map(lambda x: self.class_id[x])
         # convert the data in matrix
         X, y = self.prepare(df_train['sentence'], df_train['label'])
@@ -124,6 +126,7 @@ class DataManager:
         :return:
         """
         df_val = pd.read_csv(self.dev_file)
+        df_val = df_val.loc[df_val.label.isin(self.class_list)]
         df_val['label'] = df_val.label.map(lambda x: self.class_id[x])
         # convert the data in matrix
         X_val, y_val = self.prepare(df_val['sentence'], df_val['label'])
