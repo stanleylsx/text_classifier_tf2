@@ -31,7 +31,7 @@ def train(data_manager, logger):
     is_early_stop = classifier_config['is_early_stop']
     patient = classifier_config['patient']
     hidden_dim = classifier_config['hidden_dim']
-    model = classifier_config['model']
+    classifier = classifier_config['classifier']
 
     best_f1_val = 0.0
     best_at_epoch = 0
@@ -42,10 +42,10 @@ def train(data_manager, logger):
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     X_train, y_train, X_val, y_val = data_manager.get_training_set()
     # 载入模型
-    if model == 'textcnn':
+    if classifier == 'textcnn':
         from engines.models.textcnn import TextCNN
         model = TextCNN(seq_length, num_filters, num_classes, embedding_dim)
-    elif model == 'textrcnn':
+    elif classifier == 'textrcnn':
         from engines.models.textrcnn import TextRCNN
         model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim)
     else:

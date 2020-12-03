@@ -11,7 +11,7 @@ from config import classifier_config
 class Predictor:
     def __init__(self, data_manager, logger):
         hidden_dim = classifier_config['hidden_dim']
-        model = classifier_config['model']
+        classifier = classifier_config['classifier']
         self.dataManager = data_manager
         seq_length = data_manager.max_sequence_length
         num_classes = data_manager.max_label_number
@@ -21,10 +21,10 @@ class Predictor:
         num_filters = classifier_config['num_filters']
         checkpoints_dir = classifier_config['checkpoints_dir']
         logger.info('loading model parameter')
-        if model == 'textcnn':
+        if classifier == 'textcnn':
             from engines.models.textcnn import TextCNN
             self.model = TextCNN(seq_length, num_filters, num_classes, embedding_dim)
-        elif model == 'textrcnn':
+        elif classifier == 'textrcnn':
             from engines.models.textrcnn import TextRCNN
             self.model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim)
         else:

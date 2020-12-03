@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'train_classifier'
+mode = 'interactive_predict'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -18,7 +18,7 @@ word2vec_config = {
 }
 
 classifier_config = {
-    'model': 'textcnn',  # 模型选择
+    'classifier': 'textcnn',  # 模型选择
     'train_file': 'data/data/train_data.csv',  # 训练数据集
     'dev_file': 'data/data/dev_data.csv',  # 验证数据集
     'classes': {'negative': 0, 'positive': 1},  # 类别和对应的id
