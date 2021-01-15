@@ -101,10 +101,6 @@ class DataManager:
         # shuffle the samples
         self.logger.info('shuffling data...')
         num_samples = len(X)
-        indices = np.arange(num_samples)
-        np.random.shuffle(indices)
-        X = X[indices]
-        y = y[indices]
         self.logger.info('getting validation data...')
         if self.dev_file is not None:
             X_train = X

@@ -10,6 +10,17 @@
 
 其他环境见requirements.txt
 
+## 更新历史
+日期|版本|描述
+:---|:---|---
+2018-12-01|v1.0.0|初始仓库
+2020-10-20|v2.0.0|重构项目
+2020-10-26|v2.1.0|加入指标
+2020-11-06|v2.2.0|加入textrcnn
+2020-11-19|v2.3.0|加入attention
+2020-11-26|v2.3.1|加入focal loss
+2020-11-19|v2.4.0|增加每个类别的指标，重构指标计算逻辑
+
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
 

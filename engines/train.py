@@ -33,6 +33,8 @@ def train(data_manager, logger):
     hidden_dim = classifier_config['hidden_dim']
     classifier = classifier_config['classifier']
 
+    reverse_classes = {str(class_id): class_name for class_name, class_id in data_manager.class_id.items()}
+
     best_f1_val = 0.0
     best_at_epoch = 0
     unprocessed = 0
@@ -78,9 +80,9 @@ def train(data_manager, logger):
             # 反向传播，自动微分计算
             optimizer.apply_gradients(zip(gradients, model.trainable_variables))
             if iteration % print_per_batch == 0 and iteration != 0:
-                predictions = tf.argmax(logits, axis=-1)
-                y_train_batch = tf.argmax(y_train_batch, axis=-1)
-                measures = cal_metrics(y_true=y_train_batch, y_pred=predictions)
+                predictions = tf.argmax(logits, axis=-1).numpy()
+                y_train_batch = tf.argmax(y_train_batch, axis=-1).numpy()
+                measures, _ = cal_metrics(y_true=y_train_batch, y_pred=predictions)
                 res_str = ''
                 for k, v in measures.items():
                     res_str += (k + ': %.3f ' % v)
@@ -88,29 +90,35 @@ def train(data_manager, logger):
 
         # validation
         logger.info('start evaluate engines...')
-        val_results = {'precision': 0, 'recall': 0, 'f1': 0}
+        y_true, y_pred = np.array([]), np.array([])
+
         for iteration in tqdm(range(num_val_iterations)):
             X_val_batch, y_val_batch = data_manager.next_batch(X_val, y_val, iteration * batch_size)
             logits = model.call(X_val_batch)
             predictions = tf.argmax(logits, axis=-1)
             y_val_batch = tf.argmax(y_val_batch, axis=-1)
-            measures = cal_metrics(y_true=y_val_batch, y_pred=predictions)
-            for k, v in measures.items():
-                val_results[k] += v
+            y_true = np.append(y_true, y_val_batch)
+            y_pred = np.append(y_pred, predictions)
+
+        measures, each_classes = cal_metrics(y_true=y_true, y_pred=y_pred)
+
+        # 打印每一个类别的指标
+        classes_val_str = ''
+        for k, v in each_classes.items():
+            if k in reverse_classes:
+                classes_val_str += (reverse_classes[k] + ': ' + str(each_classes[k]) + '\n')
+        logger.info(classes_val_str)
+
+        val_res_str = ''
+        for k, v in measures.items():
+            val_res_str += (k + ': %.3f ' % measures[k])
 
         time_span = (time.time() - start_time) / 60
-        val_res_str = ''
-        dev_f1_avg = 0
-        for k, v in val_results.items():
-            val_results[k] /= num_val_iterations
-            val_res_str += (k + ': %.3f ' % val_results[k])
-            if k == 'f1':
-                dev_f1_avg = val_results[k]
-        logger.info('time consumption:%.2f(min), %s' % (time_span, val_res_str))
 
-        if np.array(dev_f1_avg).mean() > best_f1_val:
+        logger.info('time consumption:%.2f(min), %s' % (time_span, val_res_str))
+        if measures['f1'] > best_f1_val:
             unprocessed = 0
-            best_f1_val = np.array(dev_f1_avg).mean()
+            best_f1_val = measures['f1']
             best_at_epoch = i + 1
             checkpoint_manager.save()
             logger.info('saved the new best model with f1: %.3f' % best_f1_val)
