@@ -20,6 +20,7 @@
 2020-11-19|v2.3.0|加入attention
 2020-11-26|v2.3.1|加入focal loss
 2020-11-19|v2.4.0|增加每个类别的指标，重构指标计算逻辑
+2021-03-02|v2.5.0|使用Dataset替换自己写的数据加载器来加载数据
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取

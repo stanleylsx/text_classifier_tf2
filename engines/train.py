@@ -6,7 +6,7 @@
 # @Software: PyCharm
 import numpy as np
 import time
-import math
+import pandas as pd
 import tensorflow as tf
 from tqdm import tqdm
 from engines.utils.focal_loss import FocalLoss
@@ -20,6 +20,18 @@ def train(data_manager, logger):
     embedding_dim = data_manager.embedding_dim
     num_classes = data_manager.max_label_number
     seq_length = data_manager.max_sequence_length
+
+    train_file = classifier_config['train_file']
+    dev_file = classifier_config['dev_file']
+    train_df = pd.read_csv(train_file)
+    dev_df = pd.read_csv(dev_file)
+
+    if dev_file is None:
+        # split the data into train and validation set
+        train_df, dev_df = train_file[:int(len(train_file)*0.9)], train_file[int(len(train_file)*0.9):]
+
+    train_dataset = data_manager.get_dataset(train_df)
+    dev_dataset = data_manager.get_dataset(dev_df)
 
     checkpoints_dir = classifier_config['checkpoints_dir']
     checkpoint_name = classifier_config['checkpoint_name']
@@ -42,7 +54,7 @@ def train(data_manager, logger):
     very_start_time = time.time()
     loss_obj = FocalLoss() if classifier_config['use_focal_loss'] else None
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    X_train, y_train, X_val, y_val = data_manager.get_training_set()
+
     # 载入模型
     if classifier == 'textcnn':
         from engines.models.textcnn import TextCNN
@@ -55,19 +67,13 @@ def train(data_manager, logger):
     checkpoint = tf.train.Checkpoint(model=model)
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory=checkpoints_dir, checkpoint_name=checkpoint_name, max_to_keep=max_to_keep)
-    num_iterations = int(math.ceil(1.0 * len(X_train) / batch_size))
-    num_val_iterations = int(math.ceil(1.0 * len(X_val) / batch_size))
+
     logger.info(('+' * 20) + 'training starting' + ('+' * 20))
     for i in range(epoch):
         start_time = time.time()
-        # shuffle train at each epoch
-        sh_index = np.arange(len(X_train))
-        np.random.shuffle(sh_index)
-        X_train = X_train[sh_index]
-        y_train = y_train[sh_index]
         logger.info('epoch:{}/{}'.format(i + 1, epoch))
-        for iteration in tqdm(range(num_iterations)):
-            X_train_batch, y_train_batch = data_manager.next_batch(X_train, y_train, start_index=iteration * batch_size)
+        for step, batch in tqdm(train_dataset.shuffle(len(train_dataset)).batch(batch_size).enumerate()):
+            X_train_batch, y_train_batch = batch
             with tf.GradientTape() as tape:
                 logits = model.call(X_train_batch, training=1)
                 if classifier_config['use_focal_loss']:
@@ -79,21 +85,21 @@ def train(data_manager, logger):
             gradients = tape.gradient(loss, model.trainable_variables)
             # 反向传播，自动微分计算
             optimizer.apply_gradients(zip(gradients, model.trainable_variables))
-            if iteration % print_per_batch == 0 and iteration != 0:
+            if step % print_per_batch == 0 and step != 0:
                 predictions = tf.argmax(logits, axis=-1).numpy()
                 y_train_batch = tf.argmax(y_train_batch, axis=-1).numpy()
                 measures, _ = cal_metrics(y_true=y_train_batch, y_pred=predictions)
                 res_str = ''
                 for k, v in measures.items():
                     res_str += (k + ': %.3f ' % v)
-                logger.info('training batch: %5d, loss: %.5f, %s' % (iteration, loss, res_str))
+                logger.info('training batch: %5d, loss: %.5f, %s' % (step, loss, res_str))
 
         # validation
         logger.info('start evaluate engines...')
         y_true, y_pred = np.array([]), np.array([])
 
-        for iteration in tqdm(range(num_val_iterations)):
-            X_val_batch, y_val_batch = data_manager.next_batch(X_val, y_val, iteration * batch_size)
+        for dev_batch in tqdm(dev_dataset.batch(batch_size)):
+            X_val_batch, y_val_batch = dev_batch
             logits = model.call(X_val_batch)
             predictions = tf.argmax(logits, axis=-1)
             y_val_batch = tf.argmax(y_val_batch, axis=-1)
