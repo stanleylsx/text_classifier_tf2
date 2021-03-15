@@ -1,5 +1,5 @@
-# Comments Classifier
-此仓库是基于Tensorflow2.3的评论分类任务，使用Word2vec+(TextCNN/TextRCNN)模型，代码支持二分类和多分类，此项目做了个二元的情感分类。
+# Text Classifier
+此仓库是基于Tensorflow2.3的文本分类任务，使用Word2vec+(TextCNN/TextRCNN)模型，代码支持二分类和多分类，此项目基于爬取的游戏评论做了个二元的情感分类作为demo。
 
 ## 环境
 * python 3.6.7
