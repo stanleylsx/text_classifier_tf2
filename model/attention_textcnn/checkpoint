@@ -1,0 +1,4 @@
+model_checkpoint_path: "attention_textcnn-7"
+all_model_checkpoint_paths: "attention_textcnn-7"
+all_model_checkpoint_timestamps: 1615801471.4657993
+last_preserved_timestamp: 1615801208.1971605

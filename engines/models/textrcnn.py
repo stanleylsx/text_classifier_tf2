@@ -14,11 +14,14 @@ class TextRCNN(tf.keras.Model, ABC):
     TextCNN模型
     """
 
-    def __init__(self, seq_length, num_classes, hidden_dim, embedding_dim):
+    def __init__(self, seq_length, num_classes, hidden_dim, embedding_dim, vocab_size):
         super(TextRCNN, self).__init__()
         self.seq_length = seq_length
         self.hidden_dim = hidden_dim
         self.embedding_dim = embedding_dim
+        self.embedding_method = classifier_config['embedding_method']
+        self.embedding = tf.keras.layers.Embedding(vocab_size+1, self.embedding_dim, mask_zero=True)
+
         self.forward = tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True)
         self.backward = tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True, go_backwards=True)
         self.max_pool = tf.keras.layers.GlobalMaxPool1D()
@@ -33,6 +36,10 @@ class TextRCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
+        # 不引入外部的embedding
+        if self.embedding_method is None:
+            inputs = self.embedding(inputs)
+
         left_embedding = self.forward(inputs)
         right_embedding = self.backward(inputs)
         concat_outputs = tf.keras.layers.concatenate([left_embedding, inputs, right_embedding], axis=-1)

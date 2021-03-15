@@ -1,5 +1,16 @@
 # Text Classifier
-此仓库是基于Tensorflow2.3的文本分类任务，使用Word2vec+(TextCNN/TextRCNN)模型，代码支持二分类和多分类，此项目基于爬取的游戏评论做了个二元的情感分类作为demo。
+此仓库是基于Tensorflow2.3的文本分类任务，分别支持:  
+
+* 随机初始Word Embedding + TextCNN  
+* 随机初始Word Embedding + Attention + TextCNN  
+* 随机初始Word Embedding + TextRCNN  
+* Word2Vec + TextCNN  
+* Word2Vec + Attention + TextCNN  
+* Word2Vec + TextRCNN  
+* Bert Embedding + TextCNN  
+* Bert Embedding + TextRCNN  
+
+代码支持二分类和多分类，此项目基于爬取的游戏评论做了个二元的情感分类作为demo。  
 
 ## 环境
 * python 3.6.7
@@ -16,11 +27,12 @@
 2018-12-01|v1.0.0|初始仓库
 2020-10-20|v2.0.0|重构项目
 2020-10-26|v2.1.0|加入指标
-2020-11-06|v2.2.0|加入textrcnn
-2020-11-19|v2.3.0|加入attention
+2020-11-06|v2.2.0|加入TextRCNN
+2020-11-19|v2.3.0|加入Attention
 2020-11-26|v2.3.1|加入focal loss
 2020-11-19|v2.4.0|增加每个类别的指标，重构指标计算逻辑
 2021-03-02|v2.5.0|使用Dataset替换自己写的数据加载器来加载数据
+2021-03-15|v3.0.0|支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取

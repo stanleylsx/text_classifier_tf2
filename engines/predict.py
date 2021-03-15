@@ -16,6 +16,8 @@ class Predictor:
         seq_length = data_manager.max_sequence_length
         num_classes = data_manager.max_label_number
         embedding_dim = data_manager.embedding_dim
+        vocab_size = data_manager.vocab_size
+
         self.logger = logger
         # 卷集核的个数
         num_filters = classifier_config['num_filters']
@@ -23,10 +25,10 @@ class Predictor:
         logger.info('loading model parameter')
         if classifier == 'textcnn':
             from engines.models.textcnn import TextCNN
-            self.model = TextCNN(seq_length, num_filters, num_classes, embedding_dim)
+            self.model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size)
         elif classifier == 'textrcnn':
             from engines.models.textrcnn import TextRCNN
-            self.model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim)
+            self.model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
         else:
             raise Exception('config model is not exist')
         # 实例化Checkpoint，设置恢复对象为新建立的模型

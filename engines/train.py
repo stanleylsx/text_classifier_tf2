@@ -31,8 +31,10 @@ def train(data_manager, logger):
     else:
         dev_df = pd.read_csv(dev_file)
 
-    train_dataset = data_manager.get_dataset(train_df)
+    train_dataset = data_manager.get_dataset(train_df, step='train')
     dev_dataset = data_manager.get_dataset(dev_df)
+
+    vocab_size = data_manager.vocab_size
 
     checkpoints_dir = classifier_config['checkpoints_dir']
     checkpoint_name = classifier_config['checkpoint_name']
@@ -59,10 +61,10 @@ def train(data_manager, logger):
     # 载入模型
     if classifier == 'textcnn':
         from engines.models.textcnn import TextCNN
-        model = TextCNN(seq_length, num_filters, num_classes, embedding_dim)
+        model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size)
     elif classifier == 'textrcnn':
         from engines.models.textrcnn import TextRCNN
-        model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim)
+        model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
     else:
         raise Exception('config model is not exist')
     checkpoint = tf.train.Checkpoint(model=model)
@@ -98,14 +100,18 @@ def train(data_manager, logger):
         # validation
         logger.info('start evaluate engines...')
         y_true, y_pred = np.array([]), np.array([])
+        loss_values = []
 
         for dev_batch in tqdm(dev_dataset.batch(batch_size)):
             X_val_batch, y_val_batch = dev_batch
             logits = model.call(X_val_batch)
+            val_loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_val_batch, y_pred=logits)
+            val_loss = tf.reduce_mean(val_loss_vec)
             predictions = tf.argmax(logits, axis=-1)
             y_val_batch = tf.argmax(y_val_batch, axis=-1)
             y_true = np.append(y_true, y_val_batch)
             y_pred = np.append(y_pred, predictions)
+            loss_values.append(val_loss)
 
         measures, each_classes = cal_metrics(y_true=y_true, y_pred=y_pred)
 
@@ -113,10 +119,10 @@ def train(data_manager, logger):
         classes_val_str = ''
         for k, v in each_classes.items():
             if k in reverse_classes:
-                classes_val_str += (reverse_classes[k] + ': ' + str(each_classes[k]) + '\n')
+                classes_val_str += ('\n' + reverse_classes[k] + ': ' + str(each_classes[k]))
         logger.info(classes_val_str)
-
-        val_res_str = ''
+        # 打印损失函数
+        val_res_str = 'loss: %.3f ' % np.mean(loss_values)
         for k, v in measures.items():
             val_res_str += (k + ': %.3f ' % measures[k])
 

@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'interactive_predict'
+mode = 'train_classifier'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -18,25 +18,54 @@ word2vec_config = {
 }
 
 classifier_config = {
-    'classifier': 'textcnn',  # 模型选择
-    'train_file': 'data/data/train_data.csv',  # 训练数据集
-    'dev_file': 'data/data/dev_data.csv',  # 验证数据集
-    'classes': {'negative': 0, 'positive': 1},  # 类别和对应的id
-    'checkpoints_dir': 'model/att-textcnn_model',  # 模型保存的文件夹
-    'checkpoint_name': 'att-textcnn_model',  # 模型保存的名字
-    'num_filters': 64,  # 卷集核的个数
-    'learning_rate': 0.001,  # 学习率
-    'epoch': 30,  # 训练epoch
-    'max_to_keep': 1,  # 最多保存max_to_keep个模型
-    'print_per_batch': 20,  # 每print_per_batch打印
-    'is_early_stop': True,  # 是否提前结束
-    'use_attention': True,  # 是否引入attention
-    'attention_dim': 300,  # attention大小
+    # 模型选择
+    'classifier': 'textrcnn',
+    # 训练数据集
+    'train_file': 'data/data/train_data.csv',
+    # 引入外部的词嵌入,可选word2vec、Bert
+    # 此处只使用Bert Embedding,不对其做预训练
+    # None:使用随机初始化的Embedding
+    'embedding_method': 'word2vec',
+    # 不外接词向量的时候需要自定义的向量维度
+    'embedding_dim': 300,
+    # 存放词表的地方
+    'token_file': 'data/data/token2id',
+    # 验证数据集
+    'dev_file': 'data/data/dev_data.csv',
+    # 类别和对应的id
+    'classes': {'negative': 0, 'positive': 1},
+    # 模型保存的文件夹
+    'checkpoints_dir': 'model/word2vec_textrcnn',
+    # 模型保存的名字
+    'checkpoint_name': 'word2vec_textrcnn',
+    # 卷集核的个数
+    'num_filters': 64,
+    # 学习率
+    'learning_rate': 0.001,
+    # 训练epoch
+    'epoch': 30,
+    # 最多保存max_to_keep个模型
+    'max_to_keep': 1,
+    # 每print_per_batch打印
+    'print_per_batch': 20,
+    # 是否提前结束
+    'is_early_stop': True,
+    # 是否引入attention
+    # 注意:textrcnn不支持
+    'use_attention': False,
+    # attention大小
+    'attention_dim': 300,
     'patient': 8,
     'batch_size': 64,
     'max_sequence_length': 150,
-    'droupout_rate': 0.3,  # 遗忘率
-    'hidden_dim': 200,  # 隐藏层维度
-    'metrics_average': 'binary',  # 若为二分类则使用binary，多分类使用micro或macro
-    'use_focal_loss': False  # 类别样本比例失衡的时候可以考虑使用
+    # 遗忘率
+    'droupout_rate': 0.5,
+    # 隐藏层维度
+    # 使用textrcnn中需要设定
+    'hidden_dim': 200,
+    # 若为二分类则使用binary
+    # 多分类使用micro或macro
+    'metrics_average': 'binary',
+    # 类别样本比例失衡的时候可以考虑使用
+    'use_focal_loss': False
 }

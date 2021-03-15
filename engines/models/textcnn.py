@@ -13,10 +13,12 @@ class TextCNN(tf.keras.Model, ABC):
     """
     TextCNN模型
     """
-    def __init__(self, seq_length, num_filters, num_classes, embedding_dim):
+    def __init__(self, seq_length, num_filters, num_classes, embedding_dim, vocab_size):
         super(TextCNN, self).__init__()
         self.seq_length = seq_length
+        self.embedding_method = classifier_config['embedding_method']
         self.embedding_dim = embedding_dim
+        self.embedding = tf.keras.layers.Embedding(vocab_size+1, self.embedding_dim, mask_zero=True)
 
         if classifier_config['use_attention']:
             self.attention_dim = classifier_config['attention_dim']
@@ -41,13 +43,17 @@ class TextCNN(tf.keras.Model, ABC):
         self.dropout = tf.keras.layers.Dropout(classifier_config['droupout_rate'], name='dropout')
         self.dense = tf.keras.layers.Dense(num_classes,
                                            activation='softmax',
-                                           kernel_regularizer=tf.keras.regularizers.l2(0.1),
-                                           bias_regularizer=tf.keras.regularizers.l2(0.1),
+                                           kernel_regularizer=tf.keras.regularizers.l2(0.2),
+                                           bias_regularizer=tf.keras.regularizers.l2(0.2),
                                            name='dense')
         self.flatten = tf.keras.layers.Flatten(data_format='channels_last', name='flatten')
 
     @tf.function
     def call(self, inputs, training=None):
+        # 不引入外部的embedding
+        if self.embedding_method is None:
+            inputs = self.embedding(inputs)
+
         if classifier_config['use_attention']:
             u_list = []
             attn_z = []

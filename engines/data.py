@@ -6,6 +6,7 @@
 # @Software: PyCharm
 import numpy as np
 import tensorflow as tf
+import os
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from engines.utils.word2vec import Word2VecUtils
@@ -16,23 +17,70 @@ class DataManager:
 
     def __init__(self, logger):
         self.logger = logger
-
-        self.PADDING = '[PAD]'
-
+        self.embedding_method = classifier_config['embedding_method']
         self.w2v_util = Word2VecUtils(logger)
-        self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
-
         self.stop_words = self.w2v_util.get_stop_words()
 
+        if self.embedding_method == 'word2vec':
+            self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
+            self.embedding_dim = self.w2v_model.vector_size
+            self.vocab_size = len(self.w2v_model.wv.vocab)
+        elif self.embedding_method == 'Bert':
+            pass
+        else:
+            self.embedding_dim = classifier_config['embedding_dim']
+            self.token_file = classifier_config['token_file']
+            if not os.path.isfile(self.token_file):
+                self.logger.info('vocab files not exist...')
+            else:
+                self.word_token2id, self.id2word_token = self.load_vocab()
+                self.vocab_size = len(self.word_token2id)
+
+        self.PADDING = '[PAD]'
+        self.UNKNOWN = '[UNK]'
         self.batch_size = classifier_config['batch_size']
         self.max_sequence_length = classifier_config['max_sequence_length']
-        self.embedding_dim = self.w2v_model.vector_size
 
         self.class_id = classifier_config['classes']
         self.class_list = [name for name, index in classifier_config['classes'].items()]
         self.max_label_number = len(self.class_id)
 
         self.logger.info('dataManager initialed...')
+
+    def load_vocab(self, sentences=None):
+        if not os.path.isfile(self.token_file):
+            self.logger.info('vocab files not exist, building vocab...')
+            return self.build_vocab(self.token_file, sentences)
+        word_token2id, id2word_token = {}, {}
+        with open(self.token_file, 'r', encoding='utf-8') as infile:
+            for row in infile:
+                row = row.strip()
+                word_token, word_token_id = row.split('\t')[0], int(row.split('\t')[1])
+                word_token2id[word_token] = word_token_id
+                id2word_token[word_token_id] = word_token
+        self.vocab_size = len(word_token2id)
+        return word_token2id, id2word_token
+
+    def build_vocab(self, token_file, sentences):
+        word_tokens = []
+        for sentence in tqdm(sentences):
+            words = self.w2v_util.processing_sentence(sentence, self.stop_words)
+            word_tokens.extend(words)
+        word_tokens = set(word_tokens)
+        word_token2id = dict(zip(word_tokens, range(1, len(word_tokens) + 1)))
+        id2word_token = dict(zip(range(1, len(word_tokens) + 1), word_tokens))
+        # 向生成的词表和标签表中加入[PAD]
+        id2word_token[0] = self.PADDING
+        word_token2id[self.PADDING] = 0
+        # 向生成的词表中加入[UNK]
+        id2word_token[len(id2word_token) + 1] = self.UNKNOWN
+        word_token2id[self.UNKNOWN] = len(id2word_token) + 1
+        # 保存词表及标签表
+        with open(token_file, 'w', encoding='utf-8') as outfile:
+            for idx in id2word_token:
+                outfile.write(id2word_token[idx] + '\t' + str(idx) + '\n')
+        self.vocab_size = len(word_token2id)
+        return word_token2id, id2word_token
 
     def padding(self, sentence):
         """
@@ -46,9 +94,9 @@ class DataManager:
             sentence = sentence[:self.max_sequence_length]
         return sentence
 
-    def prepare(self, sentences, labels):
+    def prepare_w2v_data(self, sentences, labels):
         """
-        输出X矩阵和y向量
+        输出word2vec做embedding之后的X矩阵和y向量
         """
         self.logger.info('loading data...')
         X, y = [], []
@@ -67,14 +115,41 @@ class DataManager:
             y.append(label)
         return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
 
-    def get_dataset(self, df):
+    def prepare_data(self, sentences, labels):
+        """
+        输出X矩阵和y向量
+        """
+        self.logger.info('loading data...')
+        X, y = [], []
+        for record in tqdm(zip(sentences, labels)):
+            sentence = self.w2v_util.processing_sentence(record[0], self.stop_words)
+            sentence = self.padding(sentence)
+            label = tf.one_hot(record[1], depth=self.max_label_number)
+            word_tokens = []
+            for word in sentence:
+                if word in self.word_token2id:
+                    word_tokens.append(self.word_token2id[word])
+                else:
+                    word_tokens.append(self.word_token2id[self.UNKNOWN])
+            X.append(word_tokens)
+            y.append(label)
+        return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
+
+    def get_dataset(self, df, step=None):
         """
         构建Dataset
         """
         df = df.loc[df.label.isin(self.class_list)]
         df['label'] = df.label.map(lambda x: self.class_id[x])
         # convert the data in matrix
-        X, y = self.prepare(df['sentence'], df['label'])
+        if self.embedding_method == 'word2vec':
+            X, y = self.prepare_w2v_data(df['sentence'], df['label'])
+        elif self.embedding_method == 'Bert':
+            X, y = [], []
+        else:
+            if step == 'train':
+                self.word_token2id, self.id2word_token = self.load_vocab(df['sentence'])
+            X, y = self.prepare_data(df['sentence'], df['label'])
         dataset = tf.data.Dataset.from_tensor_slices((X, y))
         return dataset
 
@@ -84,13 +159,26 @@ class DataManager:
         :param sentence:
         :return:
         """
-        embedding_unknown = [0] * self.embedding_dim
-        sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
-        sentence = self.padding(sentence)
-        vector = []
-        for word in sentence:
-            if word in self.w2v_model.wv.vocab:
-                vector.append(self.w2v_model[word].tolist())
-            else:
-                vector.append(embedding_unknown)
-        return np.array([vector], dtype=np.float32)
+        if self.embedding_method == 'word2vec':
+            embedding_unknown = [0] * self.embedding_dim
+            sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
+            sentence = self.padding(sentence)
+            vector = []
+            for word in sentence:
+                if word in self.w2v_model.wv.vocab:
+                    vector.append(self.w2v_model[word].tolist())
+                else:
+                    vector.append(embedding_unknown)
+            return np.array([vector], dtype=np.float32)
+        elif self.embedding_method == 'Bert':
+            pass
+        else:
+            sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
+            sentence = self.padding(sentence)
+            word_tokens = []
+            for word in sentence:
+                if word in self.word_token2id:
+                    word_tokens.append(self.word_token2id[word])
+                else:
+                    word_tokens.append(self.word_token2id[self.UNKNOWN])
+            return np.array([word_tokens], dtype=np.float32)
