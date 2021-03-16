@@ -9,19 +9,22 @@ from engines.utils.logger import get_logger
 from engines.train import train
 from engines.predict import Predictor
 from engines.utils.word2vec import Word2VecUtils
-from config import mode, classifier_config
+from config import mode, classifier_config, word2vec_config
+import json
 
 
 if __name__ == '__main__':
     logger = get_logger('./logs')
     # 训练分类器
     if mode == 'train_classifier':
+        logger.info(json.dumps(classifier_config, indent=2))
         data_manage = DataManager(logger)
         logger.info('mode: train_classifier')
         logger.info('model: {}'.format(classifier_config['classifier']))
         train(data_manage, logger)
     # 测试分类
     elif mode == 'interactive_predict':
+        logger.info(json.dumps(classifier_config, indent=2))
         data_manage = DataManager(logger)
         logger.info('mode: predict_one')
         logger.info('model: {}'.format(classifier_config['classifier']))
@@ -35,6 +38,7 @@ if __name__ == '__main__':
             print(results)
     # 训练词向量
     elif mode == 'train_word2vec':
+        logger.info(json.dumps(word2vec_config, indent=2))
         logger.info('mode: train_word2vec')
         w2v = Word2VecUtils(logger)
         w2v.train_word2vec()

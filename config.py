@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'train_classifier'
+mode = 'interactive_predict'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -19,13 +19,13 @@ word2vec_config = {
 
 classifier_config = {
     # 模型选择
-    'classifier': 'textrcnn',
+    'classifier': 'textcnn',
     # 训练数据集
     'train_file': 'data/data/train_data.csv',
     # 引入外部的词嵌入,可选word2vec、Bert
     # 此处只使用Bert Embedding,不对其做预训练
     # None:使用随机初始化的Embedding
-    'embedding_method': 'word2vec',
+    'embedding_method': None,
     # 不外接词向量的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/word2vec_textrcnn',
+    'checkpoints_dir': 'model/textcnn',
     # 模型保存的名字
-    'checkpoint_name': 'word2vec_textrcnn',
+    'checkpoint_name': 'textcnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率

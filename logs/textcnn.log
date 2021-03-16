@@ -1,4 +1,33 @@
 2021-03-15 16:59:02
+{
+  "classifier": "textcnn",
+  "train_file": "data/data/train_data.csv",
+  "embedding_method": null,
+  "embedding_dim": 300,
+  "token_file": "data/data/token2id",
+  "dev_file": "data/data/dev_data.csv",
+  "classes": {
+    "negative": 0,
+    "positive": 1
+  },
+  "checkpoints_dir": "model/textcnn",
+  "checkpoint_name": "textcnn",
+  "num_filters": 64,
+  "learning_rate": 0.001,
+  "epoch": 30,
+  "max_to_keep": 1,
+  "print_per_batch": 20,
+  "is_early_stop": true,
+  "use_attention": false,
+  "attention_dim": 300,
+  "patient": 8,
+  "batch_size": 64,
+  "max_sequence_length": 150,
+  "droupout_rate": 0.5,
+  "hidden_dim": 200,
+  "metrics_average": "binary",
+  "use_focal_loss": false
+}
 dataManager initialed...
 mode: train_classifier
 model: textcnn
