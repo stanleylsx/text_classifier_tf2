@@ -7,8 +7,8 @@
 * Word2Vec + TextCNN  
 * Word2Vec + Attention + TextCNN  
 * Word2Vec + TextRCNN  
-* Bert Embedding + TextCNN  
-* Bert Embedding + TextRCNN  
+* Bert Embedding(没有微调,直接取向量) + TextCNN  
+* Bert Embedding(没有微调,直接取向量) + TextRCNN  
 
 代码支持二分类和多分类，此项目基于爬取的游戏评论做了个二元的情感分类作为demo。  
 
@@ -26,13 +26,14 @@
 :---|:---|---
 2018-12-01|v1.0.0|初始仓库
 2020-10-20|v2.0.0|重构项目
-2020-10-26|v2.1.0|加入指标
+2020-10-26|v2.1.0|加入F1、Precise、Recall分类指标,计算方式支持macro、micro、average、binary
 2020-11-06|v2.2.0|加入TextRCNN
 2020-11-19|v2.3.0|加入Attention
-2020-11-26|v2.3.1|加入focal loss
-2020-11-19|v2.4.0|增加每个类别的指标，重构指标计算逻辑
+2020-11-26|v2.3.1|加入focal loss用于改善标签分布不平衡的情况
+2020-11-19|v2.4.0|增加每个类别的指标,重构指标计算逻辑
 2021-03-02|v2.5.0|使用Dataset替换自己写的数据加载器来加载数据
 2021-03-15|v3.0.0|支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
+2021-03-16|v3.1.0|支持取用Bert的编码后接TextCNN/TextRCNN进行数据训练(此项目Bert不支持预训练);在log中打印配置
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取

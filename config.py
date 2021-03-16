@@ -25,7 +25,7 @@ classifier_config = {
     # 引入外部的词嵌入,可选word2vec、Bert
     # 此处只使用Bert Embedding,不对其做预训练
     # None:使用随机初始化的Embedding
-    'embedding_method': None,
+    'embedding_method': 'Bert',
     # 不外接词向量的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textcnn',
+    'checkpoints_dir': 'model/bert_textcnn',
     # 模型保存的名字
-    'checkpoint_name': 'textcnn',
+    'checkpoint_name': 'bert_textcnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率

@@ -22,6 +22,10 @@ class Predictor:
         # 卷集核的个数
         num_filters = classifier_config['num_filters']
         checkpoints_dir = classifier_config['checkpoints_dir']
+        self.embedding_method = classifier_config['embedding_method']
+        if self.embedding_method == 'Bert':
+            from transformers import TFBertModel
+            self.bert_model = TFBertModel.from_pretrained('bert-base-multilingual-cased')
         logger.info('loading model parameter')
         if classifier == 'textcnn':
             from engines.models.textcnn import TextCNN
@@ -45,6 +49,8 @@ class Predictor:
         """
         reverse_classes = {class_id: class_name for class_name, class_id in self.dataManager.class_id.items()}
         vector = self.dataManager.prepare_single_sentence(sentence)
+        if self.embedding_method == 'Bert':
+            vector = self.bert_model(vector)[0]
         logits = self.model.call(inputs=vector)
         prediction = tf.argmax(logits, axis=-1)
         prediction = prediction.numpy()[0]

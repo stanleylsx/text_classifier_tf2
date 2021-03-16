@@ -26,7 +26,10 @@ class DataManager:
             self.embedding_dim = self.w2v_model.vector_size
             self.vocab_size = len(self.w2v_model.wv.vocab)
         elif self.embedding_method == 'Bert':
-            pass
+            from transformers import BertTokenizer
+            self.tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
+            self.embedding_dim = 768
+            self.vocab_size = len(self.tokenizer.get_vocab())
         else:
             self.embedding_dim = classifier_config['embedding_dim']
             self.token_file = classifier_config['token_file']
@@ -115,6 +118,25 @@ class DataManager:
             y.append(label)
         return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
 
+    def prepare_bert_data(self, sentences, labels):
+        """
+        输出Bert做embedding之后的X矩阵和y向量
+        """
+        self.logger.info('loading data...')
+        tokens_list, y = [], []
+        for record in tqdm(zip(sentences, labels)):
+            label = tf.one_hot(record[1], depth=self.max_label_number)
+            if len(record[0]) > self.max_sequence_length-2:
+                sentence = record[0][:self.max_sequence_length-2]
+                tokens = self.tokenizer.encode(sentence)
+            else:
+                tokens = self.tokenizer.encode(record[0])
+            if len(tokens) < 150:
+                tokens += [0 for _ in range(self.max_sequence_length - len(tokens))]
+            tokens_list.append(tokens)
+            y.append(label)
+        return np.array(tokens_list), np.array(y, dtype=np.float32)
+
     def prepare_data(self, sentences, labels):
         """
         输出X矩阵和y向量
@@ -145,7 +167,7 @@ class DataManager:
         if self.embedding_method == 'word2vec':
             X, y = self.prepare_w2v_data(df['sentence'], df['label'])
         elif self.embedding_method == 'Bert':
-            X, y = [], []
+            X, y = self.prepare_bert_data(df['sentence'], df['label'])
         else:
             if step == 'train':
                 self.word_token2id, self.id2word_token = self.load_vocab(df['sentence'])
@@ -171,7 +193,14 @@ class DataManager:
                     vector.append(embedding_unknown)
             return np.array([vector], dtype=np.float32)
         elif self.embedding_method == 'Bert':
-            pass
+            if len(sentence) > self.max_sequence_length - 2:
+                sentence = sentence[:self.max_sequence_length - 2]
+                tokens = self.tokenizer.encode(sentence)
+            else:
+                tokens = self.tokenizer.encode(sentence)
+            if len(tokens) < 150:
+                tokens += [0 for _ in range(self.max_sequence_length - len(tokens))]
+            return np.array([tokens])
         else:
             sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
             sentence = self.padding(sentence)

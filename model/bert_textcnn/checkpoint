@@ -1,0 +1,4 @@
+model_checkpoint_path: "bert_textcnn-8"
+all_model_checkpoint_paths: "bert_textcnn-8"
+all_model_checkpoint_timestamps: 1615887957.8737504
+last_preserved_timestamp: 1615875580.4579883
