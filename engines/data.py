@@ -10,6 +10,7 @@ import os
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from engines.utils.word2vec import Word2VecUtils
+from engines.utils.clean_data import filter_word
 from config import classifier_config
 from collections import Counter
 
@@ -72,7 +73,7 @@ class DataManager:
             word_tokens.extend(words)
         # 根据词频过滤一部分频率极低的词，不加入词表
         count_dict = Counter(word_tokens)
-        word_tokens = [k for k, v in count_dict.items() if v > 1]
+        word_tokens = [k for k, v in count_dict.items() if v > 1 and filter_word(k)]
         word_token2id = dict(zip(word_tokens, range(1, len(word_tokens) + 1)))
         id2word_token = dict(zip(range(1, len(word_tokens) + 1), word_tokens))
         # 向生成的词表和标签表中加入[PAD]

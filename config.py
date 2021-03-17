@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'interactive_predict'
+mode = 'train_classifier'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
