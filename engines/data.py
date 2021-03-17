@@ -11,6 +11,7 @@ from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from engines.utils.word2vec import Word2VecUtils
 from config import classifier_config
+from collections import Counter
 
 
 class DataManager:
@@ -69,15 +70,17 @@ class DataManager:
         for sentence in tqdm(sentences):
             words = self.w2v_util.processing_sentence(sentence, self.stop_words)
             word_tokens.extend(words)
-        word_tokens = set(word_tokens)
+        # 根据词频过滤一部分频率极低的词，不加入词表
+        count_dict = Counter(word_tokens)
+        word_tokens = [k for k, v in count_dict.items() if v > 1]
         word_token2id = dict(zip(word_tokens, range(1, len(word_tokens) + 1)))
         id2word_token = dict(zip(range(1, len(word_tokens) + 1), word_tokens))
         # 向生成的词表和标签表中加入[PAD]
         id2word_token[0] = self.PADDING
         word_token2id[self.PADDING] = 0
         # 向生成的词表中加入[UNK]
-        id2word_token[len(id2word_token) + 1] = self.UNKNOWN
-        word_token2id[self.UNKNOWN] = len(id2word_token) + 1
+        id2word_token[len(id2word_token)] = self.UNKNOWN
+        word_token2id[self.UNKNOWN] = len(id2word_token)
         # 保存词表及标签表
         with open(token_file, 'w', encoding='utf-8') as outfile:
             for idx in id2word_token:
@@ -169,7 +172,7 @@ class DataManager:
         elif self.embedding_method == 'Bert':
             X, y = self.prepare_bert_data(df['sentence'], df['label'])
         else:
-            if step == 'train':
+            if step == 'train' and not os.path.isfile(self.token_file):
                 self.word_token2id, self.id2word_token = self.load_vocab(df['sentence'])
             X, y = self.prepare_data(df['sentence'], df['label'])
         dataset = tf.data.Dataset.from_tensor_slices((X, y))

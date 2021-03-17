@@ -34,6 +34,7 @@
 2021-03-02|v2.5.0|使用Dataset替换自己写的数据加载器来加载数据
 2021-03-15|v3.0.0|支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
 2021-03-16|v3.1.0|支持取用Bert的编码后接TextCNN/TextRCNN进行数据训练(此项目Bert不支持预训练);在log中打印配置
+2021-03-17|v3.1.1|根据词频过滤一部分频率极低的词,不加入词表
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
