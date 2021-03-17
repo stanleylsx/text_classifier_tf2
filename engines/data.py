@@ -134,7 +134,7 @@ class DataManager:
                 tokens = self.tokenizer.encode(sentence)
             else:
                 tokens = self.tokenizer.encode(record[0])
-            if len(tokens) < 150:
+            if len(tokens) < self.max_sequence_length:
                 tokens += [0 for _ in range(self.max_sequence_length - len(tokens))]
             tokens_list.append(tokens)
             y.append(label)
