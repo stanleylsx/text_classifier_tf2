@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'train_classifier'
+mode = 'interactive_predict'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textcnn',
+    'checkpoints_dir': 'model/textcnn_fl',
     # 模型保存的名字
-    'checkpoint_name': 'textcnn',
+    'checkpoint_name': 'textcnn_fl',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率
@@ -67,5 +67,5 @@ classifier_config = {
     # 多分类使用micro或macro
     'metrics_average': 'binary',
     # 类别样本比例失衡的时候可以考虑使用
-    'use_focal_loss': False
+    'use_focal_loss': True
 }
