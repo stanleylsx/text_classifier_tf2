@@ -1,5 +1,5 @@
 # Text Classifier
-此仓库是基于Tensorflow2.3的文本分类任务，分别支持:  
+此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可分别支持:  
 
 * 随机初始Word Embedding + TextCNN  
 * 随机初始Word Embedding + Attention + TextCNN  
@@ -53,7 +53,7 @@
 ### TextCNN
 ![textcnn](https://img-blog.csdnimg.cn/20201021000109653.png)
 
-### TextRCNN
+### TextRNN
 ![textrnn](https://img-blog.csdnimg.cn/20210322154656886.png)
 
 ### TextRCNN
