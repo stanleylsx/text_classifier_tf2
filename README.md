@@ -1,19 +1,19 @@
 # Text Classifier
 此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可分别支持:  
 
-* 随机初始Word Embedding + TextCNN  
-* 随机初始Word Embedding + Attention + TextCNN  
-* 随机初始Word Embedding + TextRNN  
-* 随机初始Word Embedding + Attention + TextRNN   
-* 随机初始Word Embedding + TextRCNN   
-* Word2Vec + TextCNN   
-* Word2Vec + Attention + TextCNN  
-* Word2Vec + TextRNN  
-* Word2Vec + Attention + TextRNN  
-* Word2Vec + TextRCNN  
-* Bert Embedding(没有微调,直接取向量) + TextCNN    
-* Bert Embedding(没有微调,直接取向量) + TextRCNN    
-* Bert Embedding(没有微调,直接取向量) + TextRNN    
+* **随机初始Word Embedding + TextCNN**  
+* **随机初始Word Embedding + Attention + TextCNN**  
+* **随机初始Word Embedding + TextRNN**  
+* **随机初始Word Embedding + Attention + TextRNN**   
+* **随机初始Word Embedding + TextRCNN**   
+* **Word2Vec + TextCNN**   
+* **Word2Vec + Attention + TextCNN**  
+* **Word2Vec + TextRNN**  
+* **Word2Vec + Attention + TextRNN**  
+* **Word2Vec + TextRCNN**  
+* **Bert Embedding(没有微调,直接取向量) + TextCNN**    
+* **Bert Embedding(没有微调,直接取向量) + TextRCNN**    
+* **Bert Embedding(没有微调,直接取向量) + TextRNN**    
 
 代码支持二分类和多分类，此项目基于爬取的游戏评论做了个二元的情感分类作为demo。  
 
@@ -23,6 +23,7 @@
 * gensim==3.8.3
 * jieba==0.42.1
 * sklearn==0.0  
+* transformers==3.0.2  
 
 其他环境见requirements.txt
 
@@ -132,20 +133,12 @@ classifier_config = {
 # [train_classifier, interactive_predict, train_word2vec]
 mode = 'train_classifier'
 ```
-* textcnn训练结果  
+* 训练结果  
 
 ![train_results_textcnn](https://img-blog.csdnimg.cn/2020110713592572.png)
 
-* att-textcnn训练结果  
-
-![train_results_att-textcnn](https://img-blog.csdnimg.cn/20201119115846656.png)
-
-* textrcnn训练结果  
-
-![train_results_textrcnn](https://img-blog.csdnimg.cn/20201107140248442.png)
-
 ### 测试
-训练好textcnn可以开始测试
+训练好模型直接可以开始测试
 ```
 # [train_classifier, interactive_predict, train_word2vec]
 mode = 'interactive_predict'
