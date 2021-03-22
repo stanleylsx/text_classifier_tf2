@@ -3,12 +3,17 @@
 
 * 随机初始Word Embedding + TextCNN  
 * 随机初始Word Embedding + Attention + TextCNN  
-* 随机初始Word Embedding + TextRCNN  
-* Word2Vec + TextCNN  
+* 随机初始Word Embedding + TextRNN  
+* 随机初始Word Embedding + Attention + TextRNN   
+* 随机初始Word Embedding + TextRCNN   
+* Word2Vec + TextCNN   
 * Word2Vec + Attention + TextCNN  
+* Word2Vec + TextRNN  
+* Word2Vec + Attention + TextRNN  
 * Word2Vec + TextRCNN  
-* Bert Embedding(没有微调,直接取向量) + TextCNN  
-* Bert Embedding(没有微调,直接取向量) + TextRCNN  
+* Bert Embedding(没有微调,直接取向量) + TextCNN    
+* Bert Embedding(没有微调,直接取向量) + TextRCNN    
+* Bert Embedding(没有微调,直接取向量) + TextRNN    
 
 代码支持二分类和多分类，此项目基于爬取的游戏评论做了个二元的情感分类作为demo。  
 
@@ -35,6 +40,7 @@
 2021-03-15|v3.0.0|支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
 2021-03-16|v3.1.0|支持取用Bert的编码后接TextCNN/TextRCNN进行数据训练(此项目Bert不支持预训练);在log中打印配置
 2021-03-17|v3.1.1|根据词频过滤一部分频率极低的词,不加入词表
+2021-03-22|v3.1.2|加入TextRNN模型
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
@@ -46,6 +52,9 @@
 
 ### TextCNN
 ![textcnn](https://img-blog.csdnimg.cn/20201021000109653.png)
+
+### TextRCNN
+![textrnn](https://img-blog.csdnimg.cn/20210322154656886.png)
 
 ### TextRCNN
 ![textrcnn](https://img-blog.csdnimg.cn/20201107140825534.png)

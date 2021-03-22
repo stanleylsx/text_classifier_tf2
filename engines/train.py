@@ -71,6 +71,9 @@ def train(data_manager, logger):
     elif classifier == 'textrcnn':
         from engines.models.textrcnn import TextRCNN
         model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
+    elif classifier == 'textrnn':
+        from engines.models.textrnn import TextRNN
+        model = TextRNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
     else:
         raise Exception('config model is not exist')
     checkpoint = tf.train.Checkpoint(model=model)

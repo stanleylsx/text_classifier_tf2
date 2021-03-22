@@ -32,7 +32,6 @@ class TextRCNN(tf.keras.Model, ABC):
                                             kernel_regularizer=tf.keras.regularizers.l2(0.1),
                                             bias_regularizer=tf.keras.regularizers.l2(0.1),
                                             name='dense')
-        self.flatten = tf.keras.layers.Flatten(data_format='channels_last', name='flatten')
 
     @tf.function
     def call(self, inputs, training=None):

@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'interactive_predict'
+mode = 'train_classifier'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -19,7 +19,7 @@ word2vec_config = {
 
 classifier_config = {
     # 模型选择
-    'classifier': 'textcnn',
+    'classifier': 'textrnn',
     # 训练数据集
     'train_file': 'data/data/train_data.csv',
     # 引入外部的词嵌入,可选word2vec、Bert
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textcnn_fl',
+    'checkpoints_dir': 'model/textrnn',
     # 模型保存的名字
-    'checkpoint_name': 'textcnn_fl',
+    'checkpoint_name': 'textrnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率
@@ -52,7 +52,7 @@ classifier_config = {
     'is_early_stop': True,
     # 是否引入attention
     # 注意:textrcnn不支持
-    'use_attention': True,
+    'use_attention': False,
     # attention大小
     'attention_dim': 300,
     'patient': 8,
@@ -67,5 +67,5 @@ classifier_config = {
     # 多分类使用micro或macro
     'metrics_average': 'binary',
     # 类别样本比例失衡的时候可以考虑使用
-    'use_focal_loss': True
+    'use_focal_loss': False
 }

@@ -33,6 +33,9 @@ class Predictor:
         elif classifier == 'textrcnn':
             from engines.models.textrcnn import TextRCNN
             self.model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
+        elif classifier == 'textrnn':
+            from engines.models.textrnn import TextRNN
+            self.model = TextRNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
         else:
             raise Exception('config model is not exist')
         # 实例化Checkpoint，设置恢复对象为新建立的模型
