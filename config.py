@@ -52,7 +52,7 @@ classifier_config = {
     'is_early_stop': True,
     # 是否引入attention
     # 注意:textrcnn不支持
-    'use_attention': False,
+    'use_attention': True,
     # attention大小
     'attention_dim': 300,
     'patient': 8,
