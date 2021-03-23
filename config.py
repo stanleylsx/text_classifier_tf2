@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec]
-mode = 'train_classifier'
+mode = 'interactive_predict'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textrnn',
+    'checkpoints_dir': 'model/attention_textrnn',
     # 模型保存的名字
-    'checkpoint_name': 'textrnn',
+    'checkpoint_name': 'attention_textrnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率
@@ -52,14 +52,14 @@ classifier_config = {
     'is_early_stop': True,
     # 是否引入attention
     # 注意:textrcnn不支持
-    'use_attention': False,
+    'use_attention': True,
     # attention大小
-    'attention_dim': 300,
+    'attention_size': 300,
     'patient': 8,
     'batch_size': 64,
     'max_sequence_length': 150,
     # 遗忘率
-    'droupout_rate': 0.5,
+    'dropout_rate': 0.5,
     # 隐藏层维度
     # 使用textrcnn中需要设定
     'hidden_dim': 200,

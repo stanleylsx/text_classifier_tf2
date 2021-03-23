@@ -21,8 +21,8 @@ class TextCNN(tf.keras.Model, ABC):
         self.embedding = tf.keras.layers.Embedding(vocab_size+1, self.embedding_dim, mask_zero=True)
 
         if classifier_config['use_attention']:
-            self.attention_dim = classifier_config['attention_dim']
-            self.attention_W = tf.keras.layers.Dense(classifier_config['attention_dim'], activation='tanh')
+            attention_size = classifier_config['attention_size']
+            self.attention_W = tf.keras.layers.Dense(attention_size, activation='tanh', use_bias=True)
             self.attention_V = tf.keras.layers.Dense(1)
 
         self.conv1 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[2, self.embedding_dim],
@@ -40,7 +40,7 @@ class TextCNN(tf.keras.Model, ABC):
                                             padding='valid',
                                             activation='relu')
         self.pool3 = tf.keras.layers.MaxPooling2D(pool_size=[seq_length-4+1, 1], padding='valid')
-        self.dropout = tf.keras.layers.Dropout(classifier_config['droupout_rate'], name='dropout')
+        self.dropout = tf.keras.layers.Dropout(classifier_config['dropout_rate'], name='dropout')
         self.dense = tf.keras.layers.Dense(num_classes,
                                            activation='softmax',
                                            kernel_regularizer=tf.keras.regularizers.l2(0.2),
@@ -55,6 +55,7 @@ class TextCNN(tf.keras.Model, ABC):
             inputs = self.embedding(inputs)
 
         if classifier_config['use_attention']:
+            # 此处的attention是直接对embedding层做attention，思路来自于https://kexue.fm/archives/5409#%E6%B3%A8%E6%84%8F%E5%8A%9B
             u_list = []
             attn_z = []
             attention_inputs = tf.split(tf.reshape(inputs, [-1, self.embedding_dim]), self.seq_length, axis=0)

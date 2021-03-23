@@ -11,7 +11,7 @@ from config import classifier_config
 
 class TextRCNN(tf.keras.Model, ABC):
     """
-    TextCNN模型
+    TextRCNN模型
     """
 
     def __init__(self, seq_length, num_classes, hidden_dim, embedding_dim, vocab_size):
@@ -25,7 +25,7 @@ class TextRCNN(tf.keras.Model, ABC):
         self.forward = tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True)
         self.backward = tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True, go_backwards=True)
         self.max_pool = tf.keras.layers.GlobalMaxPool1D()
-        self.dropout = tf.keras.layers.Dropout(classifier_config['droupout_rate'], name='dropout')
+        self.dropout = tf.keras.layers.Dropout(classifier_config['dropout_rate'], name='dropout')
         self.dense1 = tf.keras.layers.Dense(2 * self.hidden_dim + self.embedding_dim, activation='tanh')
         self.dense2 = tf.keras.layers.Dense(num_classes,
                                             activation='softmax',

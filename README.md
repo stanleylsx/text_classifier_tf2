@@ -42,6 +42,7 @@
 2021-03-16|v3.1.0|支持取用Bert的编码后接TextCNN/TextRCNN进行数据训练(此项目Bert不支持预训练);在log中打印配置
 2021-03-17|v3.1.1|根据词频过滤一部分频率极低的词,不加入词表
 2021-03-22|v3.1.2|加入TextRNN模型
+2021-03-23|v3.1.3|给TextRNN模型加上Attention
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
