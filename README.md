@@ -43,6 +43,7 @@
 2021-03-17|v3.1.1|根据词频过滤一部分频率极低的词,不加入词表
 2021-03-22|v3.1.2|加入TextRNN模型
 2021-03-23|v3.1.3|给TextRNN模型加上Attention
+2021-03-24|v3.1.4|给预测模块加上了一个推断时间输出
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取

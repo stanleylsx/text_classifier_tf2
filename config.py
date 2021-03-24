@@ -25,7 +25,7 @@ classifier_config = {
     # 引入外部的词嵌入,可选word2vec、Bert
     # 此处只使用Bert Embedding,不对其做预训练
     # None:使用随机初始化的Embedding
-    'embedding_method': None,
+    'embedding_method': 'word2vec',
     # 不外接词向量的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/attention_textrnn',
+    'checkpoints_dir': 'model/word2vec_textrnn',
     # 模型保存的名字
-    'checkpoint_name': 'attention_textrnn',
+    'checkpoint_name': 'word2vec_textrnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率
@@ -52,7 +52,7 @@ classifier_config = {
     'is_early_stop': True,
     # 是否引入attention
     # 注意:textrcnn不支持
-    'use_attention': True,
+    'use_attention': False,
     # attention大小
     'attention_size': 300,
     'patient': 8,
