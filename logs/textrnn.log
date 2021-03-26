@@ -1,4 +1,4 @@
-2021-03-22 15:24:16
+2021-03-26 18:05:24
 {
   "classifier": "textrnn",
   "train_file": "data/data/train_data.csv",
@@ -19,11 +19,11 @@
   "print_per_batch": 20,
   "is_early_stop": true,
   "use_attention": false,
-  "attention_dim": 300,
+  "attention_size": 300,
   "patient": 8,
   "batch_size": 64,
   "max_sequence_length": 150,
-  "droupout_rate": 0.5,
+  "dropout_rate": 0.5,
   "hidden_dim": 200,
   "metrics_average": "binary",
   "use_focal_loss": false
@@ -35,96 +35,107 @@ loading data...
 loading data...
 ++++++++++++++++++++training starting++++++++++++++++++++
 epoch:1/30
-training batch:    20, loss: 0.65661, precision: 0.704 recall: 0.731 f1: 0.717 
-training batch:    40, loss: 0.67057, precision: 0.656 recall: 0.700 f1: 0.677 
-training batch:    60, loss: 0.52296, precision: 0.903 recall: 0.757 f1: 0.824 
-training batch:    80, loss: 0.97959, precision: 0.750 recall: 0.600 f1: 0.667 
+training batch:    20, loss: 0.64956, precision: 0.733 recall: 0.647 f1: 0.688 
+training batch:    40, loss: 0.53100, precision: 0.879 recall: 0.806 f1: 0.841 
+training batch:    60, loss: 0.50487, precision: 0.795 recall: 0.861 f1: 0.827 
+training batch:    80, loss: 0.26898, precision: 1.000 recall: 1.000 f1: 1.000 
 start evaluate engines...
 
-negative: {'precision': 0.8041237113402062, 'recall': 0.7536231884057971, 'f1-score': 0.7780548628428928, 'support': 207}
-positive: {'precision': 0.8097014925373134, 'recall': 0.8509803921568627, 'f1-score': 0.829827915869981, 'support': 255}
-time consumption:1.83(min), loss: 0.495 precision: 0.810 recall: 0.851 f1: 0.830 
-saved the new best model with f1: 0.830
+negative: {'precision': 0.7967914438502673, 'recall': 0.7198067632850241, 'f1-score': 0.7563451776649747, 'support': 207}
+positive: {'precision': 0.7890909090909091, 'recall': 0.8509803921568627, 'f1-score': 0.8188679245283018, 'support': 255}
+time consumption:1.90(min), loss: 0.536 precision: 0.789 recall: 0.851 f1: 0.819 
+saved the new best model with f1: 0.819
 epoch:2/30
-training batch:    20, loss: 0.36860, precision: 0.860 recall: 0.925 f1: 0.892 
-training batch:    40, loss: 0.49131, precision: 0.730 recall: 0.794 f1: 0.761 
-training batch:    60, loss: 0.52195, precision: 0.735 recall: 0.714 f1: 0.725 
-training batch:    80, loss: 0.73777, precision: 0.667 recall: 0.667 f1: 0.667 
+training batch:    20, loss: 0.30628, precision: 0.833 recall: 0.909 f1: 0.870 
+training batch:    40, loss: 0.32779, precision: 0.824 recall: 0.875 f1: 0.848 
+training batch:    60, loss: 0.37758, precision: 0.854 recall: 0.921 f1: 0.886 
+training batch:    80, loss: 0.27658, precision: 1.000 recall: 0.500 f1: 0.667 
 start evaluate engines...
 
-negative: {'precision': 0.7722772277227723, 'recall': 0.7536231884057971, 'f1-score': 0.762836185819071, 'support': 207}
-positive: {'precision': 0.8038461538461539, 'recall': 0.8196078431372549, 'f1-score': 0.8116504854368931, 'support': 255}
-time consumption:1.64(min), loss: 0.482 precision: 0.804 recall: 0.820 f1: 0.812 
+negative: {'precision': 0.7832512315270936, 'recall': 0.7681159420289855, 'f1-score': 0.775609756097561, 'support': 207}
+positive: {'precision': 0.8146718146718147, 'recall': 0.8274509803921568, 'f1-score': 0.8210116731517509, 'support': 255}
+time consumption:1.63(min), loss: 0.486 precision: 0.815 recall: 0.827 f1: 0.821 
+saved the new best model with f1: 0.821
 epoch:3/30
-training batch:    20, loss: 0.17396, precision: 0.871 recall: 0.931 f1: 0.900 
-training batch:    40, loss: 0.15751, precision: 1.000 recall: 0.946 f1: 0.972 
-training batch:    60, loss: 0.17675, precision: 0.953 recall: 0.953 f1: 0.953 
-training batch:    80, loss: 0.08566, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    20, loss: 0.18743, precision: 0.865 recall: 1.000 f1: 0.928 
+training batch:    40, loss: 0.38564, precision: 0.912 recall: 0.861 f1: 0.886 
+training batch:    60, loss: 0.12536, precision: 0.967 recall: 0.935 f1: 0.951 
+training batch:    80, loss: 0.35219, precision: 1.000 recall: 0.750 f1: 0.857 
 start evaluate engines...
 
-negative: {'precision': 0.7727272727272727, 'recall': 0.7391304347826086, 'f1-score': 0.7555555555555555, 'support': 207}
-positive: {'precision': 0.7954545454545454, 'recall': 0.8235294117647058, 'f1-score': 0.8092485549132947, 'support': 255}
-time consumption:1.54(min), loss: 0.598 precision: 0.795 recall: 0.824 f1: 0.809 
+negative: {'precision': 0.7395348837209302, 'recall': 0.7681159420289855, 'f1-score': 0.7535545023696683, 'support': 207}
+positive: {'precision': 0.805668016194332, 'recall': 0.7803921568627451, 'f1-score': 0.7928286852589641, 'support': 255}
+time consumption:1.67(min), loss: 0.731 precision: 0.806 recall: 0.780 f1: 0.793 
 epoch:4/30
-training batch:    20, loss: 0.22386, precision: 0.892 recall: 0.943 f1: 0.917 
-training batch:    40, loss: 0.12234, precision: 0.969 recall: 0.939 f1: 0.954 
-training batch:    60, loss: 0.23187, precision: 0.880 recall: 0.880 f1: 0.880 
-training batch:    80, loss: 0.03708, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    20, loss: 0.13106, precision: 1.000 recall: 0.972 f1: 0.986 
+training batch:    40, loss: 0.11712, precision: 0.971 recall: 0.971 f1: 0.971 
+training batch:    60, loss: 0.07450, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    80, loss: 0.03733, precision: 1.000 recall: 1.000 f1: 1.000 
 start evaluate engines...
 
-negative: {'precision': 0.7488584474885844, 'recall': 0.7922705314009661, 'f1-score': 0.7699530516431924, 'support': 207}
-positive: {'precision': 0.823045267489712, 'recall': 0.7843137254901961, 'f1-score': 0.8032128514056225, 'support': 255}
-time consumption:1.73(min), loss: 0.615 precision: 0.823 recall: 0.784 f1: 0.803 
+negative: {'precision': 0.7810945273631841, 'recall': 0.7584541062801933, 'f1-score': 0.769607843137255, 'support': 207}
+positive: {'precision': 0.8084291187739464, 'recall': 0.8274509803921568, 'f1-score': 0.8178294573643411, 'support': 255}
+time consumption:1.71(min), loss: 1.022 precision: 0.808 recall: 0.827 f1: 0.818 
 epoch:5/30
-training batch:    20, loss: 0.15276, precision: 0.914 recall: 1.000 f1: 0.955 
-training batch:    40, loss: 0.07282, precision: 0.971 recall: 1.000 f1: 0.986 
-training batch:    60, loss: 0.15704, precision: 0.929 recall: 0.963 f1: 0.945 
-training batch:    80, loss: 0.03669, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    20, loss: 0.04953, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    40, loss: 0.10409, precision: 0.969 recall: 0.969 f1: 0.969 
+training batch:    60, loss: 0.11463, precision: 0.947 recall: 1.000 f1: 0.973 
+training batch:    80, loss: 0.00897, precision: 1.000 recall: 1.000 f1: 1.000 
 start evaluate engines...
 
-negative: {'precision': 0.7453703703703703, 'recall': 0.7777777777777778, 'f1-score': 0.7612293144208038, 'support': 207}
-positive: {'precision': 0.8130081300813008, 'recall': 0.7843137254901961, 'f1-score': 0.7984031936127746, 'support': 255}
-time consumption:1.63(min), loss: 0.984 precision: 0.813 recall: 0.784 f1: 0.798 
+negative: {'precision': 0.7707317073170732, 'recall': 0.7632850241545893, 'f1-score': 0.7669902912621359, 'support': 207}
+positive: {'precision': 0.8093385214007782, 'recall': 0.8156862745098039, 'f1-score': 0.8125, 'support': 255}
+time consumption:1.83(min), loss: 1.066 precision: 0.809 recall: 0.816 f1: 0.812 
 epoch:6/30
-training batch:    20, loss: 0.08547, precision: 0.946 recall: 1.000 f1: 0.972 
-training batch:    40, loss: 0.07193, precision: 0.933 recall: 1.000 f1: 0.966 
-training batch:    60, loss: 0.16514, precision: 0.935 recall: 0.935 f1: 0.935 
-training batch:    80, loss: 0.31906, precision: 0.500 recall: 1.000 f1: 0.667 
+training batch:    20, loss: 0.06712, precision: 0.969 recall: 0.969 f1: 0.969 
+training batch:    40, loss: 0.04989, precision: 1.000 recall: 0.969 f1: 0.984 
+training batch:    60, loss: 0.11110, precision: 0.968 recall: 0.909 f1: 0.937 
+training batch:    80, loss: 0.03922, precision: 1.000 recall: 1.000 f1: 1.000 
 start evaluate engines...
 
-negative: {'precision': 0.7433628318584071, 'recall': 0.8115942028985508, 'f1-score': 0.7759815242494226, 'support': 207}
-positive: {'precision': 0.8347457627118644, 'recall': 0.7725490196078432, 'f1-score': 0.8024439918533605, 'support': 255}
-time consumption:1.56(min), loss: 0.899 precision: 0.835 recall: 0.773 f1: 0.802 
+negative: {'precision': 0.7236842105263158, 'recall': 0.7971014492753623, 'f1-score': 0.7586206896551724, 'support': 207}
+positive: {'precision': 0.8205128205128205, 'recall': 0.7529411764705882, 'f1-score': 0.7852760736196318, 'support': 255}
+time consumption:1.75(min), loss: 1.095 precision: 0.821 recall: 0.753 f1: 0.785 
 epoch:7/30
-training batch:    20, loss: 0.04519, precision: 1.000 recall: 1.000 f1: 1.000 
-training batch:    40, loss: 0.03274, precision: 1.000 recall: 0.964 f1: 0.982 
-training batch:    60, loss: 0.07572, precision: 1.000 recall: 0.973 f1: 0.986 
-training batch:    80, loss: 0.08177, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    20, loss: 0.24044, precision: 0.882 recall: 0.882 f1: 0.882 
+training batch:    40, loss: 0.07153, precision: 0.974 recall: 1.000 f1: 0.987 
+training batch:    60, loss: 0.11432, precision: 0.936 recall: 1.000 f1: 0.967 
+training batch:    80, loss: 0.00403, precision: 1.000 recall: 1.000 f1: 1.000 
 start evaluate engines...
 
-negative: {'precision': 0.7417840375586855, 'recall': 0.7632850241545893, 'f1-score': 0.7523809523809524, 'support': 207}
-positive: {'precision': 0.8032128514056225, 'recall': 0.7843137254901961, 'f1-score': 0.7936507936507936, 'support': 255}
-time consumption:1.53(min), loss: 0.999 precision: 0.803 recall: 0.784 f1: 0.794 
+negative: {'precision': 0.7258883248730964, 'recall': 0.6908212560386473, 'f1-score': 0.7079207920792079, 'support': 207}
+positive: {'precision': 0.7584905660377359, 'recall': 0.788235294117647, 'f1-score': 0.7730769230769231, 'support': 255}
+time consumption:1.95(min), loss: 1.390 precision: 0.758 recall: 0.788 f1: 0.773 
 epoch:8/30
-training batch:    20, loss: 0.06044, precision: 1.000 recall: 0.970 f1: 0.985 
-training batch:    40, loss: 0.10715, precision: 0.943 recall: 0.971 f1: 0.957 
-training batch:    60, loss: 0.02813, precision: 1.000 recall: 1.000 f1: 1.000 
-training batch:    80, loss: 0.29031, precision: 0.000 recall: 0.000 f1: 0.000 
+training batch:    20, loss: 0.18389, precision: 0.947 recall: 0.923 f1: 0.935 
+training batch:    40, loss: 0.01413, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    60, loss: 0.11969, precision: 0.949 recall: 0.974 f1: 0.961 
+training batch:    80, loss: 0.01785, precision: 1.000 recall: 1.000 f1: 1.000 
 start evaluate engines...
 
-negative: {'precision': 0.7577319587628866, 'recall': 0.7101449275362319, 'f1-score': 0.7331670822942643, 'support': 207}
-positive: {'precision': 0.7761194029850746, 'recall': 0.8156862745098039, 'f1-score': 0.7954110898661568, 'support': 255}
-time consumption:1.71(min), loss: 1.155 precision: 0.776 recall: 0.816 f1: 0.795 
+negative: {'precision': 0.714975845410628, 'recall': 0.714975845410628, 'f1-score': 0.7149758454106281, 'support': 207}
+positive: {'precision': 0.7686274509803922, 'recall': 0.7686274509803922, 'f1-score': 0.7686274509803923, 'support': 255}
+time consumption:1.83(min), loss: 1.243 precision: 0.769 recall: 0.769 f1: 0.769 
 epoch:9/30
-training batch:    20, loss: 0.03458, precision: 1.000 recall: 1.000 f1: 1.000 
-training batch:    40, loss: 0.11240, precision: 0.971 recall: 0.944 f1: 0.958 
-training batch:    60, loss: 0.10315, precision: 0.949 recall: 1.000 f1: 0.974 
-training batch:    80, loss: 0.02832, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    20, loss: 0.01331, precision: 1.000 recall: 1.000 f1: 1.000 
+training batch:    40, loss: 0.10070, precision: 1.000 recall: 0.974 f1: 0.987 
+training batch:    60, loss: 0.13790, precision: 1.000 recall: 0.938 f1: 0.968 
+training batch:    80, loss: 0.01591, precision: 1.000 recall: 1.000 f1: 1.000 
 start evaluate engines...
 
-negative: {'precision': 0.7611940298507462, 'recall': 0.7391304347826086, 'f1-score': 0.75, 'support': 207}
-positive: {'precision': 0.7931034482758621, 'recall': 0.8117647058823529, 'f1-score': 0.8023255813953488, 'support': 255}
-time consumption:1.68(min), loss: 1.282 precision: 0.793 recall: 0.812 f1: 0.802 
+negative: {'precision': 0.7224669603524229, 'recall': 0.7922705314009661, 'f1-score': 0.7557603686635944, 'support': 207}
+positive: {'precision': 0.8170212765957446, 'recall': 0.7529411764705882, 'f1-score': 0.7836734693877552, 'support': 255}
+time consumption:1.67(min), loss: 1.191 precision: 0.817 recall: 0.753 f1: 0.784 
+epoch:10/30
+training batch:    20, loss: 0.04155, precision: 1.000 recall: 0.971 f1: 0.986 
+training batch:    40, loss: 0.04314, precision: 1.000 recall: 0.969 f1: 0.984 
+training batch:    60, loss: 0.08544, precision: 0.968 recall: 0.968 f1: 0.968 
+training batch:    80, loss: 0.00089, precision: 1.000 recall: 1.000 f1: 1.000 
+start evaluate engines...
+
+negative: {'precision': 0.7320574162679426, 'recall': 0.7391304347826086, 'f1-score': 0.735576923076923, 'support': 207}
+positive: {'precision': 0.7865612648221344, 'recall': 0.7803921568627451, 'f1-score': 0.7834645669291339, 'support': 255}
+time consumption:1.65(min), loss: 1.362 precision: 0.787 recall: 0.780 f1: 0.783 
 early stopped, no progress obtained within 8 epochs
-overall best f1 is 0.829827915869981 at 1 epoch
-total training time consumption: 14.866(min)
+overall best f1 is 0.8210116731517509 at 2 epoch
+total training time consumption: 17.601(min)

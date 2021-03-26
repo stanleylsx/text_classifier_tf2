@@ -2,7 +2,7 @@
 # @Time : 2021/03/19 10:03 下午
 # @Author : lishouxian
 # @Email : gzlishouxian@gmail.com
-# @File : textrnn.py
+# @File : word2vec_textrnn.py
 # @Software: PyCharm
 from abc import ABC
 import tensorflow as tf
@@ -41,9 +41,7 @@ class TextRNN(tf.keras.Model, ABC):
         # 不引入外部的embedding
         if self.embedding_method is None:
             inputs = self.embedding(inputs)
-
-        dropout_inputs = self.dropout(inputs, training)
-        bilstm_outputs = self.bilstm(dropout_inputs)
+        bilstm_outputs = self.bilstm(inputs)
 
         if classifier_config['use_attention']:
             u_list = []
@@ -62,6 +60,7 @@ class TextRNN(tf.keras.Model, ABC):
             alpha = tf.reshape(alpha, [-1, self.seq_length, 1])
             bilstm_outputs = alpha * bilstm_outputs
 
-        flatten_outputs = self.flatten(bilstm_outputs)
+        dropout_outputs = self.dropout(bilstm_outputs, training)
+        flatten_outputs = self.flatten(dropout_outputs)
         outputs = self.dense(flatten_outputs)
         return outputs
