@@ -29,6 +29,7 @@ if __name__ == '__main__':
         logger.info('mode: predict_one')
         logger.info('model: {}'.format(classifier_config['classifier']))
         predictor = Predictor(data_manage, logger)
+        predictor.predict_one('warm start')
         while True:
             logger.info('please input a sentence (enter [exit] to exit.)')
             sentence = input()
@@ -42,3 +43,9 @@ if __name__ == '__main__':
         logger.info('mode: train_word2vec')
         w2v = Word2VecUtils(logger)
         w2v.train_word2vec()
+    # 保存pb格式的模型用于tf-severing接口
+    elif mode == 'save_model':
+        logger.info('mode: save_pb_model')
+        data_manage = DataManager(logger)
+        predictor = Predictor(data_manage, logger)
+        predictor.save_model()

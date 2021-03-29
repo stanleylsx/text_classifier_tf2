@@ -14,15 +14,15 @@ class Predictor:
         hidden_dim = classifier_config['hidden_dim']
         classifier = classifier_config['classifier']
         self.dataManager = data_manager
-        seq_length = data_manager.max_sequence_length
+        self.seq_length = data_manager.max_sequence_length
         num_classes = data_manager.max_label_number
-        embedding_dim = data_manager.embedding_dim
+        self.embedding_dim = data_manager.embedding_dim
         vocab_size = data_manager.vocab_size
 
         self.logger = logger
         # 卷集核的个数
         num_filters = classifier_config['num_filters']
-        checkpoints_dir = classifier_config['checkpoints_dir']
+        self.checkpoints_dir = classifier_config['checkpoints_dir']
         self.embedding_method = classifier_config['embedding_method']
         if self.embedding_method == 'Bert':
             from transformers import TFBertModel
@@ -30,19 +30,19 @@ class Predictor:
         logger.info('loading model parameter')
         if classifier == 'textcnn':
             from engines.models.textcnn import TextCNN
-            self.model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size)
+            self.model = TextCNN(self.seq_length, num_filters, num_classes, self.embedding_dim, vocab_size)
         elif classifier == 'textrcnn':
             from engines.models.textrcnn import TextRCNN
-            self.model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
+            self.model = TextRCNN(self.seq_length, num_classes, hidden_dim, self.embedding_dim, vocab_size)
         elif classifier == 'textrnn':
             from engines.models.textrnn import TextRNN
-            self.model = TextRNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
+            self.model = TextRNN(self.seq_length, num_classes, hidden_dim, self.embedding_dim, vocab_size)
         else:
             raise Exception('config model is not exist')
         # 实例化Checkpoint，设置恢复对象为新建立的模型
         checkpoint = tf.train.Checkpoint(model=self.model)
         # 从文件恢复模型参数
-        checkpoint.restore(tf.train.latest_checkpoint(checkpoints_dir))
+        checkpoint.restore(tf.train.latest_checkpoint(self.checkpoints_dir))
         logger.info('loading model successfully')
 
     def predict_one(self, sentence):
@@ -61,3 +61,20 @@ class Predictor:
         prediction = prediction.numpy()[0]
         self.logger.info('predict time consumption: %.3f(ms)' % ((time.time() - start_time)*1000))
         return reverse_classes[prediction]
+
+    def save_model(self):
+        # 保存pb格式的模型到本地
+        if self.embedding_method == 'Bert':
+            tf.saved_model.save(self.model, self.checkpoints_dir,
+                                signatures=self.model.call.get_concrete_function(
+                                    tf.TensorSpec([None, self.seq_length, 768], tf.float32, name='inputs')))
+        elif self.embedding_method == 'word2vec':
+            tf.saved_model.save(self.model, self.checkpoints_dir,
+                                signatures=self.model.call.get_concrete_function(
+                                    tf.TensorSpec(
+                                        [None, self.seq_length, self.embedding_dim], tf.float32, name='inputs')))
+        else:
+            tf.saved_model.save(self.model, self.checkpoints_dir,
+                                signatures=self.model.call.get_concrete_function(
+                                    tf.TensorSpec([None, self.seq_length], tf.float32, name='inputs')))
+        self.logger.info('The model has been saved')

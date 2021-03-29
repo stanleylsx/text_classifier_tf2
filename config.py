@@ -6,7 +6,7 @@
 # @Software: PyCharm
 
 
-# [train_classifier, interactive_predict, train_word2vec]
+# [train_classifier, interactive_predict, train_word2vec, save_model]
 mode = 'interactive_predict'
 
 word2vec_config = {
@@ -19,13 +19,13 @@ word2vec_config = {
 
 classifier_config = {
     # 模型选择
-    'classifier': 'textrcnn',
+    'classifier': 'textcnn',
     # 训练数据集
     'train_file': 'data/data/train_data.csv',
     # 引入外部的词嵌入,可选word2vec、Bert
     # 此处只使用Bert Embedding,不对其做预训练
     # None:使用随机初始化的Embedding
-    'embedding_method': None,
+    'embedding_method': 'word2vec',
     # 不外接词向量的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textrcnn',
+    'checkpoints_dir': 'model/word2vec_textcnn',
     # 模型保存的名字
-    'checkpoint_name': 'textrcnn',
+    'checkpoint_name': 'word2vec_textcnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率
