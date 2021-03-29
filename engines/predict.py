@@ -59,5 +59,5 @@ class Predictor:
         logits = self.model.call(inputs=vector)
         prediction = tf.argmax(logits, axis=-1)
         prediction = prediction.numpy()[0]
-        self.logger.info('predict time consumption: %.3f(ms)' %  ((time.time() - start_time)*1000))
+        self.logger.info('predict time consumption: %.3f(ms)' % ((time.time() - start_time)*1000))
         return reverse_classes[prediction]

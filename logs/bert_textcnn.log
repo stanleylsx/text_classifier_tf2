@@ -19,11 +19,11 @@
   "print_per_batch": 20,
   "is_early_stop": true,
   "use_attention": false,
-  "attention_dim": 300,
+  "attention_size": 300,
   "patient": 8,
   "batch_size": 64,
   "max_sequence_length": 150,
-  "droupout_rate": 0.5,
+  "dropout_rate": 0.5,
   "hidden_dim": 200,
   "metrics_average": "binary",
   "use_focal_loss": false

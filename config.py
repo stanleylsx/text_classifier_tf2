@@ -19,7 +19,7 @@ word2vec_config = {
 
 classifier_config = {
     # 模型选择
-    'classifier': 'textrnn',
+    'classifier': 'textrcnn',
     # 训练数据集
     'train_file': 'data/data/train_data.csv',
     # 引入外部的词嵌入,可选word2vec、Bert
@@ -35,9 +35,9 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textrnn',
+    'checkpoints_dir': 'model/textrcnn',
     # 模型保存的名字
-    'checkpoint_name': 'textrnn',
+    'checkpoint_name': 'textrcnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率
