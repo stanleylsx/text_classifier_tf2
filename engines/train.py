@@ -23,13 +23,13 @@ def train(data_manager, logger):
 
     train_file = classifier_config['train_file']
     dev_file = classifier_config['dev_file']
-    train_df = pd.read_csv(train_file)
+    train_df = pd.read_csv(train_file).sample(frac=1)
 
     if dev_file is '':
         # split the data into train and validation set
         train_df, dev_df = train_df[:int(len(train_df)*0.9)], train_df[int(len(train_df)*0.9):]
     else:
-        dev_df = pd.read_csv(dev_file)
+        dev_df = pd.read_csv(dev_file).sample(frac=1)
 
     train_dataset = data_manager.get_dataset(train_df, step='train')
     dev_dataset = data_manager.get_dataset(dev_df)
