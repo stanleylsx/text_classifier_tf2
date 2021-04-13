@@ -79,6 +79,11 @@ def train(data_manager, logger):
     checkpoint = tf.train.Checkpoint(model=model)
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory=checkpoints_dir, checkpoint_name=checkpoint_name, max_to_keep=max_to_keep)
+    checkpoint.restore(checkpoint_manager.latest_checkpoint)
+    if checkpoint_manager.latest_checkpoint:
+        print("Restored from {}".format(checkpoint_manager.latest_checkpoint))
+    else:
+        print("Initializing from scratch.")
 
     logger.info(('+' * 20) + 'training starting' + ('+' * 20))
     for i in range(epoch):
