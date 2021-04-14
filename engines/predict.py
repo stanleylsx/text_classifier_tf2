@@ -56,7 +56,7 @@ class Predictor:
         vector = self.dataManager.prepare_single_sentence(sentence)
         if self.embedding_method == 'Bert':
             vector = self.bert_model(vector)[0]
-        logits = self.model.call(inputs=vector)
+        logits = self.model(inputs=vector)
         prediction = tf.argmax(logits, axis=-1)
         prediction = prediction.numpy()[0]
         self.logger.info('predict time consumption: %.3f(ms)' % ((time.time() - start_time)*1000))

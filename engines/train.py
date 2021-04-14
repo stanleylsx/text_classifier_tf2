@@ -97,7 +97,7 @@ def train(data_manager, logger):
                 X_train_batch, y_train_batch = batch
 
             with tf.GradientTape() as tape:
-                logits = model.call(X_train_batch, training=1)
+                logits = model(X_train_batch, training=1)
                 if classifier_config['use_focal_loss']:
                     loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
                 else:
@@ -128,7 +128,7 @@ def train(data_manager, logger):
             else:
                 X_val_batch, y_val_batch = dev_batch
 
-            logits = model.call(X_val_batch)
+            logits = model(X_val_batch)
             val_loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_val_batch, y_pred=logits)
             val_loss = tf.reduce_mean(val_loss_vec)
             predictions = tf.argmax(logits, axis=-1)
