@@ -1,5 +1,5 @@
 # Text Classifier
-**公众号文章：[https://mp.weixin.qq.com/s/7fbTt3Ov715ixErYfKR2kA](文本分类之Text-CNN/RNN/RCNN算法原理及工程实现)**
+**公众号文章：[文本分类之Text-CNN/RNN/RCNN算法原理及工程实现](https://mp.weixin.qq.com/s/7fbTt3Ov715ixErYfKR2kA)**
 
 此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可分别支持:  
 
