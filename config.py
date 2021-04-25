@@ -17,6 +17,10 @@ word2vec_config = {
     'word2vec_dim': 300,  # 词向量维度
 }
 
+CUDA_VISIBLE_DEVICES = 0
+# int, -1:CPU, [0,]:GPU
+# coincides with tf.CUDA_VISIBLE_DEVICES
+
 classifier_config = {
     # 模型选择
     'classifier': 'textcnn',

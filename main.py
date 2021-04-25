@@ -9,12 +9,14 @@ from engines.utils.logger import get_logger
 from engines.train import train
 from engines.predict import Predictor
 from engines.utils.word2vec import Word2VecUtils
-from config import mode, classifier_config, word2vec_config
+from config import mode, classifier_config, word2vec_config, CUDA_VISIBLE_DEVICES
 import json
+import os
 
 
 if __name__ == '__main__':
     logger = get_logger('./logs')
+    os.environ['CUDA_VISIBLE_DEVICES'] = str(CUDA_VISIBLE_DEVICES)
     # 训练分类器
     if mode == 'train_classifier':
         logger.info(json.dumps(classifier_config, indent=2))
