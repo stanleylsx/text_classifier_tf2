@@ -161,3 +161,9 @@ mode = 'interactive_predict'
 * [技术干货 | 漫谈Word2vec之skip-gram模型](https://mp.weixin.qq.com/s/reT4lAjwo4fHV4ctR9zbxQ?)
 * [Recurrent Convolutional Neural Networks for Text Classification](http://zhengyima.com/my/pdfs/Textrcnn.pdf)
 
+## 公众号
+相关问题欢迎在公众号反馈：  
+
+![小贤算法屋](https://img-blog.csdnimg.cn/20210427094903895.jpg)
+
+
