@@ -23,29 +23,29 @@ CUDA_VISIBLE_DEVICES = 0
 
 classifier_config = {
     # 模型选择
-    'classifier': 'textcnn',
+    'classifier': 'textrcnn',
     # 训练数据集
     'train_file': 'data/data/train_data.csv',
     # token粒度,token选择字粒度的时候，词嵌入无效
     # 词粒度:'word'
     # 字粒度:'char'
-    'token_level': 'char',
+    'token_level': 'word',
     # 引入外部的词嵌入,可选word2vec、Bert
     # 此处只使用Bert Embedding,不对其做预训练
     # None:使用随机初始化的Embedding
-    'embedding_method': None,
+    'embedding_method': 'word2vec',
     # 不外接词向量的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
-    'token_file': 'data/data/token2id_char',
+    'token_file': 'data/data/token2id',
     # 验证数据集
     'dev_file': 'data/data/dev_data.csv',
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textcnn_char',
+    'checkpoints_dir': 'model/word2vec_textrcnn',
     # 模型保存的名字
-    'checkpoint_name': 'textcnn_char',
+    'checkpoint_name': 'word2vec_textrcnn',
     # 卷集核的个数
     'num_filters': 64,
     # 学习率

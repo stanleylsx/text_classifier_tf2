@@ -49,6 +49,7 @@
 2021-03-24|v3.1.4|给预测模块加上了一个推断时间输出
 2021-03-29|v3.1.5|增加一个save模块用于保存pb格式的模型文件方便制作tf-severing接口
 2021-04-25|v3.1.6|通过配置可选GPU和CPU进行训练
+2021-06-17|v3.2.0|增加字粒度的模型训练预测
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
@@ -87,6 +88,10 @@ classifier_config = {
     'classifier': 'textcnn',
     # 训练数据集
     'train_file': 'data/data/train_data.csv',
+    # token粒度,token选择字粒度的时候，词嵌入无效
+    # 词粒度:'word'
+    # 字粒度:'char'
+    'token_level': 'char',
     # 引入外部的词嵌入,可选word2vec、Bert
     # 此处只使用Bert Embedding,不对其做预训练
     # None:使用随机初始化的Embedding
