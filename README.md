@@ -153,12 +153,13 @@ mode = 'train_classifier'
 ![train_results_textcnn](https://img-blog.csdnimg.cn/2020110713592572.png)
 
 ### 测试
-训练好模型直接可以开始测试
+训练好模型直接可以开始测试，可以进行交互测试也可以批量测试  
+* 交互测试
 ```
 # [train_classifier, interactive_predict, train_word2vec, test]
 mode = 'interactive_predict'  
 ```
-* 交互测试结果    
+交互测试结果    
 ![test](https://img-blog.csdnimg.cn/20201021000109568.png)    
 
 * 批量测试   
