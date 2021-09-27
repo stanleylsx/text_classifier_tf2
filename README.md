@@ -50,6 +50,7 @@
 2021-03-29|v3.1.5|增加一个save模块用于保存pb格式的模型文件方便制作tf-severing接口
 2021-04-25|v3.1.6|通过配置可选GPU和CPU进行训练
 2021-06-17|v3.2.0|增加字粒度的模型训练预测
+2021-09-27|v3.2.0|增加测试集的批量测试
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
@@ -152,12 +153,14 @@ mode = 'train_classifier'
 ### 测试
 训练好模型直接可以开始测试
 ```
-# [train_classifier, interactive_predict, train_word2vec]
-mode = 'interactive_predict'
+# [train_classifier, interactive_predict, train_word2vec, test]
 ```
-* 交互测试结果  
+* 交互测试结果    
+mode = 'interactive_predict'  
+![test](https://img-blog.csdnimg.cn/20201021000109568.png)  
 
-![test](https://img-blog.csdnimg.cn/20201021000109568.png)
+* 批量测试  
+mode = 'test'    
 
 ## 参考
 * [app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)
