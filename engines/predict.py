@@ -72,7 +72,7 @@ class Predictor:
             y_test_batch = tf.argmax(y_test_batch, axis=-1)
             y_true = np.append(y_true, y_test_batch)
             y_pred = np.append(y_pred, predictions)
-            self.logger.info('test time consumption: %.3f(ms)' % ((time.time() - start_time) * 1000))
+        self.logger.info('test time consumption: %.3f(ms)' % ((time.time() - start_time) * 1000))
         measures, each_classes = cal_metrics(y_true=y_true, y_pred=y_pred)
         # 打印总的指标
         res_str = ''
