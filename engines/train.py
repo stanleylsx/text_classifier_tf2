@@ -22,17 +22,19 @@ def train(data_manager, logger):
     seq_length = data_manager.max_sequence_length
 
     train_file = classifier_config['train_file']
-    dev_file = classifier_config['dev_file']
+    val_file = classifier_config['val_file']
     train_df = pd.read_csv(train_file).sample(frac=1)
 
-    if dev_file is '':
+    if val_file is '':
+        logger.info('generate validation dataset...')
         # split the data into train and validation set
-        train_df, dev_df = train_df[:int(len(train_df)*0.9)], train_df[int(len(train_df)*0.9):]
+        train_df, val_df = train_df[:int(len(train_df)*0.9)], train_df[int(len(train_df)*0.9):]
+        val_df = val_df.sample(frac=1)
     else:
-        dev_df = pd.read_csv(dev_file).sample(frac=1)
+        val_df = pd.read_csv(val_file).sample(frac=1)
 
     train_dataset = data_manager.get_dataset(train_df, step='train')
-    dev_dataset = data_manager.get_dataset(dev_df)
+    val_dataset = data_manager.get_dataset(val_df)
 
     vocab_size = data_manager.vocab_size
 
@@ -81,9 +83,9 @@ def train(data_manager, logger):
         checkpoint, directory=checkpoints_dir, checkpoint_name=checkpoint_name, max_to_keep=max_to_keep)
     checkpoint.restore(checkpoint_manager.latest_checkpoint)
     if checkpoint_manager.latest_checkpoint:
-        print("Restored from {}".format(checkpoint_manager.latest_checkpoint))
+        print('Restored from {}'.format(checkpoint_manager.latest_checkpoint))
     else:
-        print("Initializing from scratch.")
+        print('Initializing from scratch.')
 
     logger.info(('+' * 20) + 'training starting' + ('+' * 20))
     for i in range(epoch):
@@ -121,12 +123,12 @@ def train(data_manager, logger):
         y_true, y_pred = np.array([]), np.array([])
         loss_values = []
 
-        for dev_batch in tqdm(dev_dataset.batch(batch_size)):
+        for val_batch in tqdm(val_dataset.batch(batch_size)):
             if embedding_method == 'Bert':
-                X_val_batch, y_val_batch = dev_batch
+                X_val_batch, y_val_batch = val_batch
                 X_val_batch = bert_model(X_val_batch)[0]
             else:
-                X_val_batch, y_val_batch = dev_batch
+                X_val_batch, y_val_batch = val_batch
 
             logits = model(X_val_batch)
             val_loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_val_batch, y_pred=logits)
