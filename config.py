@@ -29,7 +29,7 @@ classifier_config = {
     # 验证数据集
     'val_file': 'data/data/dev_data.csv',
     # 测试数据集
-    'dev_file': '',
+    'test_file': '',
     # token粒度,token选择字粒度的时候，词嵌入无效
     # 词粒度:'word'
     # 字粒度:'char'
