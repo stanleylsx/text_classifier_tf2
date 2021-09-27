@@ -156,13 +156,23 @@ mode = 'train_classifier'
 训练好模型直接可以开始测试
 ```
 # [train_classifier, interactive_predict, train_word2vec, test]
+mode = 'interactive_predict'  
 ```
 * 交互测试结果    
-mode = 'interactive_predict'  
-![test](https://img-blog.csdnimg.cn/20201021000109568.png)  
+![test](https://img-blog.csdnimg.cn/20201021000109568.png)    
 
-* 批量测试  
+* 批量测试   
+
+在测试数据集配置上填和训练/验证集文件同构的文件地址
+```
+# 测试数据集
+'test_file': 'data/data/test_dataset.csv',
+```
+模式设定为测试模式  
+```
+# [train_classifier, interactive_predict, train_word2vec, test]
 mode = 'test'    
+```
 
 ## 参考
 * [app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)
