@@ -45,6 +45,12 @@ if __name__ == '__main__':
         logger.info('mode: train_word2vec')
         w2v = Word2VecUtils(logger)
         w2v.train_word2vec()
+    # 训练词向量
+    elif mode == 'test':
+        logger.info('mode: test')
+        data_manage = DataManager(logger)
+        predictor = Predictor(data_manage, logger)
+        predictor.predict_test()
     # 保存pb格式的模型用于tf-severing接口
     elif mode == 'save_model':
         logger.info('mode: save_pb_model')
