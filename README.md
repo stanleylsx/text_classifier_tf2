@@ -77,7 +77,7 @@
 ### 训练word2vec
 在config.py中的mode中改成train_word2vec并运行
 ```
-# [train_classifier, interactive_predict, train_word2vec]
+# [train_classifier, interactive_predict, train_word2vec, save_model, test]
 mode = 'train_word2vec'
 ```
 
@@ -89,6 +89,10 @@ classifier_config = {
     'classifier': 'textcnn',
     # 训练数据集
     'train_file': 'data/data/train_data.csv',
+    # 验证数据集
+    'val_file': 'data/data/dev_data.csv',
+    # 验证数据集
+    'test_file': '',
     # token粒度,token选择字粒度的时候，词嵌入无效
     # 词粒度:'word'
     # 字粒度:'char'
@@ -101,8 +105,6 @@ classifier_config = {
     'embedding_dim': 300,
     # 存放词表的地方
     'token_file': 'data/data/token2id',
-    # 验证数据集
-    'dev_file': 'data/data/dev_data.csv',
     # 类别和对应的id
     'classes': {'negative': 0, 'positive': 1},
     # 模型保存的文件夹
