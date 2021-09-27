@@ -5,7 +5,11 @@
 # @File : predict.py
 # @Software: PyCharm
 import tensorflow as tf
+import pandas as pd
+import numpy as np
 import time
+from tqdm import tqdm
+from engines.utils.metrics import cal_metrics
 from config import classifier_config
 
 
@@ -44,6 +48,43 @@ class Predictor:
         # 从文件恢复模型参数
         checkpoint.restore(tf.train.latest_checkpoint(self.checkpoints_dir))
         logger.info('loading model successfully')
+
+    def predict_test(self):
+        test_file = classifier_config['test_file']
+        if test_file == '':
+            self.logger.info('test dataset does not exist!')
+            return
+        test_df = pd.read_csv(test_file).sample(frac=1)
+        test_dataset = self.dataManager.get_dataset(test_df)
+        batch_size = self.dataManager.batch_size
+        reverse_classes = {str(class_id): class_name for class_name, class_id in self.dataManager.class_id.items()}
+        embedding_method = classifier_config['embedding_method']
+        y_true, y_pred = np.array([]), np.array([])
+        start_time = time.time()
+        for step, batch in tqdm(test_dataset.shuffle(len(test_dataset)).batch(batch_size).enumerate()):
+            if embedding_method == 'Bert':
+                X_test_batch, y_test_batch = batch
+                X_test_batch = self.bert_model(X_test_batch)[0]
+            else:
+                X_test_batch, y_test_batch = batch
+            logits = self.model(X_test_batch)
+            predictions = tf.argmax(logits, axis=-1)
+            y_test_batch = tf.argmax(y_test_batch, axis=-1)
+            y_true = np.append(y_true, y_test_batch)
+            y_pred = np.append(y_pred, predictions)
+            self.logger.info('test time consumption: %.3f(ms)' % ((time.time() - start_time) * 1000))
+        measures, each_classes = cal_metrics(y_true=y_true, y_pred=y_pred)
+        # 打印总的指标
+        res_str = ''
+        for k, v in measures.items():
+            res_str += (k + ': %.3f ' % v)
+        self.logger.info('%s' % res_str)
+        # 打印每一个类别的指标
+        classes_val_str = ''
+        for k, v in each_classes.items():
+            if k in reverse_classes:
+                classes_val_str += ('\n' + reverse_classes[k] + ': ' + str(each_classes[k]))
+        self.logger.info(classes_val_str)
 
     def predict_one(self, sentence):
         """
