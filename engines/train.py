@@ -27,8 +27,10 @@ def train(data_manager, logger):
 
     if val_file is '':
         logger.info('generate validation dataset...')
+        validation_rate = 0.15
+        ratio = 1 - validation_rate
         # split the data into train and validation set
-        train_df, val_df = train_df[:int(len(train_df)*0.9)], train_df[int(len(train_df)*0.9):]
+        train_df, val_df = train_df[:int(len(train_df)*ratio)], train_df[int(len(train_df)*ratio):]
         val_df = val_df.sample(frac=1)
     else:
         val_df = pd.read_csv(val_file).sample(frac=1)
