@@ -23,18 +23,13 @@ class TextRNN(tf.keras.Model, ABC):
         self.embedding = tf.keras.layers.Embedding(vocab_size + 1, self.embedding_dim, mask_zero=True)
         self.bilstm = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True))
         self.dropout = tf.keras.layers.Dropout(classifier_config['dropout_rate'], name='dropout')
-
         if classifier_config['use_attention']:
-            attention_size = classifier_config['attention_size']
-            self.attention_W = tf.keras.layers.Dense(attention_size, activation='tanh', use_bias=True)
-            self.attention_V = tf.keras.layers.Dense(1)
-
+            self.attention_w = tf.Variable(tf.zeros([1, 2 * hidden_dim]))
         self.dense = tf.keras.layers.Dense(num_classes,
                                            activation='softmax',
                                            kernel_regularizer=tf.keras.regularizers.l2(0.1),
                                            bias_regularizer=tf.keras.regularizers.l2(0.1),
                                            name='dense')
-        self.flatten = tf.keras.layers.Flatten(name='flatten')
 
     @tf.function
     def call(self, inputs, training=None):
@@ -42,25 +37,13 @@ class TextRNN(tf.keras.Model, ABC):
         if self.embedding_method is None:
             inputs = self.embedding(inputs)
         bilstm_outputs = self.bilstm(inputs)
-
         if classifier_config['use_attention']:
-            u_list = []
-            attn_z = []
-            attention_inputs = tf.split(tf.reshape(inputs, [-1, self.embedding_dim]), self.seq_length, axis=0)
-            for t in range(self.seq_length):
-                u_t = self.attention_W(attention_inputs[t])
-                u_list.append(u_t)
-
-            for t in range(self.seq_length):
-                z_t = self.attention_V(u_list[t])
-                attn_z.append(z_t)
-
-            attn = tf.concat(attn_z, axis=1)
-            alpha = tf.nn.softmax(attn)
-            alpha = tf.reshape(alpha, [-1, self.seq_length, 1])
-            bilstm_outputs = alpha * bilstm_outputs
-
+            output = tf.nn.tanh(bilstm_outputs)
+            output = tf.matmul(output, self.attention_w, transpose_b=True)
+            alpha = tf.nn.softmax(output, axis=1)
+            outputs = alpha * bilstm_outputs
+            bilstm_outputs = tf.nn.tanh(outputs)
         dropout_outputs = self.dropout(bilstm_outputs, training)
-        flatten_outputs = self.flatten(dropout_outputs)
-        outputs = self.dense(flatten_outputs)
+        outputs = tf.reduce_sum(dropout_outputs, axis=1)
+        outputs = self.dense(outputs)
         return outputs
