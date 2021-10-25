@@ -22,8 +22,8 @@ class TextCNN(tf.keras.Model, ABC):
 
         if classifier_config['use_attention']:
             attention_size = classifier_config['attention_size']
-            self.attention_W = tf.keras.layers.Dense(attention_size, activation='tanh', use_bias=True)
-            self.attention_V = tf.keras.layers.Dense(1)
+            self.attention_W = tf.keras.layers.Dense(attention_size, activation='tanh', use_bias=False)
+            self.attention_v = tf.Variable(tf.zeros([1, attention_size]))
 
         self.conv1 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[2, self.embedding_dim],
                                             strides=1,
@@ -56,20 +56,9 @@ class TextCNN(tf.keras.Model, ABC):
 
         if classifier_config['use_attention']:
             # 此处的attention是直接对embedding层做attention，思路来自于https://kexue.fm/archives/5409#%E6%B3%A8%E6%84%8F%E5%8A%9B
-            u_list = []
-            attn_z = []
-            attention_inputs = tf.split(tf.reshape(inputs, [-1, self.embedding_dim]), self.seq_length, axis=0)
-            for t in range(self.seq_length):
-                u_t = self.attention_W(attention_inputs[t])
-                u_list.append(u_t)
-
-            for t in range(self.seq_length):
-                z_t = self.attention_V(u_list[t])
-                attn_z.append(z_t)
-
-            attn = tf.concat(attn_z, axis=1)
-            alpha = tf.nn.softmax(attn)
-            alpha = tf.reshape(alpha, [-1, self.seq_length, 1])
+            output = self.attention_W(inputs)
+            output = tf.matmul(output, self.attention_v, transpose_b=True)
+            alpha = tf.nn.softmax(output, axis=1)
             inputs = alpha * inputs
 
         inputs = tf.expand_dims(inputs, -1)
