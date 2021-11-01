@@ -151,7 +151,7 @@ classifier_config = {
 ```
 配置完参数之后开始训练模型  
 ```
-# [train_classifier, interactive_predict, train_word2vec]
+# [train_classifier, interactive_predict, train_word2vec, test]
 mode = 'train_classifier'
 ```
 * 训练结果  
