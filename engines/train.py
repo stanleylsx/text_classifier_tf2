@@ -57,6 +57,8 @@ def train(data_manager, logger):
     patient = classifier_config['patient']
     hidden_dim = classifier_config['hidden_dim']
     classifier = classifier_config['classifier']
+    use_gan = classifier_config['use_gan']
+    gan_method = classifier_config['gan_method']
 
     reverse_classes = {str(class_id): class_name for class_name, class_id in data_manager.class_id.items()}
 
@@ -109,6 +111,60 @@ def train(data_manager, logger):
                 loss = tf.reduce_mean(loss_vec)
             # 定义好参加梯度的参数
             gradients = tape.gradient(loss, model.trainable_variables)
+
+            if use_gan:
+                if gan_method == 'fgm':
+                    # 使用FGM的对抗办法
+                    epsilon = 1.0
+                    embedding = model.trainable_variables[0]
+                    embedding_gradients = gradients[0]
+                    embedding_gradients = tf.zeros_like(embedding) + embedding_gradients
+                    delta = epsilon * embedding_gradients / tf.norm(embedding_gradients, ord=2)
+
+                    accum_vars = [tf.Variable(tf.zeros_like(var), trainable=False) for var in model.trainable_variables]
+                    gradients = [accum_vars[i].assign_add(grad) for i, grad in enumerate(gradients)]
+                    model.trainable_variables[0].assign_add(delta)
+
+                    with tf.GradientTape() as gan_tape:
+                        logits = model(X_train_batch, training=1)
+                        if classifier_config['use_focal_loss']:
+                            loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                        else:
+                            loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
+                        loss = tf.reduce_mean(loss_vec)
+                    gan_gradients = gan_tape.gradient(loss, model.trainable_variables)
+                    gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
+                    model.trainable_variables[0].assign_sub(delta)
+                elif gan_method == 'pgd':
+                    # 使用PGD的对抗办法
+                    K = 3
+                    alpha = 0.3
+                    epsilon = 1
+                    origin_embedding = model.trainable_variables[0]
+                    origin_embedding_gradients = gradients[0]
+                    for t in range(K):
+                        embedding = model.trainable_variables[0]
+                        embedding_gradients = gradients[0]
+                        embedding_gradients = tf.zeros_like(embedding) + embedding_gradients
+                        delta = alpha * embedding_gradients / tf.norm(embedding_gradients, ord=2)
+                        model.trainable_variables[0].assign_add(delta)
+                        r = model.trainable_variables - origin_embedding
+                        if tf.norm(r, ord=2) > epsilon:
+                            r = epsilon * r / tf.norm(r, ord=2)
+                        model.trainable_variables[0] = origin_embedding + r
+                        if t == K - 1:
+                            gradients[0] = origin_embedding_gradients
+                        with tf.GradientTape() as gan_tape:
+                            logits = model(X_train_batch, training=1)
+                            if classifier_config['use_focal_loss']:
+                                loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                            else:
+                                loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch,
+                                                                                    y_pred=logits)
+                            loss = tf.reduce_mean(loss_vec)
+                        gradients = gan_tape.gradient(loss, model.trainable_variables)
+                    model.trainable_variables[0] = origin_embedding
+
             # 反向传播，自动微分计算
             optimizer.apply_gradients(zip(gradients, model.trainable_variables))
             if step % print_per_batch == 0 and step != 0:
