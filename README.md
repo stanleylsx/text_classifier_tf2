@@ -141,6 +141,12 @@ classifier_config = {
     'metrics_average': 'binary',
     # 类别样本比例失衡的时候可以考虑使用
     'use_focal_loss': False
+    # 是否使用GAN进行对抗训练
+    'use_gan': False,
+    # 目前仅支持FGM方法
+    # fgm:Fast Gradient Method
+    # pgd:Projected Gradient Descent
+    'gan_method': 'fgm'
 }
 ```
 配置完参数之后开始训练模型  
