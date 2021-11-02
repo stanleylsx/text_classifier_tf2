@@ -51,6 +51,7 @@
 2021-04-25|v3.1.6|通过配置可选GPU和CPU进行训练
 2021-06-17|v3.2.0|增加字粒度的模型训练预测
 2021-09-27|v3.3.0|增加测试集的批量测试
+2021-11-01|v4.0.0|增加对抗训练，目前支持FGM和PGD两种方式
 
 ## 数据集
 我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
@@ -143,7 +144,7 @@ classifier_config = {
     'use_focal_loss': False
     # 是否使用GAN进行对抗训练
     'use_gan': False,
-    # 目前仅支持FGM方法
+    # 目前支持FGM方法和PGD两种方法
     # fgm:Fast Gradient Method
     # pgd:Projected Gradient Descent
     'gan_method': 'fgm'
