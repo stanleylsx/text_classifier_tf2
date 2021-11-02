@@ -121,7 +121,7 @@ def train(data_manager, logger):
                     embedding_gradients = tf.zeros_like(embedding) + embedding_gradients
                     delta = epsilon * embedding_gradients / tf.norm(embedding_gradients, ord=2)
 
-                    accum_vars = [tf.Variable(tf.zeros_like(var), trainable=False) for var in model.trainable_variables]
+                    accum_vars = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
                     gradients = [accum_vars[i].assign_add(grad) for i, grad in enumerate(gradients)]
                     model.trainable_variables[0].assign_add(delta)
 
@@ -140,20 +140,26 @@ def train(data_manager, logger):
                     K = 3
                     alpha = 0.3
                     epsilon = 1
-                    origin_embedding = model.trainable_variables[0]
-                    origin_embedding_gradients = gradients[0]
+                    origin_embedding = tf.Variable(model.trainable_variables[0])
+                    accum_vars = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
+                    origin_gradients = [accum_vars[i].assign_add(grad) for i, grad in enumerate(gradients)]
+
                     for t in range(K):
                         embedding = model.trainable_variables[0]
                         embedding_gradients = gradients[0]
                         embedding_gradients = tf.zeros_like(embedding) + embedding_gradients
                         delta = alpha * embedding_gradients / tf.norm(embedding_gradients, ord=2)
                         model.trainable_variables[0].assign_add(delta)
-                        r = model.trainable_variables - origin_embedding
+
+                        r = model.trainable_variables[0] - origin_embedding
                         if tf.norm(r, ord=2) > epsilon:
                             r = epsilon * r / tf.norm(r, ord=2)
-                        model.trainable_variables[0] = origin_embedding + r
-                        if t == K - 1:
-                            gradients[0] = origin_embedding_gradients
+                        model.trainable_variables[0].assign(origin_embedding + tf.Variable(r))
+
+                        if t != K - 1:
+                            gradients = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
+                        else:
+                            gradients = origin_gradients
                         with tf.GradientTape() as gan_tape:
                             logits = model(X_train_batch, training=1)
                             if classifier_config['use_focal_loss']:
@@ -162,8 +168,9 @@ def train(data_manager, logger):
                                 loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch,
                                                                                     y_pred=logits)
                             loss = tf.reduce_mean(loss_vec)
-                        gradients = gan_tape.gradient(loss, model.trainable_variables)
-                    model.trainable_variables[0] = origin_embedding
+                        gan_gradients = gan_tape.gradient(loss, model.trainable_variables)
+                        gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
+                    model.trainable_variables[0].assign(origin_embedding)
 
             # 反向传播，自动微分计算
             optimizer.apply_gradients(zip(gradients, model.trainable_variables))
