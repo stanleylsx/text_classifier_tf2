@@ -80,7 +80,7 @@ classifier_config = {
     'use_focal_loss': False,
     # 是否使用GAN进行对抗训练
     'use_gan': False,
-    # 目前仅支持FGM方法
+    # 目前支持FGM和PGD两种方法
     # fgm:Fast Gradient Method
     # pgd:Projected Gradient Descent
     'gan_method': 'fgm'
