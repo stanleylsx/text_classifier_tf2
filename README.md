@@ -4,13 +4,14 @@
 
 此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可支持:  
 
-* **TextCNN/TextRNN/TextRCNN/Finetune-Bert基本模型的训练** 
+* **TextCNN/TextRNN/TextRCNN/Finetune-Bert基本分类模型的训练** 
 * **TextCNN/TextRNN/TextRCNN的token可选用词粒度/字粒度** 
 * **Word2Vec/Bert特征增强后接TextCNN/TextRNN/TextRCNN(此时Bert只做特征增强，不微调)**  
 * **Attention-TextCNN/TextRNN**  
 * **FGM和PGD两种对抗方法的引入训练**  
-* **支持二分类和多分类**  
+* **支持二分类和多分类，支持FocalLoss**  
 * **保存为pb文件可供部署**  
+* **项目代码支持交互测试和批量测试**  
 
 
 ## 环境
