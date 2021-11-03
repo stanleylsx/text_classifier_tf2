@@ -30,7 +30,7 @@ class Predictor:
         self.embedding_method = classifier_config['embedding_method']
         if self.embedding_method == 'Bert':
             from transformers import TFBertModel
-            self.bert_model = TFBertModel.from_pretrained('bert-base-multilingual-cased')
+            self.bert_model = TFBertModel.from_pretrained(classifier_config['bert_op'])
         logger.info('loading model parameter')
         if classifier == 'textcnn':
             from engines.models.textcnn import TextCNN
@@ -41,6 +41,9 @@ class Predictor:
         elif classifier == 'textrnn':
             from engines.models.textrnn import TextRNN
             self.model = TextRNN(self.seq_length, num_classes, hidden_dim, self.embedding_dim, vocab_size)
+        elif classifier == 'Bert':
+            from engines.models.bert import BertClassification
+            self.model = BertClassification(num_classes)
         else:
             raise Exception('config model is not exist')
         # 实例化Checkpoint，设置恢复对象为新建立的模型

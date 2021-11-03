@@ -1,4 +1,0 @@
-model_checkpoint_path: "word2vec_textrnn-3"
-all_model_checkpoint_paths: "word2vec_textrnn-3"
-all_model_checkpoint_timestamps: 1616747327.7220201
-last_preserved_timestamp: 1616746306.1032352

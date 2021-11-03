@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec, save_model, test]
-mode = 'interactive_predict'
+mode = 'test'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -24,34 +24,37 @@ CUDA_VISIBLE_DEVICES = 0
 classifier_config = {
     # 模型选择
     'classifier': 'textcnn',
+    # 若选择Bert系列微调做分类，请在bert_op指定Bert版本
+    'bert_op': 'bert-base-multilingual-cased',
     # 训练数据集
-    'train_file': 'data/data/train_data.csv',
+    'train_file': 'data/train_dataset.csv',
     # 验证数据集
-    'val_file': 'data/data/dev_data.csv',
+    'val_file': 'data/val_dataset.csv',
     # 测试数据集
-    'test_file': '',
-    # token粒度,token选择字粒度的时候，词嵌入无效
+    'test_file': 'data/test_dataset.csv',
+    # 引入外部的词嵌入,可选word2vec、Bert
+    # word2vec:使用word2vec词向量做特征增强
+    # Bert:此处仅仅是使用Bert Embedding做特征增强，后接classifier选择的模型(textcnn/textrnn/textrcnn)
+    # None:使用模型自带的随机初始化的Embedding
+    'embedding_method': None,
+    # token的粒度,token选择字粒度的时候，词嵌入(embedding_method)无效
     # 词粒度:'word'
     # 字粒度:'char'
-    'token_level': 'char',
-    # 引入外部的词嵌入,可选word2vec、Bert
-    # 此处只使用Bert Embedding,不对其做预训练
-    # None:使用随机初始化的Embedding
-    'embedding_method': None,
-    # 不外接词向量的时候需要自定义的向量维度
+    'token_level': 'word',
+    # 不外接词嵌入的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
-    'token_file': 'data/data/token2id_char',
+    'token_file': 'data/word-token2id',
     # 类别和对应的id
-    'classes': {'negative': 0, 'positive': 1},
+    'classes': {'家居': 0, '时尚': 1, '教育': 2, '财经': 3, '时政': 4, '娱乐': 5, '科技': 6, '体育': 7, '游戏': 8, '房产': 9},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textcnn_char',
+    'checkpoints_dir': 'model/textcnn-word',
     # 模型保存的名字
-    'checkpoint_name': 'textcnn_char',
-    # 卷集核的个数
+    'checkpoint_name': 'textcnn-word',
+    # 使用Textcnn模型时候设定卷集核的个数
     'num_filters': 64,
     # 学习率
-    'learning_rate': 0.001,
+    'learning_rate': 0.0005,
     # 训练epoch
     'epoch': 30,
     # 最多保存max_to_keep个模型
@@ -67,15 +70,15 @@ classifier_config = {
     'attention_size': 300,
     'patient': 8,
     'batch_size': 64,
-    'max_sequence_length': 150,
+    'max_sequence_length': 250,
     # 遗忘率
     'dropout_rate': 0.5,
     # 隐藏层维度
-    # 使用textrcnn中需要设定
+    # 使用textrcnn和textrnn中需要设定
     'hidden_dim': 200,
     # 若为二分类则使用binary
     # 多分类使用micro或macro
-    'metrics_average': 'binary',
+    'metrics_average': 'micro',
     # 类别样本比例失衡的时候可以考虑使用
     'use_focal_loss': False,
     # 是否使用GAN进行对抗训练

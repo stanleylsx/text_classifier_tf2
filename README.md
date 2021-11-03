@@ -2,23 +2,16 @@
 **公众号文章：[文本分类之Text-CNN/RNN/RCNN算法原理及工程实现](https://mp.weixin.qq.com/s/7fbTt3Ov715ixErYfKR2kA)**  
 **公众号文章：[一篇文章带你走进词向量并掌握Word2Vec](https://mp.weixin.qq.com/s/SAEV6WkbkOxzTCvF6GUz_A)**
 
-此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可分别支持:  
+此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可支持:  
 
-* **随机初始Word Embedding + TextCNN**  
-* **随机初始Word Embedding + Attention + TextCNN**  
-* **随机初始Word Embedding + TextRNN**  
-* **随机初始Word Embedding + Attention + TextRNN**   
-* **随机初始Word Embedding + TextRCNN**   
-* **Word2Vec + TextCNN**   
-* **Word2Vec + Attention + TextCNN**  
-* **Word2Vec + TextRNN**  
-* **Word2Vec + Attention + TextRNN**  
-* **Word2Vec + TextRCNN**  
-* **Bert Embedding(没有微调,直接取向量) + TextCNN**    
-* **Bert Embedding(没有微调,直接取向量) + TextRCNN**    
-* **Bert Embedding(没有微调,直接取向量) + TextRNN**    
+* **TextCNN/TextRNN/TextRCNN/Finetune-Bert基本模型的训练** 
+* **TextCNN/TextRNN/TextRCNN的token可选用词粒度/字粒度** 
+* **Word2Vec/Bert特征增强后接TextCNN/TextRNN/TextRCNN(此时Bert只做特征增强，不微调)**  
+* **Attention-TextCNN/TextRNN**  
+* **FGM和PGD两种对抗方法的引入训练**  
+* **支持二分类和多分类**  
+* **保存为pb文件可供部署**  
 
-代码支持二分类和多分类，此项目基于爬取的游戏评论做了个二元的情感分类作为demo。  
 
 ## 环境
 * python 3.6.7
@@ -51,15 +44,14 @@
 2021-04-25|v3.1.6|通过配置可选GPU和CPU进行训练
 2021-06-17|v3.2.0|增加字粒度的模型训练预测
 2021-09-27|v3.3.0|增加测试集的批量测试
-2021-11-01|v4.0.0|增加对抗训练，目前支持FGM和PGD两种方式
+2021-11-01|v4.0.0|增加对抗训练，目前支持FGM和PGD两种方式;增加Bert微调分类训练;更换demo数据集
 
 ## 数据集
-我的另外一个爬虫项目[app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)中爬取
+部分头条新闻数据集
 
 ## 原理
 ### Word2vec
-可以参考我的博客文章[01-NLP介绍和词向量](https://lishouxian.cn/2020/04/06/NLP%E4%BB%8B%E7%BB%8D%E5%92%8C%E8%AF%8D%E5%90%91%E9%87%8F/#WordNet)和[02-词向量第二部分和词义](https://lishouxian.cn/2020/04/13/%E8%AF%8D%E5%90%91%E9%87%8F%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%E5%92%8C%E8%AF%8D%E4%B9%89/)    
-也可看博客[刘建平Pinard](https://www.cnblogs.com/pinard/p/7160330.html)和文章[技术干货 | 漫谈Word2vec之skip-gram模型](https://mp.weixin.qq.com/s/reT4lAjwo4fHV4ctR9zbxQ?)
+可以参考我的博客文章[01-NLP介绍和词向量](https://lishouxian.cn/2020/04/06/NLP%E4%BB%8B%E7%BB%8D%E5%92%8C%E8%AF%8D%E5%90%91%E9%87%8F/#WordNet)和[02-词向量第二部分和词义](https://lishouxian.cn/2020/04/13/%E8%AF%8D%E5%90%91%E9%87%8F%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%E5%92%8C%E8%AF%8D%E4%B9%89/)
 
 ### TextCNN
 ![textcnn](https://img-blog.csdnimg.cn/20201021000109653.png)
@@ -70,6 +62,10 @@
 ### TextRCNN
 ![textrcnn](https://img-blog.csdnimg.cn/20201107140825534.png)
 
+### Finetune-Bert  
+![bert](https://img-blog.csdnimg.cn/ee8c075812ac48b5b2adbfe10d294657.png)
+
+***注(1):这里使用的[transformers](https://github.com/huggingface/transformers)包加载Bert，初次使用的时候会自动下载Bert的模型*** 
 
 ## 使用
 ### 配置
@@ -86,36 +82,39 @@ mode = 'train_word2vec'
 配置好下列参数  
 ```
 classifier_config = {
-    # 模型选择
+    # 模型选择(textcnn、textrnn、textrcnn、Bert)
     'classifier': 'textcnn',
+    # 若选择Bert系列微调做分类，请在bert_op指定Bert版本
+    'bert_op': 'bert-base-multilingual-cased',
     # 训练数据集
-    'train_file': 'data/data/train_data.csv',
+    'train_file': 'data/train_dataset.csv',
     # 验证数据集
-    'val_file': 'data/data/dev_data.csv',
-    # 验证数据集
-    'test_file': '',
-    # token粒度,token选择字粒度的时候，词嵌入无效
+    'val_file': 'data/val_dataset.csv',
+    # 测试数据集
+    'test_file': 'data/test_dataset.csv',
+    # 引入外部的词嵌入,可选word2vec、Bert
+    # word2vec:使用word2vec词向量做特征增强
+    # Bert:此处仅仅是使用Bert Embedding做特征增强，后接classifier选择的模型(textcnn/textrnn/textrcnn)
+    # None:使用模型自带的随机初始化的Embedding
+    'embedding_method': None,
+    # token的粒度,token选择字粒度的时候，词嵌入(embedding_method)无效
     # 词粒度:'word'
     # 字粒度:'char'
-    'token_level': 'char',
-    # 引入外部的词嵌入,可选word2vec、Bert
-    # 此处只使用Bert Embedding,不对其做预训练
-    # None:使用随机初始化的Embedding
-    'embedding_method': 'Bert',
-    # 不外接词向量的时候需要自定义的向量维度
+    'token_level': 'word',
+    # 不外接词嵌入的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
-    'token_file': 'data/data/token2id',
+    'token_file': 'data/word-token2id',
     # 类别和对应的id
-    'classes': {'negative': 0, 'positive': 1},
+    'classes': {'家居': 0, '时尚': 1, '教育': 2, '财经': 3, '时政': 4, '娱乐': 5, '科技': 6, '体育': 7, '游戏': 8, '房产': 9},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/bert_textcnn',
+    'checkpoints_dir': 'model/textcnn-word',
     # 模型保存的名字
-    'checkpoint_name': 'bert_textcnn',
-    # 卷集核的个数
+    'checkpoint_name': 'textcnn-word',
+    # 使用Textcnn模型时候设定卷集核的个数
     'num_filters': 64,
     # 学习率
-    'learning_rate': 0.001,
+    'learning_rate': 0.0005,
     # 训练epoch
     'epoch': 30,
     # 最多保存max_to_keep个模型
@@ -128,23 +127,23 @@ classifier_config = {
     # 注意:textrcnn不支持
     'use_attention': False,
     # attention大小
-    'attention_dim': 300,
+    'attention_size': 300,
     'patient': 8,
     'batch_size': 64,
-    'max_sequence_length': 150,
+    'max_sequence_length': 250,
     # 遗忘率
-    'droupout_rate': 0.5,
+    'dropout_rate': 0.5,
     # 隐藏层维度
-    # 使用textrcnn中需要设定
+    # 使用textrcnn和textrnn中需要设定
     'hidden_dim': 200,
     # 若为二分类则使用binary
     # 多分类使用micro或macro
-    'metrics_average': 'binary',
+    'metrics_average': 'micro',
     # 类别样本比例失衡的时候可以考虑使用
-    'use_focal_loss': False
+    'use_focal_loss': False,
     # 是否使用GAN进行对抗训练
     'use_gan': False,
-    # 目前支持FGM方法和PGD两种方法
+    # 目前支持FGM和PGD两种方法
     # fgm:Fast Gradient Method
     # pgd:Projected Gradient Descent
     'gan_method': 'fgm'
@@ -157,7 +156,7 @@ mode = 'train_classifier'
 ```
 * 训练结果  
 
-![train_results_textcnn](https://img-blog.csdnimg.cn/2020110713592572.png)
+![train_results_textcnn](https://img-blog.csdnimg.cn/949975114b5e46b68f8a019d7d34204e.png)
 
 ### 测试
 训练好模型直接可以开始测试，可以进行交互测试也可以批量测试  
@@ -167,28 +166,22 @@ mode = 'train_classifier'
 mode = 'interactive_predict'  
 ```
 交互测试结果    
-![test](https://img-blog.csdnimg.cn/20201021000109568.png)    
+![interactive_predict](https://img-blog.csdnimg.cn/433787e1760b45968536b8315ad8e581.png)    
 
 * 批量测试   
 
 在测试数据集配置上填和训练/验证集文件同构的文件地址
 ```
 # 测试数据集
-'test_file': 'data/data/test_dataset.csv',
+'test_file': 'data/test_dataset.csv',
 ```
 模式设定为测试模式  
 ```
 # [train_classifier, interactive_predict, train_word2vec, test]
 mode = 'test'    
-```
-
-## 参考
-* [app_comments_spider](https://github.com/StanleyLsx/app_comments_spider)
-* [01-NLP介绍和词向量](https://lishouxian.cn/2020/04/06/NLP%E4%BB%8B%E7%BB%8D%E5%92%8C%E8%AF%8D%E5%90%91%E9%87%8F/#WordNet)
-* [02-词向量第二部分和词义](https://lishouxian.cn/2020/04/13/%E8%AF%8D%E5%90%91%E9%87%8F%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%E5%92%8C%E8%AF%8D%E4%B9%89/) 
-* [刘建平Pinard](https://www.cnblogs.com/pinard/p/7160330.html)
-* [技术干货 | 漫谈Word2vec之skip-gram模型](https://mp.weixin.qq.com/s/reT4lAjwo4fHV4ctR9zbxQ?)
-* [Recurrent Convolutional Neural Networks for Text Classification](http://zhengyima.com/my/pdfs/Textrcnn.pdf)
+```  
+批量测试结果    
+![batch_test](https://img-blog.csdnimg.cn/bd22c813350449ef937b3a50e1f09322.png) 
 
 ## 公众号
 相关问题欢迎在公众号反馈：  

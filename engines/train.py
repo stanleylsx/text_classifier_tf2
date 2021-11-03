@@ -43,7 +43,7 @@ def train(data_manager, logger):
     embedding_method = classifier_config['embedding_method']
     if embedding_method == 'Bert':
         from transformers import TFBertModel
-        bert_model = TFBertModel.from_pretrained('bert-base-multilingual-cased')
+        bert_model = TFBertModel.from_pretrained(classifier_config['bert_op'])
     else:
         bert_model = None
     checkpoints_dir = classifier_config['checkpoints_dir']
@@ -80,6 +80,9 @@ def train(data_manager, logger):
     elif classifier == 'textrnn':
         from engines.models.textrnn import TextRNN
         model = TextRNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
+    elif classifier == 'Bert':
+        from engines.models.bert import BertClassification
+        model = BertClassification(num_classes)
     else:
         raise Exception('config model is not exist')
     checkpoint = tf.train.Checkpoint(model=model)
