@@ -22,30 +22,31 @@ class DataManager:
         self.token_level = classifier_config['token_level']
         self.embedding_method = classifier_config['embedding_method']
         self.classifier = classifier_config['classifier']
-        if self.classifier == 'Bert' and self.embedding_method == 'Bert':
-            raise Exception('如果使用Bert微调，不需要设定embedding_method;如果使用Bert做特征增强，请选择其它模型')
+        if self.classifier == 'Bert' and self.embedding_method is not None:
+            raise Exception('如果使用Bert微调，不需要设定embedding_method')
         if self.token_level == 'char' and self.embedding_method is not None:
             raise Exception('字粒度不应该使用词嵌入')
         self.w2v_util = Word2VecUtils(logger)
         self.stop_words = self.w2v_util.get_stop_words()
 
-        if self.embedding_method == 'word2vec':
-            self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
-            self.embedding_dim = self.w2v_model.vector_size
-            self.vocab_size = len(self.w2v_model.wv.vocab)
-        elif self.embedding_method == 'Bert' or self.classifier == 'Bert':
+        if self.classifier == 'Bert':
             from transformers import BertTokenizer
             self.tokenizer = BertTokenizer.from_pretrained(classifier_config['bert_op'])
             self.embedding_dim = 768
             self.vocab_size = len(self.tokenizer.get_vocab())
         else:
-            self.embedding_dim = classifier_config['embedding_dim']
-            self.token_file = classifier_config['token_file']
-            if not os.path.isfile(self.token_file):
-                self.logger.info('vocab files not exist...')
+            if self.embedding_method == 'word2vec':
+                self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
+                self.embedding_dim = self.w2v_model.vector_size
+                self.vocab_size = len(self.w2v_model.wv.vocab)
             else:
-                self.token2id, self.id2token = self.load_vocab()
-                self.vocab_size = len(self.token2id)
+                self.embedding_dim = classifier_config['embedding_dim']
+                self.token_file = classifier_config['token_file']
+                if not os.path.isfile(self.token_file):
+                    self.logger.info('vocab files not exist...')
+                else:
+                    self.token2id, self.id2token = self.load_vocab()
+                    self.vocab_size = len(self.token2id)
 
         self.PADDING = '[PAD]'
         self.UNKNOWN = '[UNK]'
@@ -166,10 +167,9 @@ class DataManager:
         for record in tqdm(zip(sentences, labels)):
             if self.token_level == 'word':
                 sentence = self.w2v_util.processing_sentence(record[0], self.stop_words)
-                sentence = self.padding(sentence)
             else:
                 sentence = list(record[0])
-                sentence = self.padding(sentence)
+            sentence = self.padding(sentence)
             label = tf.one_hot(record[1], depth=self.max_label_number)
             tokens = []
             for word in sentence:
@@ -179,7 +179,7 @@ class DataManager:
                     tokens.append(self.token2id[self.UNKNOWN])
             X.append(tokens)
             y.append(label)
-        return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
+        return np.array(X), np.array(y, dtype=np.float32)
 
     def get_dataset(self, df, step=None):
         """
@@ -192,15 +192,8 @@ class DataManager:
             # 使用Bert做微调分类
             X, y = self.prepare_bert_data(df['sentence'], df['label'])
         else:
-            if self.token_level == 'word':
-                if self.embedding_method == 'word2vec':
-                    X, y = self.prepare_w2v_data(df['sentence'], df['label'])
-                elif self.embedding_method == 'Bert':
-                    X, y = self.prepare_bert_data(df['sentence'], df['label'])
-                else:
-                    if step == 'train' and not os.path.isfile(self.token_file):
-                        self.token2id, self.id2token = self.load_vocab(df['sentence'])
-                    X, y = self.prepare_data(df['sentence'], df['label'])
+            if self.embedding_method == 'word2vec':
+                X, y = self.prepare_w2v_data(df['sentence'], df['label'])
             else:
                 if step == 'train' and not os.path.isfile(self.token_file):
                     self.token2id, self.id2token = self.load_vocab(df['sentence'])
@@ -224,45 +217,27 @@ class DataManager:
                 tokens += [0 for _ in range(self.max_sequence_length - len(tokens))]
             return np.array([tokens])
         else:
-            if self.token_level == 'word':
-                if self.embedding_method == 'word2vec':
-                    embedding_unknown = [0] * self.embedding_dim
-                    sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
-                    sentence = self.padding(sentence)
-                    vector = []
-                    for word in sentence:
-                        if word in self.w2v_model.wv.vocab:
-                            vector.append(self.w2v_model[word].tolist())
-                        else:
-                            vector.append(embedding_unknown)
-                    return np.array([vector], dtype=np.float32)
-                elif self.embedding_method == 'Bert':
-                    if len(sentence) > self.max_sequence_length - 2:
-                        sentence = sentence[:self.max_sequence_length - 2]
-                        tokens = self.tokenizer.encode(sentence)
-                    else:
-                        tokens = self.tokenizer.encode(sentence)
-                    if len(tokens) < 150:
-                        tokens += [0 for _ in range(self.max_sequence_length - len(tokens))]
-                    return np.array([tokens])
-                else:
-                    sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
-                    sentence = self.padding(sentence)
-                    word_tokens = []
-                    for word in sentence:
-                        if word in self.token2id:
-                            word_tokens.append(self.token2id[word])
-                        else:
-                            word_tokens.append(self.token2id[self.UNKNOWN])
-                    return np.array([word_tokens], dtype=np.float32)
-            else:
-                sentence = list(sentence)
+            if self.embedding_method == 'word2vec':
+                embedding_unknown = [0] * self.embedding_dim
+                sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
                 sentence = self.padding(sentence)
-                char_tokens = []
+                vector = []
+                for word in sentence:
+                    if word in self.w2v_model.wv.vocab:
+                        vector.append(self.w2v_model[word].tolist())
+                    else:
+                        vector.append(embedding_unknown)
+                return np.array([vector], dtype=np.float32)
+            else:
+                if self.token_level == 'word':
+                    sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
+                else:
+                    sentence = list(sentence)
+                sentence = self.padding(sentence)
+                tokens = []
                 for word in sentence:
                     if word in self.token2id:
-                        char_tokens.append(self.token2id[word])
+                        tokens.append(self.token2id[word])
                     else:
-                        char_tokens.append(self.token2id[self.UNKNOWN])
-                return np.array([char_tokens], dtype=np.float32)
-
+                        tokens.append(self.token2id[self.UNKNOWN])
+                return np.array([tokens])

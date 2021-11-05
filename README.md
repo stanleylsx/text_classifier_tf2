@@ -6,7 +6,7 @@
 
 * **TextCNN/TextRNN/TextRCNN/Finetune-Bert基本分类模型的训练** 
 * **TextCNN/TextRNN/TextRCNN的token可选用词粒度/字粒度** 
-* **Word2Vec/Bert特征增强后接TextCNN/TextRNN/TextRCNN(此时Bert只做特征增强，不微调)**  
+* **Word2Vec特征增强后接TextCNN/TextRNN/TextRCNN**  
 * **Attention-TextCNN/TextRNN**  
 * **FGM和PGD两种对抗方法的引入训练**  
 * **支持二分类和多分类，支持FocalLoss**  
@@ -36,7 +36,7 @@
 2020-11-19|v2.4.0|增加每个类别的指标,重构指标计算逻辑
 2021-03-02|v2.5.0|使用Dataset替换自己写的数据加载器来加载数据
 2021-03-15|v3.0.0|支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
-2021-03-16|v3.1.0|支持取用Bert的编码后接TextCNN/TextRCNN进行数据训练(此项目Bert不支持预训练);在log中打印配置
+2021-03-16|v3.1.0|支持取用Word2Vec的词向量后接TextCNN/TextRCNN进行数据训练;在log中打印配置
 2021-03-17|v3.1.1|根据词频过滤一部分频率极低的词,不加入词表
 2021-03-22|v3.1.2|加入TextRNN模型
 2021-03-23|v3.1.3|给TextRNN模型加上Attention
@@ -93,9 +93,8 @@ classifier_config = {
     'val_file': 'data/val_dataset.csv',
     # 测试数据集
     'test_file': 'data/test_dataset.csv',
-    # 引入外部的词嵌入,可选word2vec、Bert
+    # 引入外部的词嵌入,可选word2vec
     # word2vec:使用word2vec词向量做特征增强
-    # Bert:此处仅仅是使用Bert Embedding做特征增强，后接classifier选择的模型(textcnn/textrnn/textrcnn)
     # None:使用模型自带的随机初始化的Embedding
     'embedding_method': None,
     # token的粒度,token选择字粒度的时候，词嵌入(embedding_method)无效

@@ -13,30 +13,32 @@ class TextCNN(tf.keras.Model, ABC):
     """
     TextCNN模型
     """
-    def __init__(self, seq_length, num_filters, num_classes, embedding_dim, vocab_size):
+    def __init__(self, seq_length, num_filters, num_classes, embedding_dim, vocab_size, embeddings_matrix=None):
         super(TextCNN, self).__init__()
-        self.seq_length = seq_length
         self.embedding_method = classifier_config['embedding_method']
-        self.embedding_dim = embedding_dim
-        self.embedding = tf.keras.layers.Embedding(vocab_size+1, self.embedding_dim, mask_zero=True)
+        if self.embedding_method is None:
+            self.embedding = tf.keras.layers.Embedding(vocab_size+1, embedding_dim, mask_zero=True)
+        else:
+            self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, weights=[embeddings_matrix],
+                                                       trainable=False)
 
         if classifier_config['use_attention']:
             attention_size = classifier_config['attention_size']
             self.attention_W = tf.keras.layers.Dense(attention_size, activation='tanh', use_bias=False)
             self.attention_v = tf.Variable(tf.zeros([1, attention_size]))
 
-        self.conv1 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[2, self.embedding_dim],
+        self.conv1 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[2, embedding_dim],
                                             strides=1,
                                             padding='valid',
                                             activation='relu')
         self.pool1 = tf.keras.layers.MaxPooling2D(pool_size=[seq_length-2+1, 1], padding='valid')
 
-        self.conv2 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[3, self.embedding_dim], strides=1,
+        self.conv2 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[3, embedding_dim], strides=1,
                                             padding='valid',
                                             activation='relu')
         self.pool2 = tf.keras.layers.MaxPooling2D(pool_size=[seq_length-3+1, 1], padding='valid')
 
-        self.conv3 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[4, self.embedding_dim], strides=1,
+        self.conv3 = tf.keras.layers.Conv2D(filters=num_filters, kernel_size=[4, embedding_dim], strides=1,
                                             padding='valid',
                                             activation='relu')
         self.pool3 = tf.keras.layers.MaxPooling2D(pool_size=[seq_length-4+1, 1], padding='valid')
@@ -50,7 +52,6 @@ class TextCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
-        # 不引入外部的embedding
         if self.embedding_method is None:
             inputs = self.embedding(inputs)
 

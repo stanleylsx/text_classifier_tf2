@@ -12,7 +12,6 @@ from tqdm import tqdm
 from engines.utils.focal_loss import FocalLoss
 from engines.utils.metrics import cal_metrics
 from config import classifier_config
-
 tf.keras.backend.set_floatx('float32')
 
 
@@ -37,15 +36,7 @@ def train(data_manager, logger):
 
     train_dataset = data_manager.get_dataset(train_df, step='train')
     val_dataset = data_manager.get_dataset(val_df)
-
     vocab_size = data_manager.vocab_size
-
-    embedding_method = classifier_config['embedding_method']
-    if embedding_method == 'Bert':
-        from transformers import TFBertModel
-        bert_model = TFBertModel.from_pretrained(classifier_config['bert_op'])
-    else:
-        bert_model = None
     checkpoints_dir = classifier_config['checkpoints_dir']
     checkpoint_name = classifier_config['checkpoint_name']
     num_filters = classifier_config['num_filters']
@@ -76,10 +67,10 @@ def train(data_manager, logger):
         model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size)
     elif classifier == 'textrcnn':
         from engines.models.textrcnn import TextRCNN
-        model = TextRCNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
+        model = TextRCNN(num_classes, hidden_dim, embedding_dim, vocab_size)
     elif classifier == 'textrnn':
         from engines.models.textrnn import TextRNN
-        model = TextRNN(seq_length, num_classes, hidden_dim, embedding_dim, vocab_size)
+        model = TextRNN(num_classes, hidden_dim, embedding_dim, vocab_size)
     elif classifier == 'Bert':
         from engines.models.bert import BertClassification
         model = BertClassification(num_classes)
@@ -99,12 +90,7 @@ def train(data_manager, logger):
         start_time = time.time()
         logger.info('epoch:{}/{}'.format(i + 1, epoch))
         for step, batch in tqdm(train_dataset.shuffle(len(train_dataset)).batch(batch_size).enumerate()):
-            if embedding_method == 'Bert':
-                X_train_batch, y_train_batch = batch
-                X_train_batch = bert_model(X_train_batch)[0]
-            else:
-                X_train_batch, y_train_batch = batch
-
+            X_train_batch, y_train_batch = batch
             with tf.GradientTape() as tape:
                 logits = model(X_train_batch, training=1)
                 if classifier_config['use_focal_loss']:
@@ -192,12 +178,7 @@ def train(data_manager, logger):
         loss_values = []
 
         for val_batch in tqdm(val_dataset.batch(batch_size)):
-            if embedding_method == 'Bert':
-                X_val_batch, y_val_batch = val_batch
-                X_val_batch = bert_model(X_val_batch)[0]
-            else:
-                X_val_batch, y_val_batch = val_batch
-
+            X_val_batch, y_val_batch = val_batch
             logits = model(X_val_batch)
             val_loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_val_batch, y_pred=logits)
             val_loss = tf.reduce_mean(val_loss_vec)

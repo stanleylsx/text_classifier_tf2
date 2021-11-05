@@ -22,25 +22,21 @@ class Predictor:
         num_classes = data_manager.max_label_number
         self.embedding_dim = data_manager.embedding_dim
         vocab_size = data_manager.vocab_size
-
+        self.embedding_method = classifier_config['embedding_method']
         self.logger = logger
         # 卷集核的个数
         num_filters = classifier_config['num_filters']
         self.checkpoints_dir = classifier_config['checkpoints_dir']
-        self.embedding_method = classifier_config['embedding_method']
-        if self.embedding_method == 'Bert':
-            from transformers import TFBertModel
-            self.bert_model = TFBertModel.from_pretrained(classifier_config['bert_op'])
         logger.info('loading model parameter')
         if classifier == 'textcnn':
             from engines.models.textcnn import TextCNN
             self.model = TextCNN(self.seq_length, num_filters, num_classes, self.embedding_dim, vocab_size)
         elif classifier == 'textrcnn':
             from engines.models.textrcnn import TextRCNN
-            self.model = TextRCNN(self.seq_length, num_classes, hidden_dim, self.embedding_dim, vocab_size)
+            self.model = TextRCNN(num_classes, hidden_dim, self.embedding_dim, vocab_size)
         elif classifier == 'textrnn':
             from engines.models.textrnn import TextRNN
-            self.model = TextRNN(self.seq_length, num_classes, hidden_dim, self.embedding_dim, vocab_size)
+            self.model = TextRNN(num_classes, hidden_dim, self.embedding_dim, vocab_size)
         elif classifier == 'Bert':
             from engines.models.bert import BertClassification
             self.model = BertClassification(num_classes)
@@ -61,15 +57,10 @@ class Predictor:
         test_dataset = self.dataManager.get_dataset(test_df)
         batch_size = self.dataManager.batch_size
         reverse_classes = {str(class_id): class_name for class_name, class_id in self.dataManager.class_id.items()}
-        embedding_method = classifier_config['embedding_method']
         y_true, y_pred = np.array([]), np.array([])
         start_time = time.time()
         for step, batch in tqdm(test_dataset.shuffle(len(test_dataset)).batch(batch_size).enumerate()):
-            if embedding_method == 'Bert':
-                X_test_batch, y_test_batch = batch
-                X_test_batch = self.bert_model(X_test_batch)[0]
-            else:
-                X_test_batch, y_test_batch = batch
+            X_test_batch, y_test_batch = batch
             logits = self.model(X_test_batch)
             predictions = tf.argmax(logits, axis=-1)
             y_test_batch = tf.argmax(y_test_batch, axis=-1)
@@ -98,8 +89,6 @@ class Predictor:
         reverse_classes = {class_id: class_name for class_name, class_id in self.dataManager.class_id.items()}
         start_time = time.time()
         vector = self.dataManager.prepare_single_sentence(sentence)
-        if self.embedding_method == 'Bert':
-            vector = self.bert_model(vector)[0]
         logits = self.model(inputs=vector)
         prediction = tf.argmax(logits, axis=-1)
         prediction = prediction.numpy()[0]
@@ -108,11 +97,7 @@ class Predictor:
 
     def save_model(self):
         # 保存pb格式的模型到本地
-        if self.embedding_method == 'Bert':
-            tf.saved_model.save(self.model, self.checkpoints_dir,
-                                signatures=self.model.call.get_concrete_function(
-                                    tf.TensorSpec([None, self.seq_length, 768], tf.float32, name='inputs')))
-        elif self.embedding_method == 'word2vec':
+        if self.embedding_method == 'word2vec':
             tf.saved_model.save(self.model, self.checkpoints_dir,
                                 signatures=self.model.call.get_concrete_function(
                                     tf.TensorSpec(
@@ -120,5 +105,5 @@ class Predictor:
         else:
             tf.saved_model.save(self.model, self.checkpoints_dir,
                                 signatures=self.model.call.get_concrete_function(
-                                    tf.TensorSpec([None, self.seq_length], tf.float32, name='inputs')))
+                                    tf.TensorSpec([None, self.seq_length], tf.int32, name='inputs')))
         self.logger.info('The model has been saved')

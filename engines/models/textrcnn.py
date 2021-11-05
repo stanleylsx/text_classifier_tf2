@@ -14,19 +14,20 @@ class TextRCNN(tf.keras.Model, ABC):
     TextRCNN模型
     """
 
-    def __init__(self, seq_length, num_classes, hidden_dim, embedding_dim, vocab_size):
+    def __init__(self, num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix=None):
         super(TextRCNN, self).__init__()
-        self.seq_length = seq_length
-        self.hidden_dim = hidden_dim
-        self.embedding_dim = embedding_dim
         self.embedding_method = classifier_config['embedding_method']
-        self.embedding = tf.keras.layers.Embedding(vocab_size+1, self.embedding_dim, mask_zero=True)
+        if self.embedding_method is None:
+            self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, mask_zero=True)
+        else:
+            self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, weights=[embeddings_matrix],
+                                                       trainable=False)
 
-        self.forward = tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True)
-        self.backward = tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True, go_backwards=True)
+        self.forward = tf.keras.layers.LSTM(hidden_dim, return_sequences=True)
+        self.backward = tf.keras.layers.LSTM(hidden_dim, return_sequences=True, go_backwards=True)
         self.max_pool = tf.keras.layers.GlobalMaxPool1D()
         self.dropout = tf.keras.layers.Dropout(classifier_config['dropout_rate'], name='dropout')
-        self.dense1 = tf.keras.layers.Dense(2 * self.hidden_dim + self.embedding_dim, activation='tanh')
+        self.dense1 = tf.keras.layers.Dense(2 * hidden_dim + embedding_dim, activation='tanh')
         self.dense2 = tf.keras.layers.Dense(num_classes,
                                             activation='softmax',
                                             kernel_regularizer=tf.keras.regularizers.l2(0.1),
@@ -35,7 +36,6 @@ class TextRCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
-        # 不引入外部的embedding
         if self.embedding_method is None:
             inputs = self.embedding(inputs)
 

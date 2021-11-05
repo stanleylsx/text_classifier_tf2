@@ -14,14 +14,15 @@ class TextRNN(tf.keras.Model, ABC):
     TextRNN模型
     """
 
-    def __init__(self, seq_length, num_classes, hidden_dim, embedding_dim, vocab_size):
+    def __init__(self, num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix=None):
         super(TextRNN, self).__init__()
-        self.seq_length = seq_length
-        self.hidden_dim = hidden_dim
-        self.embedding_dim = embedding_dim
         self.embedding_method = classifier_config['embedding_method']
-        self.embedding = tf.keras.layers.Embedding(vocab_size + 1, self.embedding_dim, mask_zero=True)
-        self.bilstm = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(self.hidden_dim, return_sequences=True))
+        if self.embedding_method is None:
+            self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, mask_zero=True)
+        else:
+            self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, weights=[embeddings_matrix],
+                                                       trainable=False)
+        self.bilstm = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(hidden_dim, return_sequences=True))
         self.dropout = tf.keras.layers.Dropout(classifier_config['dropout_rate'], name='dropout')
         if classifier_config['use_attention']:
             self.attention_w = tf.Variable(tf.zeros([1, 2 * hidden_dim]))
@@ -33,7 +34,6 @@ class TextRNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
-        # 不引入外部的embedding
         if self.embedding_method is None:
             inputs = self.embedding(inputs)
         bilstm_outputs = self.bilstm(inputs)

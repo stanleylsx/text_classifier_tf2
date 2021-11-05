@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec, save_model, test]
-mode = 'test'
+mode = 'interactive_predict'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -34,7 +34,6 @@ classifier_config = {
     'test_file': 'data/test_dataset.csv',
     # 引入外部的词嵌入,可选word2vec、Bert
     # word2vec:使用word2vec词向量做特征增强
-    # Bert:此处仅仅是使用Bert Embedding做特征增强，后接classifier选择的模型(textcnn/textrnn/textrcnn)
     # None:使用模型自带的随机初始化的Embedding
     'embedding_method': None,
     # token的粒度,token选择字粒度的时候，词嵌入(embedding_method)无效
