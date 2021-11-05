@@ -1,0 +1,11 @@
+2021-11-05 21:58:51
+{
+  "stop_words": "data/w2v_data/stop_words.txt",
+  "train_data": "data/w2v_data/dataset.csv",
+  "model_dir": "model/word2vec_model",
+  "model_name": "word2vec_model.pkl",
+  "word2vec_dim": 300
+}
+mode: train_word2vec
+Cut sentence...
+Training word2vec...
