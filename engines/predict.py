@@ -28,15 +28,22 @@ class Predictor:
         num_filters = classifier_config['num_filters']
         self.checkpoints_dir = classifier_config['checkpoints_dir']
         logger.info('loading model parameter')
+
+        if classifier_config['embedding_method'] == 'word2vec':
+            embeddings_matrix = data_manager.embeddings_matrix
+        else:
+            embeddings_matrix = None
+
         if classifier == 'textcnn':
             from engines.models.textcnn import TextCNN
-            self.model = TextCNN(self.seq_length, num_filters, num_classes, self.embedding_dim, vocab_size)
+            self.model = TextCNN(self.seq_length, num_filters, num_classes, self.embedding_dim, vocab_size,
+                                 embeddings_matrix)
         elif classifier == 'textrcnn':
             from engines.models.textrcnn import TextRCNN
-            self.model = TextRCNN(num_classes, hidden_dim, self.embedding_dim, vocab_size)
+            self.model = TextRCNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'textrnn':
             from engines.models.textrnn import TextRNN
-            self.model = TextRNN(num_classes, hidden_dim, self.embedding_dim, vocab_size)
+            self.model = TextRNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'Bert':
             from engines.models.bert import BertClassification
             self.model = BertClassification(num_classes)
@@ -96,14 +103,7 @@ class Predictor:
         return reverse_classes[prediction]
 
     def save_model(self):
-        # 保存pb格式的模型到本地
-        if self.embedding_method == 'word2vec':
-            tf.saved_model.save(self.model, self.checkpoints_dir,
-                                signatures=self.model.call.get_concrete_function(
-                                    tf.TensorSpec(
-                                        [None, self.seq_length, self.embedding_dim], tf.float32, name='inputs')))
-        else:
-            tf.saved_model.save(self.model, self.checkpoints_dir,
-                                signatures=self.model.call.get_concrete_function(
-                                    tf.TensorSpec([None, self.seq_length], tf.int32, name='inputs')))
+        tf.saved_model.save(self.model, self.checkpoints_dir,
+                            signatures=self.model.call.get_concrete_function(
+                                tf.TensorSpec([None, self.seq_length], tf.int32, name='inputs')))
         self.logger.info('The model has been saved')
