@@ -61,16 +61,22 @@ def train(data_manager, logger):
     loss_obj = FocalLoss() if classifier_config['use_focal_loss'] else None
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    # 载入模型
+    # 加入word2vec进行训练
+    if classifier_config['embedding_method'] == 'word2vec':
+        embeddings_matrix = data_manager.embeddings_matrix
+    else:
+        embeddings_matrix = None
+
+        # 载入模型
     if classifier == 'textcnn':
         from engines.models.textcnn import TextCNN
-        model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size)
+        model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'textrcnn':
         from engines.models.textrcnn import TextRCNN
-        model = TextRCNN(num_classes, hidden_dim, embedding_dim, vocab_size)
+        model = TextRCNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'textrnn':
         from engines.models.textrnn import TextRNN
-        model = TextRNN(num_classes, hidden_dim, embedding_dim, vocab_size)
+        model = TextRNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'Bert':
         from engines.models.bert import BertClassification
         model = BertClassification(num_classes)
