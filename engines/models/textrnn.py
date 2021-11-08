@@ -34,8 +34,7 @@ class TextRNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
-        if self.embedding_method is None:
-            inputs = self.embedding(inputs)
+        inputs = self.embedding(inputs)
         bilstm_outputs = self.bilstm(inputs)
         if classifier_config['use_attention']:
             output = tf.nn.tanh(bilstm_outputs)
