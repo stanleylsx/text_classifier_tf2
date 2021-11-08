@@ -28,6 +28,8 @@ class DataManager:
             raise Exception('字粒度不应该使用词嵌入')
         self.w2v_util = Word2VecUtils(logger)
         self.stop_words = self.w2v_util.get_stop_words()
+        self.PADDING = '[PAD]'
+        self.UNKNOWN = '[UNK]'
 
         if self.classifier == 'Bert':
             from transformers import BertTokenizer
@@ -39,6 +41,20 @@ class DataManager:
                 self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
                 self.embedding_dim = self.w2v_model.vector_size
                 self.vocab_size = len(self.w2v_model.wv.vocab)
+                self.word2token = {self.PADDING: 0}
+                # 所有词对应的嵌入向量 [(word, vector)]
+                vocab_list = [(k, self.w2v_model.wv[k]) for k, v in self.w2v_model.wv.vocab.items()]
+                # [len(vocab)+1, embedding_dim] '+1'是增加了一个'PAD'
+                self.embeddings_matrix = np.zeros((len(self.w2v_model.wv.vocab.items()) + 1, self.w2v_model.vector_size))
+                for i in tqdm(range(len(vocab_list))):
+                    word = vocab_list[i][0]
+                    self.word2token[word] = i + 1
+                    self.embeddings_matrix[i + 1] = vocab_list[i][1]
+                # 保存词表及标签表
+                self.token_file = classifier_config['token_file']
+                with open(self.token_file, 'w', encoding='utf-8') as outfile:
+                    for word, token in self.word2token.items():
+                        outfile.write(word + '\t' + str(token) + '\n')
             else:
                 self.embedding_dim = classifier_config['embedding_dim']
                 self.token_file = classifier_config['token_file']
@@ -48,8 +64,6 @@ class DataManager:
                     self.token2id, self.id2token = self.load_vocab()
                     self.vocab_size = len(self.token2id)
 
-        self.PADDING = '[PAD]'
-        self.UNKNOWN = '[UNK]'
         self.batch_size = classifier_config['batch_size']
         self.max_sequence_length = classifier_config['max_sequence_length']
 
@@ -124,20 +138,19 @@ class DataManager:
         """
         self.logger.info('loading data...')
         X, y = [], []
-        embedding_unknown = [0] * self.embedding_dim
         for record in tqdm(zip(sentences, labels)):
             sentence = self.w2v_util.processing_sentence(record[0], self.stop_words)
             sentence = self.padding(sentence)
             label = tf.one_hot(record[1], depth=self.max_label_number)
-            vector = []
+            tokens = []
             for word in sentence:
-                if word in self.w2v_model.wv.vocab:
-                    vector.append(self.w2v_model[word].tolist())
+                if word in self.word2token:
+                    tokens.append(self.word2token[word])
                 else:
-                    vector.append(embedding_unknown)
-            X.append(vector)
+                    tokens.append(self.word2token[self.PADDING])
+            X.append(tokens)
             y.append(label)
-        return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32)
+        return np.array(X), np.array(y, dtype=np.float32)
 
     def prepare_bert_data(self, sentences, labels):
         """
@@ -218,16 +231,15 @@ class DataManager:
             return np.array([tokens])
         else:
             if self.embedding_method == 'word2vec':
-                embedding_unknown = [0] * self.embedding_dim
                 sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
                 sentence = self.padding(sentence)
-                vector = []
+                tokens = []
                 for word in sentence:
-                    if word in self.w2v_model.wv.vocab:
-                        vector.append(self.w2v_model[word].tolist())
+                    if word in self.word2token:
+                        tokens.append(self.word2token[word])
                     else:
-                        vector.append(embedding_unknown)
-                return np.array([vector], dtype=np.float32)
+                        tokens.append(self.word2token[self.PADDING])
+                return np.array([tokens])
             else:
                 if self.token_level == 'word':
                     sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
