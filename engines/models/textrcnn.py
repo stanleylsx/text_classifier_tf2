@@ -36,9 +36,7 @@ class TextRCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
-        if self.embedding_method is None:
-            inputs = self.embedding(inputs)
-
+        inputs = self.embedding(inputs)
         left_embedding = self.forward(inputs)
         right_embedding = self.backward(inputs)
         concat_outputs = tf.keras.layers.concatenate([left_embedding, inputs, right_embedding], axis=-1)
