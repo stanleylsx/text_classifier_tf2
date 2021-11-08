@@ -52,9 +52,7 @@ class TextCNN(tf.keras.Model, ABC):
 
     @tf.function
     def call(self, inputs, training=None):
-        if self.embedding_method is None:
-            inputs = self.embedding(inputs)
-
+        inputs = self.embedding(inputs)
         if classifier_config['use_attention']:
             # 此处的attention是直接对embedding层做attention，思路来自于https://kexue.fm/archives/5409#%E6%B3%A8%E6%84%8F%E5%8A%9B
             output = self.attention_W(inputs)
