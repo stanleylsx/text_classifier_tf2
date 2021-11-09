@@ -34,8 +34,8 @@ classifier_config = {
     'test_file': 'data/test_dataset.csv',
     # 引入外部的词嵌入,可选word2vec、Bert
     # word2vec:使用word2vec词向量做特征增强
-    # None:使用模型自带的随机初始化的Embedding
-    'embedding_method': None,
+    # 不填写则随机初始化的Embedding
+    'embedding_method': '',
     # token的粒度,token选择字粒度的时候，词嵌入(embedding_method)无效
     # 词粒度:'word'
     # 字粒度:'char'

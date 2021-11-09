@@ -16,8 +16,7 @@ class TextRCNN(tf.keras.Model, ABC):
 
     def __init__(self, num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix=None):
         super(TextRCNN, self).__init__()
-        self.embedding_method = classifier_config['embedding_method']
-        if self.embedding_method is None:
+        if classifier_config['embedding_method'] is '':
             self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, mask_zero=True)
         else:
             self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, weights=[embeddings_matrix],

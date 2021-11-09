@@ -22,7 +22,6 @@ class Predictor:
         num_classes = data_manager.max_label_number
         self.embedding_dim = data_manager.embedding_dim
         vocab_size = data_manager.vocab_size
-        self.embedding_method = classifier_config['embedding_method']
         self.logger = logger
         # 卷集核的个数
         num_filters = classifier_config['num_filters']
