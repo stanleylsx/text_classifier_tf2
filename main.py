@@ -45,6 +45,13 @@ if __name__ == '__main__':
         logger.info('mode: train_word2vec')
         w2v = Word2VecUtils(logger)
         w2v.train_word2vec()
+    # 训练SIF句向量
+    elif mode == 'train_sif_sentence_vec':
+        logger.info(json.dumps(word2vec_config, indent=2))
+        logger.info('mode: train_sif_sentence_vec')
+        w2v = Word2VecUtils(logger)
+        sif = Sentence2VecUtils(logger)
+        sif.train_pca()
     # 训练词向量
     elif mode == 'test':
         logger.info('mode: test')
