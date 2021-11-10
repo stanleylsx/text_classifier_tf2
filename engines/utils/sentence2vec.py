@@ -6,17 +6,20 @@
 # @Software: PyCharm
 import numpy as np
 import pandas as pd
+import os
 from sklearn.decomposition import PCA
 from engines.utils.word2vec import Word2VecUtils
 from gensim.models.word2vec import Word2Vec
 from tqdm import tqdm
+from config import word2vec_config
 
 
 class Sentence2VecUtils:
     def __init__(self, logger):
         self.w2v_utils = Word2VecUtils(logger)
         self.w2v_model = Word2Vec.load(self.w2v_utils.model_path)
-        self.pca_vec_path = './pca_u.npy'
+        model_dir = word2vec_config['model_dir']
+        self.pca_vec_path = os.path.join(model_dir, 'pca_u.npy')
         self.count_num = 0
         for key, value in self.w2v_model.wv.vocab.items():
             self.count_num += value.count
@@ -42,7 +45,7 @@ class Sentence2VecUtils:
         # 切词
         stop_words = self.w2v_utils.get_stop_words()
         train_df = pd.read_csv(self.w2v_utils.train_data, encoding='utf-8')
-        self.logger.info('Cut sentence...')
+        self.logger.info('cut sentence...')
         train_df['sentence'] = train_df.sentence.apply(self.w2v_utils.processing_sentence, args=(stop_words,))
         # 删掉缺失的行
         train_df.dropna(inplace=True)
@@ -56,9 +59,11 @@ class Sentence2VecUtils:
 
         # calculate PCA of this sentence set
         pca = PCA(n_components=self.w2v_utils.dim)
+        self.logger.info('train pca vector...')
         pca.fit(np.array(sentence_set))
         u = pca.components_[0]  # the PCA vector
         u = np.multiply(u, np.transpose(u))  # u x uT
+        self.logger.info('save pca vector...')
         np.save(self.pca_vec_path, u)
 
     def get_sif_vector(self, sentence, u):
