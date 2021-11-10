@@ -6,7 +6,7 @@
 # @Software: PyCharm
 
 
-# [train_classifier, interactive_predict, train_word2vec, save_model, test]
+# [train_classifier, interactive_predict, train_word2vec, save_model, test, train_sif_sentence_vec]
 mode = 'interactive_predict'
 
 word2vec_config = {
@@ -15,6 +15,9 @@ word2vec_config = {
     'model_dir': 'model/word2vec_model',  # 词向量模型的保存文件夹
     'model_name': 'word2vec_model.pkl',  # 词向量模型名
     'word2vec_dim': 300,  # 词向量维度
+    'min_count': 3,  # 最低保留词频大小
+    # 选择skip-gram和cbow
+    'sg': 'cbow'
 }
 
 CUDA_VISIBLE_DEVICES = 0
