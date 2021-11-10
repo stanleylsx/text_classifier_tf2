@@ -70,6 +70,7 @@ class Sentence2VecUtils:
     def load_pca_vector(self):
         if not os.path.isfile(self.pca_vec_path):
             self.logger.info('pca vector not exist...')
+            raise Exception('pca vector not exist...')
         else:
             self.u = np.load(self.pca_vec_path)
 
