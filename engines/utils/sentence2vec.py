@@ -25,6 +25,7 @@ class Sentence2VecUtils:
             self.count_num += value.count
         self.logger = logger
         self.a = 1e-3
+        self.u = None
 
     def calculate_weight(self, sentence):
         vs = np.zeros(self.w2v_utils.dim)  # add all word2vec values into one vector for the sentence
@@ -66,8 +67,14 @@ class Sentence2VecUtils:
         self.logger.info('save pca vector...')
         np.save(self.pca_vec_path, u)
 
-    def get_sif_vector(self, sentence, u):
+    def load_pca_vector(self):
+        if not os.path.isfile(self.pca_vec_path):
+            self.logger.info('pca vector not exist...')
+        else:
+            self.u = np.load(self.pca_vec_path)
+
+    def get_sif_vector(self, sentence):
         vs = self.calculate_weight(sentence)
-        sub = np.multiply(u, vs)
+        sub = np.multiply(self.u, vs)
         result_vec = np.subtract(vs, sub)
         return result_vec
