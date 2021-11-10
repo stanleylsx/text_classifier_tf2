@@ -53,7 +53,7 @@ if __name__ == '__main__':
         w2v = Word2VecUtils(logger)
         sif = Sentence2VecUtils(logger)
         sif.train_pca()
-    # 训练词向量
+    # 批量测试
     elif mode == 'test':
         logger.info('mode: test')
         data_manage = DataManager(logger)
