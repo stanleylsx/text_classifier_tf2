@@ -20,6 +20,8 @@ class Word2VecUtils:
         model_name = word2vec_config['model_name']
         self.model_path = os.path.join(model_dir, model_name)
         self.dim = word2vec_config['word2vec_dim']
+        self.min_count = word2vec_config['min_count']
+        self.sg = 1 if word2vec_config['sg'] == 'skip-gram' else 0
 
     @staticmethod
     def processing_sentence(x, stop_words):
@@ -52,7 +54,7 @@ class Word2VecUtils:
         all_cut_sentence = train_df.sentence.to_list()
         # 训练词向量
         self.logger.info('Training word2vec...')
-        w2v_model = Word2Vec(size=self.dim, workers=10, min_count=3)
+        w2v_model = Word2Vec(size=self.dim, workers=10, min_count=self.min_count, sg=self.sg)
         w2v_model.build_vocab(all_cut_sentence)
         w2v_model.train(all_cut_sentence, total_examples=w2v_model.corpus_count, epochs=100)
         w2v_model.save(self.model_path)
