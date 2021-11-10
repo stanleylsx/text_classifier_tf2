@@ -9,6 +9,7 @@ from engines.utils.logger import get_logger
 from engines.train import train
 from engines.predict import Predictor
 from engines.utils.word2vec import Word2VecUtils
+from engines.utils.sentence2vec import Sentence2VecUtils
 from config import mode, classifier_config, word2vec_config, CUDA_VISIBLE_DEVICES
 import json
 import os
