@@ -11,9 +11,9 @@ mode = 'interactive_predict'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
-    'train_data': 'data/w2v_data/comments_data.csv',  # 词向量训练用的数据
-    'model_dir': 'model/w2v_model',  # 词向量模型的保存文件夹
-    'model_name': 'w2v_model.pkl',  # 词向量模型名
+    'train_data': 'data/w2v_data/dataset.csv',  # 词向量训练用的数据
+    'model_dir': 'model/word2vec_model',  # 词向量模型的保存文件夹
+    'model_name': 'word2vec_model.pkl',  # 词向量模型名
     'word2vec_dim': 300,  # 词向量维度
 }
 
