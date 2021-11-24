@@ -70,7 +70,7 @@
 ***注(1):这里使用的[transformers](https://github.com/huggingface/transformers)包加载Bert，初次使用的时候会自动下载Bert的模型***   
 
 ### Transformer  
-从我另外一个[项目](https://github.com/StanleyLsx/text_classification_by_transformer]中集成过来
+从我另外一个[项目](https://github.com/StanleyLsx/text_classification_by_transformer)中集成过来
 
 ## 使用
 ### 配置
