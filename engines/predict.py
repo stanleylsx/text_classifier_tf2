@@ -43,6 +43,9 @@ class Predictor:
         elif classifier == 'textrnn':
             from engines.models.textrnn import TextRNN
             self.model = TextRNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
+        elif classifier == 'transformer':
+            from engines.models.transformer import Transformer
+            self.model = Transformer(self.seq_length, num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'Bert':
             from engines.models.bert import BertClassification
             self.model = BertClassification(num_classes)

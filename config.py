@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, train_word2vec, save_model, test, train_sif_sentence_vec]
-mode = 'interactive_predict'
+mode = 'test'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -26,7 +26,8 @@ CUDA_VISIBLE_DEVICES = 0
 
 classifier_config = {
     # 模型选择
-    'classifier': 'textcnn',
+    # textcnn/textrnn/textrcnn/Bert/transformer
+    'classifier': 'transformer',
     # 若选择Bert系列微调做分类，请在bert_op指定Bert版本
     'bert_op': 'bert-base-multilingual-cased',
     # 训练数据集
@@ -50,15 +51,16 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'家居': 0, '时尚': 1, '教育': 2, '财经': 3, '时政': 4, '娱乐': 5, '科技': 6, '体育': 7, '游戏': 8, '房产': 9},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textcnn-word',
+    'checkpoints_dir': 'model/transformer-word',
     # 模型保存的名字
-    'checkpoint_name': 'textcnn-word',
+    'checkpoint_name': 'transformer-word',
     # 使用Textcnn模型时候设定卷集核的个数
     'num_filters': 64,
     # 学习率
-    'learning_rate': 0.0005,
+    # 微调Bert时建议更小
+    'learning_rate': 0.001,
     # 训练epoch
-    'epoch': 30,
+    'epoch': 100,
     # 最多保存max_to_keep个模型
     'max_to_keep': 1,
     # 每print_per_batch打印
@@ -76,8 +78,13 @@ classifier_config = {
     # 遗忘率
     'dropout_rate': 0.5,
     # 隐藏层维度
-    # 使用textrcnn和textrnn中需要设定
-    'hidden_dim': 200,
+    # 使用textrcnn、textrnn和transformer中需要设定
+    # 使用transformer建议设定为2048
+    'hidden_dim': 2048,
+    # 编码器个数(使用transformer需要设定)
+    'encoder_num': 1,
+    # 多头注意力的个数(使用transformer需要设定)
+    'head_num': 12,
     # 若为二分类则使用binary
     # 多分类使用micro或macro
     'metrics_average': 'micro',

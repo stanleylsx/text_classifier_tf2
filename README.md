@@ -4,10 +4,10 @@
 
 此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可支持:  
 
-* **TextCNN/TextRNN/TextRCNN/Finetune-Bert基本分类模型的训练** 
-* **TextCNN/TextRNN/TextRCNN的token可选用词粒度/字粒度** 
-* **Word2Vec特征增强后接TextCNN/TextRNN/TextRCNN**  
-* **Attention-TextCNN/TextRNN**  
+* **TextCNN/TextRNN/TextRCNN/Transformer/Finetune-Bert基本分类模型的训练** 
+* **TextCNN/TextRNN/TextRCNN/Transformer的token可选用词粒度/字粒度** 
+* **Word2Vec特征增强后接TextCNN/TextRNN/TextRCNN/Transformer**  
+* **支持Attention-TextCNN/TextRNN**  
 * **FGM和PGD两种对抗方法的引入训练**  
 * **支持二分类和多分类，支持FocalLoss**  
 * **保存为pb文件可供部署**  
@@ -20,7 +20,7 @@
 * gensim==3.8.3
 * jieba==0.42.1
 * sklearn==0.0  
-* transformers==3.0.2  
+* transformers==4.6.1  
 
 其他环境见requirements.txt
 
@@ -46,6 +46,7 @@
 2021-06-17|v3.2.0|增加字粒度的模型训练预测
 2021-09-27|v3.3.0|增加测试集的批量测试
 2021-11-01|v4.0.0|增加对抗训练，目前支持FGM和PGD两种方式;增加Bert微调分类训练;更换demo数据集
+2021-11-24|v4.1.0|增加Transformer模型做文本分类
 
 ## 数据集
 部分头条新闻数据集
@@ -66,7 +67,10 @@
 ### Finetune-Bert  
 ![bert](https://img-blog.csdnimg.cn/ee8c075812ac48b5b2adbfe10d294657.png)
 
-***注(1):这里使用的[transformers](https://github.com/huggingface/transformers)包加载Bert，初次使用的时候会自动下载Bert的模型*** 
+***注(1):这里使用的[transformers](https://github.com/huggingface/transformers)包加载Bert，初次使用的时候会自动下载Bert的模型***   
+
+### Transformer  
+从我另外一个[项目](https://github.com/StanleyLsx/text_classification_by_transformer]中集成过来
 
 ## 使用
 ### 配置
@@ -83,8 +87,9 @@ mode = 'train_word2vec'
 配置好下列参数  
 ```
 classifier_config = {
-    # 模型选择(textcnn、textrnn、textrcnn、Bert)
-    'classifier': 'textcnn',
+    # 模型选择
+    # textcnn/textrnn/textrcnn/Bert/transformer
+    'classifier': 'transformer',
     # 若选择Bert系列微调做分类，请在bert_op指定Bert版本
     'bert_op': 'bert-base-multilingual-cased',
     # 训练数据集
@@ -93,7 +98,7 @@ classifier_config = {
     'val_file': 'data/val_dataset.csv',
     # 测试数据集
     'test_file': 'data/test_dataset.csv',
-    # 引入外部的词嵌入,可选word2vec
+    # 引入外部的词嵌入,可选word2vec、Bert
     # word2vec:使用word2vec词向量做特征增强
     # 不填写则随机初始化的Embedding
     'embedding_method': '',
@@ -108,15 +113,16 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'家居': 0, '时尚': 1, '教育': 2, '财经': 3, '时政': 4, '娱乐': 5, '科技': 6, '体育': 7, '游戏': 8, '房产': 9},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/textcnn-word',
+    'checkpoints_dir': 'model/transformer-word',
     # 模型保存的名字
-    'checkpoint_name': 'textcnn-word',
+    'checkpoint_name': 'transformer-word',
     # 使用Textcnn模型时候设定卷集核的个数
     'num_filters': 64,
     # 学习率
-    'learning_rate': 0.0005,
+    # 微调Bert时建议更小
+    'learning_rate': 0.001,
     # 训练epoch
-    'epoch': 30,
+    'epoch': 100,
     # 最多保存max_to_keep个模型
     'max_to_keep': 1,
     # 每print_per_batch打印
@@ -134,8 +140,13 @@ classifier_config = {
     # 遗忘率
     'dropout_rate': 0.5,
     # 隐藏层维度
-    # 使用textrcnn和textrnn中需要设定
-    'hidden_dim': 200,
+    # 使用textrcnn、textrnn和transformer中需要设定
+    # 使用transformer建议设定为2048
+    'hidden_dim': 2048,
+    # 编码器个数(使用transformer需要设定)
+    'encoder_num': 1,
+    # 多头注意力的个数(使用transformer需要设定)
+    'head_num': 12,
     # 若为二分类则使用binary
     # 多分类使用micro或macro
     'metrics_average': 'micro',

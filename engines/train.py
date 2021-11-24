@@ -77,6 +77,9 @@ def train(data_manager, logger):
     elif classifier == 'textrnn':
         from engines.models.textrnn import TextRNN
         model = TextRNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
+    elif classifier == 'transformer':
+        from engines.models.transformer import Transformer
+        model = Transformer(seq_length, num_classes, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'Bert':
         from engines.models.bert import BertClassification
         model = BertClassification(num_classes)
