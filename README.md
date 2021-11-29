@@ -9,6 +9,7 @@
 * **Word2Vec特征增强后接TextCNN/TextRNN/TextRCNN/Transformer**  
 * **支持Attention-TextCNN/TextRNN**  
 * **FGM和PGD两种对抗方法的引入训练**  
+* **对比学习方法R-drop引入**  
 * **支持二分类和多分类，支持FocalLoss**  
 * **保存为pb文件可供部署**  
 * **项目代码支持交互测试和批量测试**  
@@ -30,16 +31,14 @@
 2018-12-01|v1.0.0|初始仓库
 2020-10-20|v2.0.0|重构项目
 2020-10-26|v2.1.0|加入F1、Precise、Recall分类指标,计算方式支持macro、micro、average、binary
-2020-11-06|v2.2.0|加入TextRCNN
-2020-11-19|v2.3.0|加入Attention
+2020-11-19|v2.3.0|加入TextRCNN,加入Attention
 2020-11-26|v2.3.1|加入focal loss用于改善标签分布不平衡的情况
 2020-11-19|v2.4.0|增加每个类别的指标,重构指标计算逻辑
 2021-03-02|v2.5.0|使用Dataset替换自己写的数据加载器来加载数据
 2021-03-15|v3.0.0|支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
 2021-03-16|v3.1.0|支持取用Word2Vec的词向量后接TextCNN/TextRCNN进行数据训练;在log中打印配置
 2021-03-17|v3.1.1|根据词频过滤一部分频率极低的词,不加入词表
-2021-03-22|v3.1.2|加入TextRNN模型
-2021-03-23|v3.1.3|给TextRNN模型加上Attention
+2021-03-23|v3.1.3|加入TextRNN模型,给TextRNN模型加上Attention
 2021-03-24|v3.1.4|给预测模块加上了一个推断时间输出
 2021-03-29|v3.1.5|增加一个save模块用于保存pb格式的模型文件方便制作tf-severing接口
 2021-04-25|v3.1.6|通过配置可选GPU和CPU进行训练
@@ -47,6 +46,7 @@
 2021-09-27|v3.3.0|增加测试集的批量测试
 2021-11-01|v4.0.0|增加对抗训练，目前支持FGM和PGD两种方式;增加Bert微调分类训练;更换demo数据集
 2021-11-24|v4.1.0|增加Transformer模型做文本分类
+2021-11-29|v4.2.0|增加对比学习方法r-drop
 
 ## 数据集
 部分头条新闻数据集
@@ -157,7 +157,9 @@ classifier_config = {
     # 目前支持FGM和PGD两种方法
     # fgm:Fast Gradient Method
     # pgd:Projected Gradient Descent
-    'gan_method': 'fgm'
+    'gan_method': 'fgm',
+    # 使用对比学习，不推荐和对抗方法一起使用，效率慢收益不大
+    'use_r_drop': True
 }
 ```
 配置完参数之后开始训练模型  
