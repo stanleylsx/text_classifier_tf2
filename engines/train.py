@@ -10,6 +10,7 @@ import pandas as pd
 import tensorflow as tf
 from tqdm import tqdm
 from engines.utils.focal_loss import FocalLoss
+from engines.utils.r_drop_loss import RDropLoss
 from engines.utils.metrics import cal_metrics
 from config import classifier_config
 tf.keras.backend.set_floatx('float32')
@@ -59,6 +60,7 @@ def train(data_manager, logger):
     batch_size = data_manager.batch_size
     very_start_time = time.time()
     loss_obj = FocalLoss() if classifier_config['use_focal_loss'] else None
+    r_drop_loss = RDropLoss()
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
     # 加入word2vec进行训练
@@ -102,11 +104,15 @@ def train(data_manager, logger):
             X_train_batch, y_train_batch = batch
             with tf.GradientTape() as tape:
                 logits = model(X_train_batch, training=1)
-                if classifier_config['use_focal_loss']:
-                    loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                if classifier_config['use_r_drop']:
+                    logits_2 = model(X_train_batch, training=1)
+                    loss = r_drop_loss.calculate_loss(logits, logits_2, y_train_batch)
                 else:
-                    loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
-                loss = tf.reduce_mean(loss_vec)
+                    if classifier_config['use_focal_loss']:
+                        loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                    else:
+                        loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
+                    loss = tf.reduce_mean(loss_vec)
             # 定义好参加梯度的参数
             gradients = tape.gradient(loss, model.trainable_variables)
 
@@ -125,11 +131,15 @@ def train(data_manager, logger):
 
                     with tf.GradientTape() as gan_tape:
                         logits = model(X_train_batch, training=1)
-                        if classifier_config['use_focal_loss']:
-                            loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                        if classifier_config['use_r_drop']:
+                            logits_2 = model(X_train_batch, training=1)
+                            loss = r_drop_loss.calculate_loss(logits, logits_2, y_train_batch)
                         else:
-                            loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
-                        loss = tf.reduce_mean(loss_vec)
+                            if classifier_config['use_focal_loss']:
+                                loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                            else:
+                                loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
+                            loss = tf.reduce_mean(loss_vec)
                     gan_gradients = gan_tape.gradient(loss, model.trainable_variables)
                     gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
                     model.trainable_variables[0].assign_sub(delta)
@@ -159,13 +169,16 @@ def train(data_manager, logger):
                         else:
                             gradients = origin_gradients
                         with tf.GradientTape() as gan_tape:
-                            logits = model(X_train_batch, training=1)
-                            if classifier_config['use_focal_loss']:
-                                loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                            if classifier_config['use_r_drop']:
+                                logits_2 = model(X_train_batch, training=1)
+                                loss = r_drop_loss.calculate_loss(logits, logits_2, y_train_batch)
                             else:
-                                loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch,
-                                                                                    y_pred=logits)
-                            loss = tf.reduce_mean(loss_vec)
+                                if classifier_config['use_focal_loss']:
+                                    loss_vec = loss_obj.call(y_true=y_train_batch, y_pred=logits)
+                                else:
+                                    loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch,
+                                                                                        y_pred=logits)
+                                loss = tf.reduce_mean(loss_vec)
                         gan_gradients = gan_tape.gradient(loss, model.trainable_variables)
                         gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
                     model.trainable_variables[0].assign(origin_embedding)
