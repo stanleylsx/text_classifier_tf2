@@ -169,6 +169,7 @@ def train(data_manager, logger):
                         else:
                             gradients = origin_gradients
                         with tf.GradientTape() as gan_tape:
+                            logits = model(X_train_batch, training=1)
                             if classifier_config['use_r_drop']:
                                 logits_2 = model(X_train_batch, training=1)
                                 loss = r_drop_loss.calculate_loss(logits, logits_2, y_train_batch)
