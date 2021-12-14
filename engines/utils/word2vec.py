@@ -6,6 +6,7 @@
 # @Software: PyCharm
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
+from config import word2vec_config
 import jieba
 import multiprocessing
 import pandas as pd
@@ -59,7 +60,7 @@ class Word2VecUtils:
         all_cut_sentence = train_df.sentence.to_list()
         # 训练词向量
         self.logger.info('Training word2vec...')
-        w2v_model = Word2Vec(size=self.dim, workers=10, min_count=self.min_count, sg=self.sg)
+        w2v_model = Word2Vec(size=self.dim, workers=multiprocessing.cpu_count(), min_count=self.min_count, sg=self.sg)
         w2v_model.build_vocab(all_cut_sentence)
         w2v_model.train(all_cut_sentence, total_examples=w2v_model.corpus_count, epochs=100)
         w2v_model.save(self.model_path)
