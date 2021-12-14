@@ -79,3 +79,19 @@ class Sentence2VecUtils:
         sub = np.multiply(self.u, vs)
         result_vec = np.subtract(vs, sub)
         return result_vec
+    
+    def get_average_vector(self, sentence):
+        vs = np.zeros(self.w2v_utils.dim)  # add all word2vec values into one vector for the sentence
+        sentence_length = len(sentence)
+        for word in sentence:
+            if word in self.w2v_model.wv.vocab:
+                vs = np.add(vs, self.w2v_model[word])
+            vs = np.divide(vs, sentence_length)  # weighted average
+        return vs
+
+    def similar_words(self, word):
+        rtn_list = []
+        rtn = self.w2v_model.similar_by_word(word, topn=5)
+        for item in rtn:
+            rtn_list.append({item[0]: item[1]})
+        return rtn_list
