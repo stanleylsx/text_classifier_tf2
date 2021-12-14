@@ -4,10 +4,11 @@
 # @Email : gzlishouxian@gmail.com
 # @File : word2vec_util.py
 # @Software: PyCharm
-import pandas as pd
+from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
-from config import word2vec_config
 import jieba
+import multiprocessing
+import pandas as pd
 import os
 
 
@@ -21,7 +22,10 @@ class Word2VecUtils:
         self.model_path = os.path.join(model_dir, model_name)
         self.dim = word2vec_config['word2vec_dim']
         self.min_count = word2vec_config['min_count']
+        # skip-gram(sg=1)是CBOW(sg=0)训练时间的2.5 ～3倍左右
         self.sg = 1 if word2vec_config['sg'] == 'skip-gram' else 0
+        # 使用分级softmax(1)是采用负采样(0)训练时间的1.8～2倍左右
+        self.hs = 1
 
     @staticmethod
     def processing_sentence(x, stop_words):
@@ -48,7 +52,8 @@ class Word2VecUtils:
         stop_words = self.get_stop_words()
         # 切词
         self.logger.info('Cut sentence...')
-        train_df['sentence'] = train_df.sentence.apply(self.processing_sentence, args=(stop_words,))
+        tqdm.pandas(desc='Cut sentence...')
+        train_df['sentence'] = train_df.sentence.progress_apply(self.processing_sentence, args=(stop_words,))
         # 删掉缺失的行
         train_df.dropna(inplace=True)
         all_cut_sentence = train_df.sentence.to_list()
