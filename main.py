@@ -18,9 +18,10 @@ import os
 
 if __name__ == '__main__':
     logger = get_logger('./logs')
-    os.environ['CUDA_VISIBLE_DEVICES'] = str(CUDA_VISIBLE_DEVICES)
-    physical_devices = tf.config.list_physical_devices('GPU')
-    tf.config.experimental.set_memory_growth(physical_devices[CUDA_VISIBLE_DEVICES], True)
+    if CUDA_VISIBLE_DEVICES != -1:
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(CUDA_VISIBLE_DEVICES)
+        physical_devices = tf.config.list_physical_devices('GPU')
+        tf.config.experimental.set_memory_growth(physical_devices[CUDA_VISIBLE_DEVICES], True)
     # 训练分类器
     if mode == 'train_classifier':
         logger.info(json.dumps(classifier_config, indent=2))
