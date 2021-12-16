@@ -27,9 +27,9 @@ CUDA_VISIBLE_DEVICES = 0
 classifier_config = {
     # 模型选择
     # textcnn/textrnn/textrcnn/Bert/transformer
-    'classifier': 'transformer',
+    'classifier': 'textcnn',
     # 若选择Bert系列微调做分类，请在bert_op指定Bert版本
-    'bert_op': 'bert-base-multilingual-cased',
+    'bert_op': 'bert-base-chinese',
     # 训练数据集
     'train_file': 'data/train_dataset.csv',
     # 验证数据集
@@ -51,20 +51,20 @@ classifier_config = {
     # 类别和对应的id
     'classes': {'家居': 0, '时尚': 1, '教育': 2, '财经': 3, '时政': 4, '娱乐': 5, '科技': 6, '体育': 7, '游戏': 8, '房产': 9},
     # 模型保存的文件夹
-    'checkpoints_dir': 'model/transformer-word',
+    'checkpoints_dir': 'model/textcnn',
     # 模型保存的名字
-    'checkpoint_name': 'transformer-word',
+    'checkpoint_name': 'textcnn',
     # 使用Textcnn模型时候设定卷集核的个数
     'num_filters': 64,
     # 学习率
     # 微调Bert时建议更小
-    'learning_rate': 0.001,
+    'learning_rate': 0.0005,
     # 训练epoch
     'epoch': 100,
     # 最多保存max_to_keep个模型
     'max_to_keep': 1,
     # 每print_per_batch打印
-    'print_per_batch': 20,
+    'print_per_batch': 100,
     # 是否提前结束
     'is_early_stop': True,
     # 是否引入attention
@@ -73,14 +73,14 @@ classifier_config = {
     # attention大小
     'attention_size': 300,
     'patient': 8,
-    'batch_size': 64,
-    'max_sequence_length': 250,
+    'batch_size': 256,
+    'max_sequence_length': 300,
     # 遗忘率
     'dropout_rate': 0.5,
     # 隐藏层维度
     # 使用textrcnn、textrnn和transformer中需要设定
     # 使用transformer建议设定为2048
-    'hidden_dim': 2048,
+    'hidden_dim': 256,
     # 编码器个数(使用transformer需要设定)
     'encoder_num': 1,
     # 多头注意力的个数(使用transformer需要设定)
@@ -95,7 +95,7 @@ classifier_config = {
     # 目前支持FGM和PGD两种方法
     # fgm:Fast Gradient Method
     # pgd:Projected Gradient Descent
-    'gan_method': 'fgm',
+    'gan_method': 'pgd',
     # 使用对比学习，不推荐和对抗方法一起使用，效率慢收益不大
     'use_r_drop': False
 }
