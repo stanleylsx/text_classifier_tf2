@@ -11,6 +11,7 @@ from engines.predict import Predictor
 from engines.utils.word2vec import Word2VecUtils
 from engines.utils.sentence2vec import Sentence2VecUtils
 from config import mode, classifier_config, word2vec_config, CUDA_VISIBLE_DEVICES
+import tensorflow as tf
 import json
 import os
 
@@ -18,6 +19,8 @@ import os
 if __name__ == '__main__':
     logger = get_logger('./logs')
     os.environ['CUDA_VISIBLE_DEVICES'] = str(CUDA_VISIBLE_DEVICES)
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[CUDA_VISIBLE_DEVICES], True)
     # 训练分类器
     if mode == 'train_classifier':
         logger.info(json.dumps(classifier_config, indent=2))
