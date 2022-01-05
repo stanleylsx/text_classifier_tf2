@@ -81,7 +81,8 @@ class Predictor:
         inconsistent = np.argwhere(y_true != y_pred)
         if len(inconsistent) > 0:
             self.logger.info('inconsistent indices:')
-            self.logger.info(list(inconsistent.ravel()))
+            indices = [i+1 for i in list(inconsistent.ravel())]
+            self.logger.info(indices)
         # 打印总的指标
         res_str = ''
         for k, v in measures.items():
