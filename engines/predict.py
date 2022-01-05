@@ -77,6 +77,11 @@ class Predictor:
             y_pred = np.append(y_pred, predictions)
         self.logger.info('test time consumption: %.3f(ms)' % ((time.time() - start_time) * 1000))
         measures, each_classes = cal_metrics(y_true=y_true, y_pred=y_pred)
+        # 打印不一致的下标
+        inconsistent = np.argwhere(y_true != y_pred)
+        if len(inconsistent) > 0:
+            self.logger.info('inconsistent indices:')
+            self.logger.info(list(inconsistent.ravel()))
         # 打印总的指标
         res_str = ''
         for k, v in measures.items():
