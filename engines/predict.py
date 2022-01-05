@@ -68,7 +68,7 @@ class Predictor:
         reverse_classes = {str(class_id): class_name for class_name, class_id in self.dataManager.class_id.items()}
         y_true, y_pred = np.array([]), np.array([])
         start_time = time.time()
-        for step, batch in tqdm(test_dataset.shuffle(len(test_dataset)).batch(batch_size).enumerate()):
+        for step, batch in tqdm(test_dataset.batch(batch_size).enumerate()):
             X_test_batch, y_test_batch = batch
             logits = self.model(X_test_batch)
             predictions = tf.argmax(logits, axis=-1)
