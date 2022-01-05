@@ -62,7 +62,7 @@ class Predictor:
         if test_file == '':
             self.logger.info('test dataset does not exist!')
             return
-        test_df = pd.read_csv(test_file).sample(frac=1)
+        test_df = pd.read_csv(test_file)
         test_dataset = self.dataManager.get_dataset(test_df)
         batch_size = self.dataManager.batch_size
         reverse_classes = {str(class_id): class_name for class_name, class_id in self.dataManager.class_id.items()}
