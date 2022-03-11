@@ -50,6 +50,7 @@ class Predictor:
             from engines.models.bert import BertClassification
             self.model = BertClassification(num_classes)
         else:
+            self.model = None
             raise Exception('config model is not exist')
         # 实例化Checkpoint，设置恢复对象为新建立的模型
         checkpoint = tf.train.Checkpoint(model=self.model)
