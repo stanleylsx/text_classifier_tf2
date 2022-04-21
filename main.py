@@ -16,7 +16,22 @@ import json
 import os
 
 
+def fold_check(config):
+
+    if config['checkpoints_dir'] == '':
+        raise Exception('checkpoints_dir did not set...')
+
+    if not os.path.exists('logs'):
+        print('log fold not found, creating...')
+        os.mkdir('./logs')
+
+    if not os.path.exists(config['checkpoints_dir']):
+        print('checkpoints fold not found, creating...')
+        os.makedirs(config['checkpoints_dir'])
+
+
 if __name__ == '__main__':
+    fold_check(config=classifier_config)
     logger = get_logger('./logs')
     if CUDA_VISIBLE_DEVICES != -1:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(CUDA_VISIBLE_DEVICES)
@@ -24,14 +39,14 @@ if __name__ == '__main__':
         tf.config.experimental.set_memory_growth(physical_devices[CUDA_VISIBLE_DEVICES], True)
     # 训练分类器
     if mode == 'train_classifier':
-        logger.info(json.dumps(classifier_config, indent=2))
+        logger.info(json.dumps(classifier_config, indent=2, ensure_ascii=False))
         data_manage = DataManager(logger)
         logger.info('mode: train_classifier')
         logger.info('model: {}'.format(classifier_config['classifier']))
         train(data_manage, logger)
     # 测试分类
     elif mode == 'interactive_predict':
-        logger.info(json.dumps(classifier_config, indent=2))
+        logger.info(json.dumps(classifier_config, indent=2, ensure_ascii=False))
         data_manage = DataManager(logger)
         logger.info('mode: predict_one')
         logger.info('model: {}'.format(classifier_config['classifier']))
@@ -46,13 +61,13 @@ if __name__ == '__main__':
             print(results)
     # 训练词向量
     elif mode == 'train_word2vec':
-        logger.info(json.dumps(word2vec_config, indent=2))
+        logger.info(json.dumps(word2vec_config, indent=2, ensure_ascii=False))
         logger.info('mode: train_word2vec')
         w2v = Word2VecUtils(logger)
         w2v.train_word2vec()
     # 训练SIF句向量
     elif mode == 'train_sif_sentence_vec':
-        logger.info(json.dumps(word2vec_config, indent=2))
+        logger.info(json.dumps(word2vec_config, indent=2, ensure_ascii=False))
         logger.info('mode: train_sif_sentence_vec')
         w2v = Word2VecUtils(logger)
         sif = Sentence2VecUtils(logger)

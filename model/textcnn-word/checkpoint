@@ -1,4 +1,0 @@
-model_checkpoint_path: "textcnn-word-8"
-all_model_checkpoint_paths: "textcnn-word-8"
-all_model_checkpoint_timestamps: 1635952191.311304
-last_preserved_timestamp: 1635951575.8616936
