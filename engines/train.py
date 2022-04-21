@@ -20,6 +20,7 @@ def train(data_manager, logger):
     embedding_dim = data_manager.embedding_dim
     num_classes = data_manager.max_label_number
     seq_length = data_manager.max_sequence_length
+    reverse_classes = data_manager.reverse_classes
 
     train_file = classifier_config['train_file']
     val_file = classifier_config['val_file']
@@ -51,8 +52,6 @@ def train(data_manager, logger):
     classifier = classifier_config['classifier']
     use_gan = classifier_config['use_gan']
     gan_method = classifier_config['gan_method']
-
-    reverse_classes = {str(class_id): class_name for class_name, class_id in data_manager.class_id.items()}
 
     best_f1_val = 0.0
     best_at_epoch = 0

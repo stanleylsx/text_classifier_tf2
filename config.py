@@ -48,8 +48,8 @@ classifier_config = {
     'embedding_dim': 300,
     # 存放词表的地方
     'token_file': 'data/word-token2id',
-    # 类别和对应的id
-    'classes': {'家居': 0, '时尚': 1, '教育': 2, '财经': 3, '时政': 4, '娱乐': 5, '科技': 6, '体育': 7, '游戏': 8, '房产': 9},
+    # 类别列表
+    'classes': ['家居', '时尚', '教育', '财经', '时政', '娱乐', '科技', '体育', '游戏', '房产'],
     # 模型保存的文件夹
     'checkpoints_dir': 'model/textcnn',
     # 模型保存的名字

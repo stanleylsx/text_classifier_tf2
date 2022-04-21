@@ -23,6 +23,7 @@ class Predictor:
         self.embedding_dim = data_manager.embedding_dim
         vocab_size = data_manager.vocab_size
         self.logger = logger
+        self.reverse_classes = data_manager.reverse_classes
         # 卷集核的个数
         num_filters = classifier_config['num_filters']
         self.checkpoints_dir = classifier_config['checkpoints_dir']
@@ -66,7 +67,6 @@ class Predictor:
         test_df = pd.read_csv(test_file)
         test_dataset = self.dataManager.get_dataset(test_df)
         batch_size = self.dataManager.batch_size
-        reverse_classes = {str(class_id): class_name for class_name, class_id in self.dataManager.class_id.items()}
         y_true, y_pred = np.array([]), np.array([])
         start_time = time.time()
         for step, batch in tqdm(test_dataset.batch(batch_size).enumerate()):
@@ -92,8 +92,8 @@ class Predictor:
         # 打印每一个类别的指标
         classes_val_str = ''
         for k, v in each_classes.items():
-            if k in reverse_classes:
-                classes_val_str += ('\n' + reverse_classes[k] + ': ' + str(each_classes[k]))
+            if k in self.reverse_classes:
+                classes_val_str += ('\n' + self.reverse_classes[k] + ': ' + str(each_classes[k]))
         self.logger.info(classes_val_str)
 
     def predict_one(self, sentence):
@@ -102,14 +102,13 @@ class Predictor:
         :param sentence:
         :return:
         """
-        reverse_classes = {class_id: class_name for class_name, class_id in self.dataManager.class_id.items()}
         start_time = time.time()
         vector = self.dataManager.prepare_single_sentence(sentence)
         logits = self.model(inputs=vector)
         prediction = tf.argmax(logits, axis=-1)
         prediction = prediction.numpy()[0]
         self.logger.info('predict time consumption: %.3f(ms)' % ((time.time() - start_time)*1000))
-        return reverse_classes[prediction]
+        return self.reverse_classes[prediction]
 
     def save_model(self):
         tf.saved_model.save(self.model, self.checkpoints_dir,

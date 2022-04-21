@@ -67,9 +67,10 @@ class DataManager:
         self.batch_size = classifier_config['batch_size']
         self.max_sequence_length = classifier_config['max_sequence_length']
 
-        self.class_id = classifier_config['classes']
-        self.class_list = [name for name, index in classifier_config['classes'].items()]
-        self.max_label_number = len(self.class_id)
+        self.classes = classifier_config['classes']
+        self.class_id = {cls: index for index, cls in enumerate(self.classes)}
+        self.max_label_number = len(self.classes)
+        self.reverse_classes = {str(class_id): class_name for class_name, class_id in self.class_id.items()}
 
         self.logger.info('dataManager initialed...')
 
@@ -198,7 +199,7 @@ class DataManager:
         """
         构建Dataset
         """
-        df = df.loc[df.label.isin(self.class_list)]
+        df = df.loc[df.label.isin(self.classes)]
         df['label'] = df.label.map(lambda x: self.class_id[x])
         # convert the data in matrix
         if self.classifier == 'Bert':
