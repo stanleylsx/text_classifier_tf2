@@ -31,8 +31,6 @@
 * transformers==4.6.1
 * texttable==1.6.4
 
-其他环境见requirements.txt
-
 ## 更新历史
 日期| 版本     |描述
 :---|:-------|---
