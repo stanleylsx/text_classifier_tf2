@@ -51,37 +51,9 @@
 ## 数据集
 部分头条新闻数据集
 
-## 原理
-### Word2vec
-可以参考我的博客文章[01-NLP介绍和词向量](https://lishouxian.cn/2020/04/06/NLP%E4%BB%8B%E7%BB%8D%E5%92%8C%E8%AF%8D%E5%90%91%E9%87%8F/#WordNet)和[02-词向量第二部分和词义](https://lishouxian.cn/2020/04/13/%E8%AF%8D%E5%90%91%E9%87%8F%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%E5%92%8C%E8%AF%8D%E4%B9%89/)
-
-### TextCNN
-![textcnn](https://img-blog.csdnimg.cn/20201021000109653.png)
-
-### TextRNN
-![textrnn](https://img-blog.csdnimg.cn/20210322154656886.png)
-
-### TextRCNN
-![textrcnn](https://img-blog.csdnimg.cn/20201107140825534.png)
-
-### Finetune-Bert  
-![bert](https://img-blog.csdnimg.cn/ee8c075812ac48b5b2adbfe10d294657.png)
-
-***注(1):这里使用的[transformers](https://github.com/huggingface/transformers)包加载Bert，初次使用的时候会自动下载Bert的模型***   
-
-### Transformer  
-从我另外一个[项目](https://github.com/StanleyLsx/text_classification_by_transformer)中集成过来
-
 ## 使用
 ### 配置
 在config.py中配置好各个参数，文件中有详细参数说明
-
-### 训练word2vec
-在config.py中的mode中改成train_word2vec并运行
-```
-# [train_classifier, interactive_predict, train_word2vec, save_model, test]
-mode = 'train_word2vec'
-```
 
 ### 训练分类器
 配置好下列参数  
@@ -90,8 +62,8 @@ classifier_config = {
     # 模型选择
     # textcnn/textrnn/textrcnn/Bert/transformer
     'classifier': 'textcnn',
-    # 若选择Bert系列微调做分类，请在bert_op指定Bert版本
-    'bert_op': 'bert-base-chinese',
+    # 若选择Bert系列微调做分类，请在pretrained指定预训练模型的版本
+    'pretrained': 'bert-base-chinese',
     # 训练数据集
     'train_file': 'data/train_dataset.csv',
     # 验证数据集
@@ -110,8 +82,8 @@ classifier_config = {
     'embedding_dim': 300,
     # 存放词表的地方
     'token_file': 'data/word-token2id',
-    # 类别和对应的id
-    'classes': {'家居': 0, '时尚': 1, '教育': 2, '财经': 3, '时政': 4, '娱乐': 5, '科技': 6, '体育': 7, '游戏': 8, '房产': 9},
+    # 类别列表
+    'classes': ['家居', '时尚', '教育', '财经', '时政', '娱乐', '科技', '体育', '游戏', '房产'],
     # 模型保存的文件夹
     'checkpoints_dir': 'model/textcnn',
     # 模型保存的名字
@@ -164,7 +136,7 @@ classifier_config = {
 ```
 配置完参数之后开始训练模型  
 ```
-# [train_classifier, interactive_predict, train_word2vec, test]
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
 mode = 'train_classifier'
 ```
 * 训练结果  
@@ -175,7 +147,7 @@ mode = 'train_classifier'
 训练好模型直接可以开始测试，可以进行交互测试也可以批量测试  
 * 交互测试
 ```
-# [train_classifier, interactive_predict, train_word2vec, test]
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
 mode = 'interactive_predict'  
 ```
 交互测试结果    
@@ -190,11 +162,29 @@ mode = 'interactive_predict'
 ```
 模式设定为测试模式  
 ```
-# [train_classifier, interactive_predict, train_word2vec, test]
-mode = 'test'    
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
+mode = 'test'
 ```  
 批量测试结果    
 ![batch_test](https://img-blog.csdnimg.cn/bd22c813350449ef937b3a50e1f09322.png) 
+
+### 训练word2vec
+在config.py中的mode中配置好词向量训练的相关参数，并在mode中选择train_word2vec并运行：
+```
+word2vec_config = {
+    'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
+    'train_data': 'data/w2v_data/dataset.csv',  # 词向量训练用的数据
+    'model_dir': 'model/word2vec_model',  # 词向量模型的保存文件夹
+    'model_name': 'word2vec_model.pkl',  # 词向量模型名
+    'word2vec_dim': 300,  # 词向量维度
+    'min_count': 3,  # 最低保留词频大小
+    # 选择skip-gram和cbow
+    'sg': 'cbow'
+}
+
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
+mode = 'train_word2vec'
+```
 
 ## 公众号
 相关问题欢迎在公众号反馈：  
