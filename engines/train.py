@@ -26,7 +26,7 @@ def train(data_manager, logger):
     val_file = classifier_config['val_file']
     train_df = pd.read_csv(train_file).sample(frac=1)
 
-    if val_file is '':
+    if val_file == '':
         logger.info('generate validation dataset...')
         validation_rate = 0.15
         ratio = 1 - validation_rate
