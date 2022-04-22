@@ -98,7 +98,7 @@ def train(data_manager, logger):
     logger.info(('+' * 20) + 'training starting' + ('+' * 20))
     for i in range(epoch):
         start_time = time.time()
-        logger.info('epoch:{}/{}'.format(i + 1, epoch))
+        logger.info('\nepoch:{}/{}'.format(i + 1, epoch))
         for step, batch in tqdm(train_dataset.shuffle(len(train_dataset)).batch(batch_size).enumerate()):
             X_train_batch, y_train_batch = batch
             with tf.GradientTape() as tape:
