@@ -23,7 +23,7 @@ class DataManager:
         self.embedding_method = classifier_config['embedding_method']
         self.classifier = classifier_config['classifier']
         self.token_file = classifier_config['token_file']
-        self.support_pretrained_model = ['Bert', 'DistilBert', 'AlBert']
+        self.support_pretrained_model = ['Bert', 'DistilBert', 'AlBert', 'Electra', 'RoBerta', 'XLNet']
         if self.embedding_method != '':
             if self.classifier in self.support_pretrained_model:
                 raise Exception('如果使用预训练模型微调，不需要设定embedding_method')
@@ -43,9 +43,21 @@ class DataManager:
                 from transformers import DistilBertTokenizer
                 self.tokenizer = DistilBertTokenizer.from_pretrained(classifier_config['pretrained'])
                 self.embedding_dim = 768
-            elif self.classifier == 'ALBert':
+            elif self.classifier == 'AlBert':
                 from transformers import AlbertTokenizer
                 self.tokenizer = AlbertTokenizer.from_pretrained(classifier_config['pretrained'])
+                self.embedding_dim = 768
+            elif self.classifier == 'Electra':
+                from transformers import ElectraTokenizer
+                self.tokenizer = ElectraTokenizer.from_pretrained(classifier_config['pretrained'])
+                self.embedding_dim = 768
+            elif self.classifier == 'RoBerta':
+                from transformers import RobertaTokenizer
+                self.tokenizer = RobertaTokenizer.from_pretrained(classifier_config['pretrained'])
+                self.embedding_dim = 768
+            elif self.classifier == 'XLNet':
+                from transformers import XLNetTokenizer
+                self.tokenizer = XLNetTokenizer.from_pretrained(classifier_config['pretrained'])
                 self.embedding_dim = 768
             if not os.path.exists(self.token_file):
                 self.logger.info('vocab files not exist, save pretrained model vocab...')

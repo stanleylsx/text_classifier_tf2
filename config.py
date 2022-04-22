@@ -26,8 +26,8 @@ CUDA_VISIBLE_DEVICES = 0
 
 classifier_config = {
     # 模型选择
-    # 传统模型：textcnn/textrnn/textrcnn/transformer
-    # 预训练模型：Bert/DistilBert/AlBert
+    # 传统模型：TextCNN/TextRNN/TextRCNN/Transformer
+    # 预训练模型：Bert/DistilBert/AlBert/RoBerta/Electra/XLNet
     'classifier': 'textcnn',
     # 若选择Bert系列微调做分类，请在pretrained指定预训练模型的版本
     'pretrained': 'bert-base-chinese',

@@ -84,16 +84,16 @@ def train(data_manager, logger):
         embeddings_matrix = None
 
         # 载入模型
-    if classifier == 'textcnn':
+    if classifier == 'TextCNN':
         from engines.models.TextCNN import TextCNN
         model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size, embeddings_matrix)
-    elif classifier == 'textrcnn':
+    elif classifier == 'TextRCNN':
         from engines.models.TextRCNN import TextRCNN
         model = TextRCNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
-    elif classifier == 'textrnn':
+    elif classifier == 'TextRNN':
         from engines.models.TextRNN import TextRNN
         model = TextRNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
-    elif classifier == 'transformer':
+    elif classifier == 'Transformer':
         from engines.models.Transformer import Transformer
         model = Transformer(seq_length, num_classes, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'Bert':
@@ -105,8 +105,18 @@ def train(data_manager, logger):
     elif classifier == 'AlBert':
         from engines.models.AlBert import AlBertClassification
         model = AlBertClassification(num_classes)
+    elif classifier == 'RoBerta':
+        from engines.models.RoBerta import RoBertaClassification
+        model = RoBertaClassification(num_classes)
+    elif classifier == 'Electra':
+        from engines.models.Electra import ElectraClassification
+        model = ElectraClassification(num_classes)
+    elif classifier == 'XLNet':
+        from engines.models.XLNet import XLNetClassification
+        model = XLNetClassification(num_classes)
     else:
         raise Exception('config model is not exist')
+
     checkpoint = tf.train.Checkpoint(model=model)
     checkpoint_manager = tf.train.CheckpointManager(
         checkpoint, directory=checkpoints_dir, checkpoint_name=checkpoint_name, max_to_keep=max_to_keep)

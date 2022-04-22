@@ -37,17 +37,17 @@ class Predictor:
         else:
             embeddings_matrix = None
 
-        if classifier == 'textcnn':
+        if classifier == 'TextCNN':
             from engines.models.TextCNN import TextCNN
             self.model = TextCNN(self.seq_length, num_filters, num_classes, self.embedding_dim, vocab_size,
                                  embeddings_matrix)
-        elif classifier == 'textrcnn':
+        elif classifier == 'TextRCNN':
             from engines.models.TextRCNN import TextRCNN
             self.model = TextRCNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
-        elif classifier == 'textrnn':
+        elif classifier == 'TextRNN':
             from engines.models.TextRNN import TextRNN
             self.model = TextRNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
-        elif classifier == 'transformer':
+        elif classifier == 'Transformer':
             from engines.models.Transformer import Transformer
             self.model = Transformer(self.seq_length, num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'Bert':
@@ -56,9 +56,18 @@ class Predictor:
         elif classifier == 'DistilBert':
             from engines.models.DistilBert import DistilBertClassification
             self.model = DistilBertClassification(num_classes)
-        elif classifier == 'DistilBert':
+        elif classifier == 'AlBert':
             from engines.models.AlBert import AlBertClassification
             self.model = AlBertClassification(num_classes)
+        elif classifier == 'RoBerta':
+            from engines.models.RoBerta import RoBertaClassification
+            self.model = RoBertaClassification(num_classes)
+        elif classifier == 'Electra':
+            from engines.models.Electra import ElectraClassification
+            self.model = ElectraClassification(num_classes)
+        elif classifier == 'XLNet':
+            from engines.models.XLNet import XLNetClassification
+            self.model = XLNetClassification(num_classes)
         else:
             raise Exception('config model is not exist')
         # 实例化Checkpoint，设置恢复对象为新建立的模型
