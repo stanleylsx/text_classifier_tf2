@@ -13,8 +13,9 @@ class TextCNN(tf.keras.Model, ABC):
     """
     TextCNN模型
     """
-    def __init__(self, seq_length, num_filters, num_classes, embedding_dim, vocab_size, embeddings_matrix=None):
+    def __init__(self, seq_length, num_classes, embedding_dim, vocab_size, embeddings_matrix=None):
         super(TextCNN, self).__init__()
+        num_filters = classifier_config['num_filters']
         if classifier_config['embedding_method'] is '':
             self.embedding = tf.keras.layers.Embedding(vocab_size+1, embedding_dim, mask_zero=True)
         else:

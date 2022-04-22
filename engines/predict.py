@@ -39,8 +39,7 @@ class Predictor:
 
         if classifier == 'TextCNN':
             from engines.models.TextCNN import TextCNN
-            self.model = TextCNN(self.seq_length, num_filters, num_classes, self.embedding_dim, vocab_size,
-                                 embeddings_matrix)
+            self.model = TextCNN(self.seq_length, num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'TextRCNN':
             from engines.models.TextRCNN import TextRCNN
             self.model = TextRCNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)

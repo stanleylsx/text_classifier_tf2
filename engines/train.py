@@ -22,6 +22,7 @@ def train(data_manager, logger):
     num_classes = data_manager.max_label_number
     seq_length = data_manager.max_sequence_length
     reverse_classes = data_manager.reverse_classes
+    vocab_size = data_manager.vocab_size
 
     train_file = classifier_config['train_file']
     val_file = classifier_config['val_file']
@@ -39,10 +40,8 @@ def train(data_manager, logger):
 
     train_dataset = data_manager.get_dataset(train_df, step='train')
     val_dataset = data_manager.get_dataset(val_df)
-    vocab_size = data_manager.vocab_size
     checkpoints_dir = classifier_config['checkpoints_dir']
     checkpoint_name = classifier_config['checkpoint_name']
-    num_filters = classifier_config['num_filters']
     learning_rate = classifier_config['learning_rate']
     epoch = classifier_config['epoch']
     max_to_keep = classifier_config['max_to_keep']
@@ -86,7 +85,7 @@ def train(data_manager, logger):
         # 载入模型
     if classifier == 'TextCNN':
         from engines.models.TextCNN import TextCNN
-        model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size, embeddings_matrix)
+        model = TextCNN(seq_length, num_classes, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'TextRCNN':
         from engines.models.TextRCNN import TextRCNN
         model = TextRCNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
