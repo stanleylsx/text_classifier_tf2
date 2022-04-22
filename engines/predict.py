@@ -18,37 +18,33 @@ from collections import Counter
 
 class Predictor:
     def __init__(self, data_manager, logger):
-        hidden_dim = classifier_config['hidden_dim']
-        classifier = classifier_config['classifier']
+        self.logger = logger
         self.dataManager = data_manager
         self.seq_length = data_manager.max_sequence_length
-        num_classes = data_manager.max_label_number
         self.embedding_dim = data_manager.embedding_dim
-        vocab_size = data_manager.vocab_size
-        self.logger = logger
         self.reverse_classes = data_manager.reverse_classes
-        # 卷集核的个数
-        num_filters = classifier_config['num_filters']
         self.checkpoints_dir = classifier_config['checkpoints_dir']
-        logger.info('loading model parameter')
 
         if classifier_config['embedding_method'] == 'word2vec':
             embeddings_matrix = data_manager.embeddings_matrix
         else:
             embeddings_matrix = None
-
+        classifier = classifier_config['classifier']
+        vocab_size = data_manager.vocab_size
+        num_classes = data_manager.max_label_number
+        logger.info('loading model parameter')
         if classifier == 'TextCNN':
             from engines.models.TextCNN import TextCNN
-            self.model = TextCNN(self.seq_length, num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
+            self.model = TextCNN(num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'TextRCNN':
             from engines.models.TextRCNN import TextRCNN
-            self.model = TextRCNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
+            self.model = TextRCNN(num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'TextRNN':
             from engines.models.TextRNN import TextRNN
-            self.model = TextRNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
+            self.model = TextRNN(num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'Transformer':
             from engines.models.Transformer import Transformer
-            self.model = Transformer(self.seq_length, num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
+            self.model = Transformer(num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'Bert':
             from engines.models.Bert import BertClassification
             self.model = BertClassification(num_classes)

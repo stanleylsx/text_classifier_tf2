@@ -134,10 +134,11 @@ class Transformer(tf.keras.Model, ABC):
     Transformer模型
     """
 
-    def __init__(self, seq_length, num_classes, embedding_dim, vocab_size, embeddings_matrix=None):
+    def __init__(self, num_classes, embedding_dim, vocab_size, embeddings_matrix=None):
         super(Transformer, self).__init__()
         dropout_rate = classifier_config['dropout_rate']
         encoder_num = classifier_config['encoder_num']
+        seq_length = classifier_config['max_sequence_length']
         if classifier_config['embedding_method'] is '':
             self.embedding = tf.keras.layers.Embedding(vocab_size+1, embedding_dim, mask_zero=True)
         else:

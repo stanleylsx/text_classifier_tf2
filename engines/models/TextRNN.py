@@ -14,8 +14,9 @@ class TextRNN(tf.keras.Model, ABC):
     TextRNN模型
     """
 
-    def __init__(self, num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix=None):
+    def __init__(self, num_classes, embedding_dim, vocab_size, embeddings_matrix=None):
         super(TextRNN, self).__init__()
+        hidden_dim = classifier_config['hidden_dim']
         if classifier_config['embedding_method'] is '':
             self.embedding = tf.keras.layers.Embedding(vocab_size + 1, embedding_dim, mask_zero=True)
         else:

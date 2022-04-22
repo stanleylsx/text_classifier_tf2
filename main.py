@@ -6,7 +6,7 @@
 # @Software: PyCharm
 from engines.data import DataManager
 from engines.utils.logger import get_logger
-from engines.train import train
+from engines.train import Train
 from engines.predict import Predictor
 from engines.utils.word2vec import Word2VecUtils
 from engines.utils.sentence2vec import Sentence2VecUtils
@@ -43,7 +43,8 @@ if __name__ == '__main__':
         data_manage = DataManager(logger)
         logger.info('mode: train_classifier')
         logger.info('model: {}'.format(classifier_config['classifier']))
-        train(data_manage, logger)
+        train = Train(data_manage, logger)
+        train.train()
     # 测试分类
     elif mode == 'interactive_predict':
         logger.info(json.dumps(classifier_config, indent=2, ensure_ascii=False))

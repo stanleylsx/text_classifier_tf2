@@ -7,7 +7,7 @@
 
 
 # [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
-mode = 'train_classifier'
+mode = 'test'
 
 word2vec_config = {
     'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
@@ -28,7 +28,7 @@ classifier_config = {
     # 模型选择
     # 传统模型：TextCNN/TextRNN/TextRCNN/Transformer
     # 预训练模型：Bert/DistilBert/AlBert/RoBerta/Electra/XLNet
-    'classifier': 'textcnn',
+    'classifier': 'TextCNN',
     # 若选择Bert系列微调做分类，请在pretrained指定预训练模型的版本
     'pretrained': 'bert-base-chinese',
     # 训练数据集
