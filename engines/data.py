@@ -22,8 +22,9 @@ class DataManager:
         self.token_level = classifier_config['token_level']
         self.embedding_method = classifier_config['embedding_method']
         self.classifier = classifier_config['classifier']
-        if self.classifier == 'Bert' and self.embedding_method is not '':
-            raise Exception('如果使用Bert微调，不需要设定embedding_method')
+        if self.embedding_method is not '':
+            if self.classifier == 'Bert':
+                raise Exception('如果使用预训练模型微调，不需要设定embedding_method')
         if self.token_level == 'char' and self.embedding_method is not '':
             raise Exception('字粒度不应该使用词嵌入')
         self.w2v_util = Word2VecUtils(logger)
@@ -33,7 +34,7 @@ class DataManager:
 
         if self.classifier == 'Bert':
             from transformers import BertTokenizer
-            self.tokenizer = BertTokenizer.from_pretrained(classifier_config['bert_op'])
+            self.tokenizer = BertTokenizer.from_pretrained(classifier_config['pretrained'])
             self.embedding_dim = 768
             self.vocab_size = len(self.tokenizer.get_vocab())
         else:
@@ -153,9 +154,9 @@ class DataManager:
             y.append(label)
         return np.array(X), np.array(y, dtype=np.float32)
 
-    def prepare_bert_data(self, sentences, labels):
+    def prepare_pretrained_data(self, sentences, labels):
         """
-        输出Bert做embedding之后的X矩阵和y向量
+        输出预训练做embedding之后的X矩阵和y向量
         """
         self.logger.info('loading data...')
         tokens_list, y = [], []
@@ -203,8 +204,8 @@ class DataManager:
         df['label'] = df.label.map(lambda x: self.class_id[x])
         # convert the data in matrix
         if self.classifier == 'Bert':
-            # 使用Bert做微调分类
-            X, y = self.prepare_bert_data(df['sentence'], df['label'])
+            # 使用预训练模型做微调分类
+            X, y = self.prepare_pretrained_data(df['sentence'], df['label'])
         else:
             if self.embedding_method == 'word2vec':
                 X, y = self.prepare_w2v_data(df['sentence'], df['label'])
