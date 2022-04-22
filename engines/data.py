@@ -22,8 +22,10 @@ class DataManager:
         self.token_level = classifier_config['token_level']
         self.embedding_method = classifier_config['embedding_method']
         self.classifier = classifier_config['classifier']
+        self.token_file = classifier_config['token_file']
+        self.support_pretrained_model = ['Bert', 'DistilBert', 'AlBert']
         if self.embedding_method != '':
-            if self.classifier == 'Bert':
+            if self.classifier in self.support_pretrained_model:
                 raise Exception('如果使用预训练模型微调，不需要设定embedding_method')
         if self.token_level == 'char' and self.embedding_method != '':
             raise Exception('字粒度不应该使用词嵌入')
@@ -32,11 +34,23 @@ class DataManager:
         self.PADDING = '[PAD]'
         self.UNKNOWN = '[UNK]'
 
-        if self.classifier == 'Bert':
-            from transformers import BertTokenizer
-            self.tokenizer = BertTokenizer.from_pretrained(classifier_config['pretrained'])
-            self.embedding_dim = 768
-            self.vocab_size = len(self.tokenizer.get_vocab())
+        if self.classifier in self.support_pretrained_model:
+            if self.classifier == 'Bert':
+                from transformers import BertTokenizer
+                self.tokenizer = BertTokenizer.from_pretrained(classifier_config['pretrained'])
+                self.embedding_dim = 768
+            elif self.classifier == 'DistilBert':
+                from transformers import DistilBertTokenizer
+                self.tokenizer = DistilBertTokenizer.from_pretrained(classifier_config['pretrained'])
+                self.embedding_dim = 768
+            elif self.classifier == 'ALBert':
+                from transformers import AlbertTokenizer
+                self.tokenizer = AlbertTokenizer.from_pretrained(classifier_config['pretrained'])
+                self.embedding_dim = 768
+            if not os.path.exists(self.token_file):
+                self.logger.info('vocab files not exist, save pretrained model vocab...')
+                self.tokenizer.save_vocabulary(self.token_file)
+            self.vocab_size = len(self.tokenizer)
         else:
             if self.embedding_method == 'word2vec':
                 self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
@@ -52,7 +66,6 @@ class DataManager:
                     self.word2token[word] = i + 1
                     self.embeddings_matrix[i + 1] = vocab_list[i][1]
                 # 保存词表及标签表
-                self.token_file = classifier_config['token_file']
                 with open(self.token_file, 'w', encoding='utf-8') as outfile:
                     for word, token in self.word2token.items():
                         outfile.write(word + '\t' + str(token) + '\n')
@@ -203,8 +216,7 @@ class DataManager:
         df = df.loc[df.label.isin(self.classes)]
         df['label'] = df.label.map(lambda x: self.class_id[x])
         # convert the data in matrix
-        if self.classifier == 'Bert':
-            # 使用预训练模型做微调分类
+        if self.classifier in self.support_pretrained_model:
             X, y = self.prepare_pretrained_data(df['sentence'], df['label'])
         else:
             if self.embedding_method == 'word2vec':
@@ -222,7 +234,7 @@ class DataManager:
         :param sentence:
         :return:
         """
-        if self.classifier == 'Bert':
+        if self.classifier in self.support_pretrained_model:
             if len(sentence) > self.max_sequence_length - 2:
                 sentence = sentence[:self.max_sequence_length - 2]
                 tokens = self.tokenizer.encode(sentence)
