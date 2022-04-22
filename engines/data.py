@@ -22,10 +22,10 @@ class DataManager:
         self.token_level = classifier_config['token_level']
         self.embedding_method = classifier_config['embedding_method']
         self.classifier = classifier_config['classifier']
-        if self.embedding_method is not '':
+        if self.embedding_method != '':
             if self.classifier == 'Bert':
                 raise Exception('如果使用预训练模型微调，不需要设定embedding_method')
-        if self.token_level == 'char' and self.embedding_method is not '':
+        if self.token_level == 'char' and self.embedding_method != '':
             raise Exception('字粒度不应该使用词嵌入')
         self.w2v_util = Word2VecUtils(logger)
         self.stop_words = self.w2v_util.get_stop_words()
