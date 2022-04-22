@@ -8,6 +8,7 @@ import numpy as np
 import time
 import pandas as pd
 import tensorflow as tf
+from tensorflow_addons.optimizers import AdamW
 from tqdm import tqdm
 from engines.utils.focal_loss import FocalLoss
 from engines.utils.r_drop_loss import RDropLoss
@@ -60,7 +61,21 @@ def train(data_manager, logger):
     very_start_time = time.time()
     loss_obj = FocalLoss() if classifier_config['use_focal_loss'] else None
     r_drop_loss = RDropLoss()
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
+    if classifier_config['optimizer'] == 'Adagrad':
+        optimizer = tf.keras.optimizers.Adagrad(learning_rate=learning_rate)
+    elif classifier_config['optimizer'] == 'Adadelta':
+        optimizer = tf.keras.optimizers.Adadelta(learning_rate=learning_rate)
+    elif classifier_config['optimizer'] == 'RMSprop':
+        optimizer = tf.keras.optimizers.RMSprop(learning_rate=learning_rate)
+    elif classifier_config['optimizer'] == 'SGD':
+        optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate)
+    elif classifier_config['optimizer'] == 'Adam':
+        optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    elif classifier_config['optimizer'] == 'AdamW':
+        optimizer = AdamW(learning_rate=learning_rate, weight_decay=1e-2)
+    else:
+        raise Exception('optimizer does not exist')
 
     # 加入word2vec进行训练
     if classifier_config['embedding_method'] == 'word2vec':
