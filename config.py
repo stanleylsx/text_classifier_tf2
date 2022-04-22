@@ -1,29 +1,63 @@
-# -*- coding: utf-8 -*-
-# @Time : 2020/10/20 11:03 下午
-# @Author : lishouxian
-# @Email : gzlishouxian@gmail.com
-# @File : config.py 
-# @Software: PyCharm
+# Text Classifier
+**公众号文章：[文本分类之Text-CNN/RNN/RCNN算法原理及工程实现](https://mp.weixin.qq.com/s/7fbTt3Ov715ixErYfKR2kA)**  
+**公众号文章：[一篇文章带你走进词向量并掌握Word2Vec](https://mp.weixin.qq.com/s/SAEV6WkbkOxzTCvF6GUz_A)**
+
+此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可支持:  
+
+* **TextCNN/TextRNN/TextRCNN/Transformer/Finetune-Bert基本分类模型的训练** 
+* **TextCNN/TextRNN/TextRCNN/Transformer的token可选用词粒度/字粒度** 
+* **Word2Vec特征增强后接TextCNN/TextRNN/TextRCNN/Transformer**  
+* **支持Attention-TextCNN/TextRNN**  
+* **FGM和PGD两种对抗方法的引入训练**  
+* **对比学习方法R-drop引入**  
+* **支持二分类和多分类，支持FocalLoss**  
+* **保存为pb文件可供部署**  
+* **项目代码支持交互测试和批量测试**  
 
 
-# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
-mode = 'train_classifier'
+## 环境
+* python 3.6.7
+* tensorflow==2.3.0
+* gensim==3.8.3
+* jieba==0.42.1
+* sklearn==0.0  
+* transformers==4.6.1  
 
-word2vec_config = {
-    'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
-    'train_data': 'data/w2v_data/dataset.csv',  # 词向量训练用的数据
-    'model_dir': 'model/word2vec_model',  # 词向量模型的保存文件夹
-    'model_name': 'word2vec_model.pkl',  # 词向量模型名
-    'word2vec_dim': 300,  # 词向量维度
-    'min_count': 3,  # 最低保留词频大小
-    # 选择skip-gram和cbow
-    'sg': 'cbow'
-}
+其他环境见requirements.txt
 
-CUDA_VISIBLE_DEVICES = 0
-# int, -1:CPU, [0,]:GPU
-# coincides with tf.CUDA_VISIBLE_DEVICES
+## 更新历史
+日期| 版本     |描述
+:---|:-------|---
+2018-12-01| v1.0.0 |初始仓库
+2020-10-20| v2.0.0 |重构项目
+2020-10-26| v2.1.0 |加入F1、Precise、Recall分类指标,计算方式支持macro、micro、average、binary
+2020-11-19| v2.3.0 |加入TextRCNN,加入Attention
+2020-11-26| v2.3.1 |加入focal loss用于改善标签分布不平衡的情况
+2020-11-19| v2.4.0 |增加每个类别的指标,重构指标计算逻辑
+2021-03-02| v2.5.0 |使用Dataset替换自己写的数据加载器来加载数据
+2021-03-15| v3.0.0 |支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
+2021-03-16| v3.1.0 |支持取用Word2Vec的词向量后接TextCNN/TextRCNN进行数据训练;在log中打印配置
+2021-03-17| v3.1.1 |根据词频过滤一部分频率极低的词,不加入词表
+2021-03-23| v3.1.3 |加入TextRNN模型,给TextRNN模型加上Attention
+2021-03-29| v3.1.5 |增加一个save模块用于保存pb格式的模型文件方便制作tf-severing接口
+2021-04-25| v3.1.6 |通过配置可选GPU和CPU进行训练
+2021-06-17| v3.2.0 |增加字粒度的模型训练预测
+2021-09-27| v3.3.0 |增加测试集的批量测试
+2021-11-01| v4.0.0 |增加对抗训练，目前支持FGM和PGD两种方式;增加Bert微调分类训练;更换demo数据集
+2021-11-24| v4.2.0 |增加Transformer模型做文本分类、增加对比学习方法r-drop
+2022-04-22| v4.3.0 |批量测试打印bad_case以及预测混淆情况、文件夹检查、配置里面不再自己定义标签顺序
 
+
+## 数据集
+部分头条新闻数据集
+
+## 使用
+### 配置
+在config.py中配置好各个参数，文件中有详细参数说明
+
+### 训练分类器
+配置好下列参数  
+```
 classifier_config = {
     # 模型选择
     # textcnn/textrnn/textrcnn/Bert/transformer
@@ -99,3 +133,62 @@ classifier_config = {
     # 使用对比学习，不推荐和对抗方法一起使用，效率慢收益不大
     'use_r_drop': False
 }
+```
+配置完参数之后开始训练模型  
+```
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
+mode = 'train_classifier'
+```
+* 训练结果  
+
+![train_results_textcnn](https://img-blog.csdnimg.cn/949975114b5e46b68f8a019d7d34204e.png)
+
+### 测试
+训练好模型直接可以开始测试，可以进行交互测试也可以批量测试  
+* 交互测试
+```
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
+mode = 'interactive_predict'  
+```
+交互测试结果    
+![interactive_predict](https://img-blog.csdnimg.cn/433787e1760b45968536b8315ad8e581.png)    
+
+* 批量测试   
+
+在测试数据集配置上填和训练/验证集文件同构的文件地址
+```
+# 测试数据集
+'test_file': 'data/test_dataset.csv',
+```
+模式设定为测试模式  
+```
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
+mode = 'test'
+```  
+批量测试结果    
+![batch_test](https://img-blog.csdnimg.cn/bd22c813350449ef937b3a50e1f09322.png) 
+
+### 训练word2vec
+在config.py中的mode中配置好词向量训练的相关参数，并在mode中选择train_word2vec并运行：
+```
+word2vec_config = {
+    'stop_words': 'data/w2v_data/stop_words.txt',  # 停用词(可为空)
+    'train_data': 'data/w2v_data/dataset.csv',  # 词向量训练用的数据
+    'model_dir': 'model/word2vec_model',  # 词向量模型的保存文件夹
+    'model_name': 'word2vec_model.pkl',  # 词向量模型名
+    'word2vec_dim': 300,  # 词向量维度
+    'min_count': 3,  # 最低保留词频大小
+    # 选择skip-gram和cbow
+    'sg': 'cbow'
+}
+
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
+mode = 'train_word2vec'
+```
+
+## 公众号
+相关问题欢迎在公众号反馈：  
+
+![小贤算法屋](https://img-blog.csdnimg.cn/20210427094903895.jpg)
+
+
