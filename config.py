@@ -26,7 +26,8 @@ CUDA_VISIBLE_DEVICES = 0
 
 classifier_config = {
     # 模型选择
-    # textcnn/textrnn/textrcnn/Bert/transformer
+    # 传统模型：textcnn/textrnn/textrcnn/transformer
+    # 预训练模型：Bert/DistilBert/AlBert
     'classifier': 'textcnn',
     # 若选择Bert系列微调做分类，请在pretrained指定预训练模型的版本
     'pretrained': 'bert-base-chinese',
@@ -57,7 +58,7 @@ classifier_config = {
     # 使用Textcnn模型时候设定卷集核的个数
     'num_filters': 64,
     # 学习率
-    # 微调Bert时建议更小
+    # 微调预训练模型时建议更小，设置5e-5
     'learning_rate': 0.0005,
     # 训练epoch
     'epoch': 100,
