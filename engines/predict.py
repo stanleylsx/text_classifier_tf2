@@ -38,20 +38,20 @@ class Predictor:
             embeddings_matrix = None
 
         if classifier == 'textcnn':
-            from engines.models.textcnn import TextCNN
+            from engines.models.TextCNN import TextCNN
             self.model = TextCNN(self.seq_length, num_filters, num_classes, self.embedding_dim, vocab_size,
                                  embeddings_matrix)
         elif classifier == 'textrcnn':
-            from engines.models.textrcnn import TextRCNN
+            from engines.models.TextRCNN import TextRCNN
             self.model = TextRCNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'textrnn':
-            from engines.models.textrnn import TextRNN
+            from engines.models.TextRNN import TextRNN
             self.model = TextRNN(num_classes, hidden_dim, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'transformer':
-            from engines.models.transformer import Transformer
+            from engines.models.Transformer import Transformer
             self.model = Transformer(self.seq_length, num_classes, self.embedding_dim, vocab_size, embeddings_matrix)
         elif classifier == 'Bert':
-            from engines.models.bert import BertClassification
+            from engines.models.Bert import BertClassification
             self.model = BertClassification(num_classes)
         else:
             self.model = None
