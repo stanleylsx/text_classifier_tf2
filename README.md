@@ -8,7 +8,7 @@
 
 此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可支持:  
 
-* **TextCNN/TextRNN/TextRCNN/Transformer/Finetune-Bert基本分类模型的训练** 
+* **TextCNN/TextRNN/TextRCNN/Transformer/Bert/AlBert/DistilBert基本分类模型的训练** 
 * **TextCNN/TextRNN/TextRCNN/Transformer的token可选用词粒度/字粒度** 
 * **Word2Vec特征增强后接TextCNN/TextRNN/TextRCNN/Transformer**  
 * **支持Attention-TextCNN/TextRNN**  
@@ -38,21 +38,18 @@
 2018-12-01| v1.0.0 |初始仓库
 2020-10-20| v2.0.0 |重构项目
 2020-10-26| v2.1.0 |加入F1、Precise、Recall分类指标,计算方式支持macro、micro、average、binary
-2020-11-19| v2.3.0 |加入TextRCNN,加入Attention
 2020-11-26| v2.3.1 |加入focal loss用于改善标签分布不平衡的情况
 2020-11-19| v2.4.0 |增加每个类别的指标,重构指标计算逻辑
 2021-03-02| v2.5.0 |使用Dataset替换自己写的数据加载器来加载数据
 2021-03-15| v3.0.0 |支持仅使用TextCNN/TextRCNN进行数据训练(基于词粒度的token,使用随机生成的Embedding层)
 2021-03-16| v3.1.0 |支持取用Word2Vec的词向量后接TextCNN/TextRCNN进行数据训练;在log中打印配置
 2021-03-17| v3.1.1 |根据词频过滤一部分频率极低的词,不加入词表
-2021-03-23| v3.1.3 |加入TextRNN模型,给TextRNN模型加上Attention
-2021-03-29| v3.1.5 |增加一个save模块用于保存pb格式的模型文件方便制作tf-severing接口
 2021-04-25| v3.1.6 |通过配置可选GPU和CPU进行训练
 2021-06-17| v3.2.0 |增加字粒度的模型训练预测
 2021-09-27| v3.3.0 |增加测试集的批量测试
 2021-11-01| v4.0.0 |增加对抗训练，目前支持FGM和PGD两种方式;增加Bert微调分类训练;更换demo数据集
 2021-11-24| v4.2.0 |增加Transformer模型做文本分类、增加对比学习方法r-drop
-2022-04-22| v4.3.0 |批量测试打印bad_case以及预测混淆情况、文件夹检查、配置里面不再自己定义标签顺序
+2022-04-22| v5.0.0 |批量测试打印bad_case以及预测混淆情况、文件夹检查、配置里面不再自己定义标签顺序、各类预训练模型支持
 
 
 ## 数据集
@@ -67,7 +64,8 @@
 ```
 classifier_config = {
     # 模型选择
-    # textcnn/textrnn/textrcnn/Bert/transformer
+    # 传统模型：textcnn/textrnn/textrcnn/transformer
+    # 预训练模型：Bert/DistilBert/AlBert
     'classifier': 'textcnn',
     # 若选择Bert系列微调做分类，请在pretrained指定预训练模型的版本
     'pretrained': 'bert-base-chinese',
@@ -98,7 +96,7 @@ classifier_config = {
     # 使用Textcnn模型时候设定卷集核的个数
     'num_filters': 64,
     # 学习率
-    # 微调Bert时建议更小
+    # 微调预训练模型时建议更小，设置5e-5
     'learning_rate': 0.0005,
     # 训练epoch
     'epoch': 100,
