@@ -6,7 +6,7 @@
 # @Software: PyCharm
 
 
-# [train_classifier, interactive_predict, train_word2vec, save_model, test, train_sif_sentence_vec]
+# [train_classifier, interactive_predict, test, save_model, train_word2vec, train_sif_sentence_vec]
 mode = 'train_classifier'
 
 word2vec_config = {
@@ -28,8 +28,8 @@ classifier_config = {
     # 模型选择
     # textcnn/textrnn/textrcnn/Bert/transformer
     'classifier': 'textcnn',
-    # 若选择Bert系列微调做分类，请在bert_op指定Bert版本
-    'bert_op': 'bert-base-chinese',
+    # 若选择Bert系列微调做分类，请在pretrained指定预训练模型的版本
+    'pretrained': 'bert-base-chinese',
     # 训练数据集
     'train_file': 'data/train_dataset.csv',
     # 验证数据集
