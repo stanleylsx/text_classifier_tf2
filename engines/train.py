@@ -70,19 +70,19 @@ def train(data_manager, logger):
 
         # 载入模型
     if classifier == 'textcnn':
-        from engines.models.textcnn import TextCNN
+        from engines.models.TextCNN import TextCNN
         model = TextCNN(seq_length, num_filters, num_classes, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'textrcnn':
-        from engines.models.textrcnn import TextRCNN
+        from engines.models.TextRCNN import TextRCNN
         model = TextRCNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'textrnn':
-        from engines.models.textrnn import TextRNN
+        from engines.models.TextRNN import TextRNN
         model = TextRNN(num_classes, hidden_dim, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'transformer':
-        from engines.models.transformer import Transformer
+        from engines.models.Transformer import Transformer
         model = Transformer(seq_length, num_classes, embedding_dim, vocab_size, embeddings_matrix)
     elif classifier == 'Bert':
-        from engines.models.bert import BertClassification
+        from engines.models.Bert import BertClassification
         model = BertClassification(num_classes)
     else:
         raise Exception('config model is not exist')
