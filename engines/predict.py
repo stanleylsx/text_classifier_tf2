@@ -134,7 +134,7 @@ class Predictor:
         prediction = tf.argmax(logits, axis=-1)
         prediction = prediction.numpy()[0]
         self.logger.info('predict time consumption: %.3f(ms)' % ((time.time() - start_time)*1000))
-        return self.reverse_classes[prediction], logits
+        return self.reverse_classes[str(prediction)], logits
 
     def save_model(self):
         tf.saved_model.save(self.model, self.checkpoints_dir,
