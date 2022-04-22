@@ -84,6 +84,12 @@ def train(data_manager, logger):
     elif classifier == 'Bert':
         from engines.models.Bert import BertClassification
         model = BertClassification(num_classes)
+    elif classifier == 'DistilBert':
+        from engines.models.DistilBert import DistilBertClassification
+        model = DistilBertClassification(num_classes)
+    elif classifier == 'AlBert':
+        from engines.models.AlBert import AlBertClassification
+        model = AlBertClassification(num_classes)
     else:
         raise Exception('config model is not exist')
     checkpoint = tf.train.Checkpoint(model=model)
@@ -98,7 +104,7 @@ def train(data_manager, logger):
     logger.info(('+' * 20) + 'training starting' + ('+' * 20))
     for i in range(epoch):
         start_time = time.time()
-        logger.info('\nepoch:{}/{}'.format(i + 1, epoch))
+        logger.info('epoch:{}/{}'.format(i + 1, epoch))
         for step, batch in tqdm(train_dataset.shuffle(len(train_dataset)).batch(batch_size).enumerate()):
             X_train_batch, y_train_batch = batch
             with tf.GradientTape() as tape:
@@ -113,20 +119,23 @@ def train(data_manager, logger):
                         loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
                     loss = tf.reduce_mean(loss_vec)
             # 定义好参加梯度的参数
-            gradients = tape.gradient(loss, model.trainable_variables)
+            variables = model.trainable_variables
+            # 将预训练模型里面的pooler层的参数去掉
+            variables = [var for var in variables if 'pooler' not in var.name]
+            gradients = tape.gradient(loss, variables)
 
             if use_gan:
                 if gan_method == 'fgm':
                     # 使用FGM的对抗办法
                     epsilon = 1.0
-                    embedding = model.trainable_variables[0]
+                    embedding = variables[0]
                     embedding_gradients = gradients[0]
                     embedding_gradients = tf.zeros_like(embedding) + embedding_gradients
                     delta = epsilon * embedding_gradients / tf.norm(embedding_gradients, ord=2)
 
                     accum_vars = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
                     gradients = [accum_vars[i].assign_add(grad) for i, grad in enumerate(gradients)]
-                    model.trainable_variables[0].assign_add(delta)
+                    variables[0].assign_add(delta)
 
                     with tf.GradientTape() as gan_tape:
                         logits = model(X_train_batch, training=1)
@@ -139,29 +148,29 @@ def train(data_manager, logger):
                             else:
                                 loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
                             loss = tf.reduce_mean(loss_vec)
-                    gan_gradients = gan_tape.gradient(loss, model.trainable_variables)
+                    gan_gradients = gan_tape.gradient(loss, variables)
                     gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
-                    model.trainable_variables[0].assign_sub(delta)
+                    variables[0].assign_sub(delta)
                 elif gan_method == 'pgd':
                     # 使用PGD的对抗办法
                     K = 3
                     alpha = 0.3
                     epsilon = 1
-                    origin_embedding = tf.Variable(model.trainable_variables[0])
+                    origin_embedding = tf.Variable(variables[0])
                     accum_vars = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
                     origin_gradients = [accum_vars[i].assign_add(grad) for i, grad in enumerate(gradients)]
 
                     for t in range(K):
-                        embedding = model.trainable_variables[0]
+                        embedding = variables[0]
                         embedding_gradients = gradients[0]
                         embedding_gradients = tf.zeros_like(embedding) + embedding_gradients
                         delta = alpha * embedding_gradients / tf.norm(embedding_gradients, ord=2)
-                        model.trainable_variables[0].assign_add(delta)
+                        variables[0].assign_add(delta)
 
-                        r = model.trainable_variables[0] - origin_embedding
+                        r = variables[0] - origin_embedding
                         if tf.norm(r, ord=2) > epsilon:
                             r = epsilon * r / tf.norm(r, ord=2)
-                        model.trainable_variables[0].assign(origin_embedding + tf.Variable(r))
+                        variables[0].assign(origin_embedding + tf.Variable(r))
 
                         if t != K - 1:
                             gradients = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
@@ -179,12 +188,12 @@ def train(data_manager, logger):
                                     loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch,
                                                                                         y_pred=logits)
                                 loss = tf.reduce_mean(loss_vec)
-                        gan_gradients = gan_tape.gradient(loss, model.trainable_variables)
+                        gan_gradients = gan_tape.gradient(loss, variables)
                         gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
-                    model.trainable_variables[0].assign(origin_embedding)
+                    variables[0].assign(origin_embedding)
 
             # 反向传播，自动微分计算
-            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+            optimizer.apply_gradients(zip(gradients, variables))
             if step % print_per_batch == 0 and step != 0:
                 predictions = tf.argmax(logits, axis=-1).numpy()
                 y_train_batch = tf.argmax(y_train_batch, axis=-1).numpy()
