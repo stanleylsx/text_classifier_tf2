@@ -16,12 +16,15 @@
 
 
 ## 环境
-* python 3.6.7
-* tensorflow==2.3.0
+* python 3.7.10
+* tensorflow-gpu==2.3.0
+* tqdm==4.50.2
 * gensim==3.8.3
 * jieba==0.42.1
-* sklearn==0.0  
-* transformers==4.6.1  
+* pandas==1.1.3
+* scikit-learn==0.23.2
+* transformers==4.6.1
+* texttable==1.6.4
 
 其他环境见requirements.txt
 
