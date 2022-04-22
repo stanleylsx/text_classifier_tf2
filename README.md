@@ -1,4 +1,8 @@
 # Text Classifier
+
+![Authour](https://img.shields.io/badge/Author-StanleyLsx-blue.svg) 
+[![GitHub license](https://img.shields.io/badge/license-MIT-yellowgreen.svg)](https://github.com/StanleyLsx/entity_extractor_by_ner)
+
 **公众号文章：[文本分类之Text-CNN/RNN/RCNN算法原理及工程实现](https://mp.weixin.qq.com/s/7fbTt3Ov715ixErYfKR2kA)**  
 **公众号文章：[一篇文章带你走进词向量并掌握Word2Vec](https://mp.weixin.qq.com/s/SAEV6WkbkOxzTCvF6GUz_A)**
 
