@@ -28,7 +28,8 @@ class BertClassification(tf.keras.Model, ABC):
         sequence_len = tf.reduce_sum(tf.sign(inputs), axis=1)
         sequence_len = tf.cast(sequence_len, tf.int32)
         bert_mask_ids = tf.sequence_mask(sequence_len, self.max_sequence_length, tf.int32)
-        pooled_output = self.bert_model(input_ids=inputs, attention_mask=bert_mask_ids)[1]
+        last_hidden_state = self.bert_model(input_ids=inputs, attention_mask=bert_mask_ids).last_hidden_state
+        pooled_output = last_hidden_state[:, 0]
         dropout_outputs = self.dropout(pooled_output, training)
         outputs = self.dense(dropout_outputs)
         return outputs
