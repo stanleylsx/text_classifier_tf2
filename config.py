@@ -60,6 +60,9 @@ classifier_config = {
     # 学习率
     # 微调预训练模型时建议更小，设置5e-5
     'learning_rate': 0.0005,
+    # 优化器选择
+    # 可选：Adagrad/Adadelta/RMSprop/SGD/Adam/AdamW
+    'optimizer': 'Adam',
     # 训练epoch
     'epoch': 100,
     # 最多保存max_to_keep个模型
