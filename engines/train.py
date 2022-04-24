@@ -8,10 +8,8 @@ import numpy as np
 import time
 import pandas as pd
 import tensorflow as tf
-from tensorflow_addons.optimizers import AdamW
 from tqdm import tqdm
 from engines.utils.focal_loss import FocalLoss
-from engines.utils.r_drop_loss import RDropLoss
 from engines.utils.metrics import cal_metrics
 from config import classifier_config
 from tensorflow.keras.losses import CategoricalCrossentropy
@@ -33,6 +31,7 @@ class Train:
         self.batch_size = self.data_manager.batch_size
         self.loss_function = FocalLoss() if classifier_config['use_focal_loss'] else CategoricalCrossentropy()
         if classifier_config['use_r_drop']:
+            from engines.utils.r_drop_loss import RDropLoss
             self.r_drop_loss = RDropLoss()
 
         learning_rate = classifier_config['learning_rate']
@@ -47,6 +46,7 @@ class Train:
         elif classifier_config['optimizer'] == 'Adam':
             self.optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         elif classifier_config['optimizer'] == 'AdamW':
+            from tensorflow_addons.optimizers import AdamW
             self.optimizer = AdamW(learning_rate=learning_rate, weight_decay=1e-2)
         else:
             raise Exception('optimizer does not exist')
