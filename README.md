@@ -137,6 +137,8 @@ classifier_config = {
     # fgm:Fast Gradient Method
     # pgd:Projected Gradient Descent
     'gan_method': 'pgd',
+    'gan_method': 'pgd',
+    # 对抗次数
     # 使用对比学习，不推荐和对抗方法一起使用，效率慢收益不大
     'use_r_drop': False
 }
