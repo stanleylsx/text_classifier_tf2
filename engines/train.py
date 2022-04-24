@@ -14,6 +14,7 @@ from engines.utils.focal_loss import FocalLoss
 from engines.utils.r_drop_loss import RDropLoss
 from engines.utils.metrics import cal_metrics
 from config import classifier_config
+from tensorflow.keras.losses import CategoricalCrossentropy
 tf.keras.backend.set_floatx('float32')
 
 
@@ -30,8 +31,9 @@ class Train:
         self.use_gan = classifier_config['use_gan']
         self.gan_method = classifier_config['gan_method']
         self.batch_size = self.data_manager.batch_size
-        self.loss_obj = FocalLoss() if classifier_config['use_focal_loss'] else None
-        self.r_drop_loss = RDropLoss()
+        self.loss_function = FocalLoss() if classifier_config['use_focal_loss'] else CategoricalCrossentropy()
+        if classifier_config['use_r_drop']:
+            self.r_drop_loss = RDropLoss()
 
         learning_rate = classifier_config['learning_rate']
         if classifier_config['optimizer'] == 'Adagrad':
@@ -139,10 +141,7 @@ class Train:
                         logits_2 = self.model(X_train_batch, training=1)
                         loss = self.r_drop_loss.calculate_loss(logits, logits_2, y_train_batch)
                     else:
-                        if classifier_config['use_focal_loss']:
-                            loss_vec = self.loss_obj.call(y_true=y_train_batch, y_pred=logits)
-                        else:
-                            loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch, y_pred=logits)
+                        loss_vec = self.loss_function(y_true=y_train_batch, y_pred=logits)
                         loss = tf.reduce_mean(loss_vec)
                 # 定义好参加梯度的参数
                 variables = self.model.trainable_variables
@@ -169,11 +168,7 @@ class Train:
                                 logits_2 = self.model(X_train_batch, training=1)
                                 loss = self.r_drop_loss.calculate_loss(logits, logits_2, y_train_batch)
                             else:
-                                if classifier_config['use_focal_loss']:
-                                    loss_vec = self.loss_obj.call(y_true=y_train_batch, y_pred=logits)
-                                else:
-                                    loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch,
-                                                                                        y_pred=logits)
+                                loss_vec = self.loss_function(y_true=y_train_batch, y_pred=logits)
                                 loss = tf.reduce_mean(loss_vec)
                         gan_gradients = gan_tape.gradient(loss, variables)
                         gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
@@ -209,11 +204,7 @@ class Train:
                                     logits_2 = self.model(X_train_batch, training=1)
                                     loss = self.r_drop_loss.calculate_loss(logits, logits_2, y_train_batch)
                                 else:
-                                    if classifier_config['use_focal_loss']:
-                                        loss_vec = self.loss_obj.call(y_true=y_train_batch, y_pred=logits)
-                                    else:
-                                        loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_train_batch,
-                                                                                            y_pred=logits)
+                                    loss_vec = self.loss_function(y_true=y_train_batch, y_pred=logits)
                                     loss = tf.reduce_mean(loss_vec)
                             gan_gradients = gan_tape.gradient(loss, variables)
                             gradients = [gradients[i].assign_add(grad) for i, grad in enumerate(gan_gradients)]
@@ -259,7 +250,7 @@ class Train:
         for val_batch in tqdm(val_dataset.batch(self.batch_size)):
             X_val_batch, y_val_batch = val_batch
             logits = self.model(X_val_batch)
-            val_loss_vec = tf.keras.losses.categorical_crossentropy(y_true=y_val_batch, y_pred=logits)
+            val_loss_vec = self.loss_function(y_true=y_val_batch, y_pred=logits)
             val_loss = tf.reduce_mean(val_loss_vec)
             predictions = tf.argmax(logits, axis=-1)
             y_val_batch = tf.argmax(y_val_batch, axis=-1)
