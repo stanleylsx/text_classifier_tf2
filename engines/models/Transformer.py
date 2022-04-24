@@ -155,9 +155,9 @@ class Transformer(tf.keras.Model, ABC):
         mask = create_padding_mask(inputs)
         embed_inputs = self.embedding(inputs)
         output = self.positional_encoder(embed_inputs)
-        output = self.dropout(output, training=training)
         for encoder in self.encoders:
             output = encoder(output, training, mask)
+        output = self.dropout(output, training=training)
         output = self.avg_pool(output)
         output = self.dense(output)
         return output
