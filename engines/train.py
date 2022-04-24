@@ -180,14 +180,14 @@ class Train:
                         variables[0].assign_sub(delta)
                     elif self.gan_method == 'pgd':
                         # 使用PGD的对抗办法
-                        K = 3
                         alpha = 0.3
                         epsilon = 1
+                        k = classifier_config['attack_round']
                         origin_embedding = tf.Variable(variables[0])
                         accum_vars = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
                         origin_gradients = [accum_vars[i].assign_add(grad) for i, grad in enumerate(gradients)]
 
-                        for t in range(K):
+                        for t in range(k):
                             embedding = variables[0]
                             embedding_gradients = gradients[0]
                             embedding_gradients = tf.zeros_like(embedding) + embedding_gradients
@@ -199,7 +199,7 @@ class Train:
                                 r = epsilon * r / tf.norm(r, ord=2)
                             variables[0].assign(origin_embedding + tf.Variable(r))
 
-                            if t != K - 1:
+                            if t != k - 1:
                                 gradients = [tf.Variable(tf.zeros_like(grad), trainable=False) for grad in gradients]
                             else:
                                 gradients = origin_gradients
