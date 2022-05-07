@@ -8,8 +8,8 @@ import datetime
 import logging
 
 
-def get_logger(log_dir):
-    log_file = log_dir + '/' + (datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S.log'))
+def get_logger(log_dir, name):
+    log_file = log_dir + '/' + (datetime.datetime.now().strftime('%Y%m%d%H%M%S-' + name + '.log'))
     logger = logging.getLogger(__name__)
     logger.setLevel(level=logging.INFO)
     formatter = logging.Formatter('%(message)s')
