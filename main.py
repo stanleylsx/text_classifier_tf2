@@ -32,7 +32,7 @@ def fold_check(config):
 
 if __name__ == '__main__':
     fold_check(config=classifier_config)
-    logger = get_logger(classifier_config['checkpoints_dir'] + '/logs')
+    logger = get_logger(classifier_config['checkpoints_dir'] + '/logs', mode)
     if CUDA_VISIBLE_DEVICES != -1:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(CUDA_VISIBLE_DEVICES)
         physical_devices = tf.config.list_physical_devices('GPU')
