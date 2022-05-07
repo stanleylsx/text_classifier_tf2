@@ -103,7 +103,7 @@ class Predictor:
                 data_dict[col_name] = test_df.iloc[indices][col_name].tolist()
             data_dict['probability'] = list(probabilities[indices])
             indices = [i + 1 for i in indices]
-            test_result_file = './logs/' + (datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S.csv'))
+            test_result_file = self.checkpoints_dir + '/logs/' + (datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S.csv'))
             result = pd.DataFrame(data_dict)
             statics = pd.DataFrame(
                 result.groupby('label').apply(lambda data: data.y_error_pred.value_counts())).reset_index()
