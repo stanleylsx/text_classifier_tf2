@@ -21,18 +21,18 @@ def fold_check(config):
     if config['checkpoints_dir'] == '':
         raise Exception('checkpoints_dir did not set...')
 
-    if not os.path.exists('logs'):
-        print('log fold not found, creating...')
-        os.mkdir('./logs')
-
     if not os.path.exists(config['checkpoints_dir']):
         print('checkpoints fold not found, creating...')
         os.makedirs(config['checkpoints_dir'])
 
+    if not os.path.exists(config['checkpoints_dir'] + '/logs'):
+        print('log fold not found, creating...')
+        os.mkdir(config['checkpoints_dir'] + '/logs')
+
 
 if __name__ == '__main__':
     fold_check(config=classifier_config)
-    logger = get_logger('./logs')
+    logger = get_logger(classifier_config['checkpoints_dir'] + '/logs')
     if CUDA_VISIBLE_DEVICES != -1:
         os.environ['CUDA_VISIBLE_DEVICES'] = str(CUDA_VISIBLE_DEVICES)
         physical_devices = tf.config.list_physical_devices('GPU')
