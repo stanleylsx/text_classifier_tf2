@@ -7,6 +7,7 @@
 import numpy as np
 import tensorflow as tf
 import os
+import jieba
 from tqdm import tqdm
 from gensim.models.word2vec import Word2Vec
 from engines.utils.word2vec import Word2VecUtils
@@ -30,7 +31,10 @@ class DataManager:
         if self.token_level == 'char' and self.embedding_method != '':
             raise Exception('字粒度不应该使用词嵌入')
         self.w2v_util = Word2VecUtils(logger)
-        self.stop_words = self.w2v_util.get_stop_words()
+        if classifier_config['stop_words']:
+            self.stop_words = self.w2v_util.get_stop_words()
+        else:
+            self.stop_words = []
         self.PADDING = '[PAD]'
         self.UNKNOWN = '[UNK]'
 
@@ -88,7 +92,6 @@ class DataManager:
                     self.logger.info('vocab files not exist...')
                 else:
                     self.token2id, self.id2token = self.load_vocab()
-                    self.vocab_size = len(self.token2id)
 
         self.batch_size = classifier_config['batch_size']
         self.max_sequence_length = classifier_config['max_sequence_length']
@@ -103,7 +106,7 @@ class DataManager:
     def load_vocab(self, sentences=None):
         if not os.path.isfile(self.token_file):
             self.logger.info('vocab files not exist, building vocab...')
-            return self.build_vocab(self.token_file, sentences)
+            return self.build_vocab(sentences)
         word_token2id, id2word_token = {}, {}
         with open(self.token_file, 'r', encoding='utf-8') as infile:
             for row in infile:
@@ -114,12 +117,22 @@ class DataManager:
         self.vocab_size = len(word_token2id)
         return word_token2id, id2word_token
 
-    def build_vocab(self, token_file, sentences):
+    @staticmethod
+    def processing_sentence(x, stop_words):
+        cut_word = jieba.cut(str(x).strip())
+        if stop_words:
+            words = [word for word in cut_word if word not in stop_words and word != ' ']
+        else:
+            words = list(cut_word)
+            words = [word for word in words if word != ' ']
+        return words
+
+    def build_vocab(self, sentences):
         tokens = []
         if self.token_level == 'word':
             # 词粒度
             for sentence in tqdm(sentences):
-                words = self.w2v_util.processing_sentence(sentence, self.stop_words)
+                words = self.processing_sentence(sentence, self.stop_words)
                 tokens.extend(words)
             # 根据词频过滤一部分频率极低的词/字，不加入词表
             count_dict = Counter(tokens)
@@ -128,6 +141,8 @@ class DataManager:
             # 字粒度
             for sentence in tqdm(sentences):
                 chars = list(sentence)
+                if self.stop_words:
+                    chars = [char for char in chars if char not in self.stop_words and char != ' ']
                 tokens.extend(chars)
             # 根据词频过滤一部分频率极低的词/字，不加入词表
             count_dict = Counter(tokens)
@@ -141,10 +156,12 @@ class DataManager:
         id2token[len(id2token)] = self.UNKNOWN
         token2id[self.UNKNOWN] = len(id2token)
         # 保存词表及标签表
-        with open(token_file, 'w', encoding='utf-8') as outfile:
+        with open(self.token_file, 'w', encoding='utf-8') as outfile:
             for idx in id2token:
                 outfile.write(id2token[idx] + '\t' + str(idx) + '\n')
         self.vocab_size = len(token2id)
+        self.token2id = token2id
+        self.id2token = id2token
         return token2id, id2token
 
     def padding(self, sentence):
@@ -166,7 +183,7 @@ class DataManager:
         self.logger.info('loading data...')
         X, y = [], []
         for record in tqdm(zip(sentences, labels)):
-            sentence = self.w2v_util.processing_sentence(record[0], self.stop_words)
+            sentence = self.processing_sentence(record[0], self.stop_words)
             sentence = self.padding(sentence)
             label = tf.one_hot(record[1], depth=self.max_label_number)
             tokens = []
@@ -206,9 +223,11 @@ class DataManager:
         X, y = [], []
         for record in tqdm(zip(sentences, labels)):
             if self.token_level == 'word':
-                sentence = self.w2v_util.processing_sentence(record[0], self.stop_words)
+                sentence = self.processing_sentence(record[0], self.stop_words)
             else:
                 sentence = list(record[0])
+                if self.stop_words:
+                    sentence = [char for char in sentence if char not in self.stop_words and char != ' ']
             sentence = self.padding(sentence)
             label = tf.one_hot(record[1], depth=self.max_label_number)
             tokens = []
@@ -221,7 +240,7 @@ class DataManager:
             y.append(label)
         return np.array(X), np.array(y, dtype=np.float32)
 
-    def get_dataset(self, df, step=None):
+    def get_dataset(self, df):
         """
         构建Dataset
         """
@@ -234,8 +253,6 @@ class DataManager:
             if self.embedding_method == 'word2vec':
                 X, y = self.prepare_w2v_data(df['sentence'], df['label'])
             else:
-                if step == 'train' and not os.path.isfile(self.token_file):
-                    self.token2id, self.id2token = self.load_vocab(df['sentence'])
                 X, y = self.prepare_data(df['sentence'], df['label'])
         dataset = tf.data.Dataset.from_tensor_slices((X, y))
         return dataset
@@ -271,6 +288,8 @@ class DataManager:
                     sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
                 else:
                     sentence = list(sentence)
+                    if self.stop_words:
+                        sentence = [char for char in sentence if char not in self.stop_words and char != ' ']
                 sentence = self.padding(sentence)
                 tokens = []
                 for word in sentence:
