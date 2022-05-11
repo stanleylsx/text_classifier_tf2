@@ -82,6 +82,8 @@ classifier_config = {
     # 词粒度:'word'
     # 字粒度:'char'
     'token_level': 'word',
+    # 去停用词，路径需要在上面的word2vec_config中配置，仅限非预训练微调使用
+    'stop_words': True,
     # 不外接词嵌入的时候需要自定义的向量维度
     'embedding_dim': 300,
     # 存放词表的地方
@@ -142,6 +144,7 @@ classifier_config = {
     # 使用对比学习，不推荐和对抗方法一起使用，效率慢收益不大
     'use_r_drop': False
 }
+
 ```
 配置完参数之后开始训练模型  
 ```
