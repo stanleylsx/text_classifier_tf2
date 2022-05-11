@@ -6,6 +6,7 @@
 # @Software: PyCharm
 import numpy as np
 import time
+import os
 import pandas as pd
 import tensorflow as tf
 from tqdm import tqdm
@@ -59,6 +60,14 @@ class Train:
         classifier = classifier_config['classifier']
         embedding_dim = data_manager.embedding_dim
         num_classes = data_manager.max_label_number
+        if not os.path.isfile(classifier_config['token_file']):
+            train_file = classifier_config['train_file']
+            val_file = classifier_config['val_file']
+            df = pd.read_csv(train_file).sample(frac=1)
+            if not val_file == '':
+                val_df = pd.read_csv(val_file).sample(frac=1)
+                df = pd.concat([df, val_df], axis=0)
+            self.data_manager.build_vocab(df['sentence'])
         vocab_size = data_manager.vocab_size
         # 载入模型
         if classifier == 'TextCNN':
@@ -121,7 +130,7 @@ class Train:
         else:
             val_df = pd.read_csv(val_file).sample(frac=1)
 
-        train_dataset = self.data_manager.get_dataset(train_df, step='train')
+        train_dataset = self.data_manager.get_dataset(train_df)
         val_dataset = self.data_manager.get_dataset(val_df)
 
         best_f1_val = 0.0
