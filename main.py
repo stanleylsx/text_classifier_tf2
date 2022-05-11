@@ -21,6 +21,10 @@ def fold_check(config):
     if config['checkpoints_dir'] == '':
         raise Exception('checkpoints_dir did not set...')
 
+    if not os.path.exists(os.path.dirname(config['token_file'])):
+        print('token fold not found, creating...')
+        os.makedirs(os.path.dirname(config['token_file']))
+
     if not os.path.exists(config['checkpoints_dir']):
         print('checkpoints fold not found, creating...')
         os.makedirs(config['checkpoints_dir'])
