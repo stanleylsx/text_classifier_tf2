@@ -104,7 +104,7 @@ class DataManager:
         self.logger.info('dataManager initialed...')
 
     def load_vocab(self, sentences=None):
-        if not os.path.isfile(self.token_file):
+        if not os.path.exists(self.token_file):
             self.logger.info('vocab files not exist, building vocab...')
             return self.build_vocab(sentences)
         word_token2id, id2word_token = {}, {}
