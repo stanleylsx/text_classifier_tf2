@@ -60,7 +60,7 @@ class Train:
         classifier = classifier_config['classifier']
         embedding_dim = data_manager.embedding_dim
         num_classes = data_manager.max_label_number
-        if not os.path.isfile(classifier_config['token_file']):
+        if not os.path.exists(classifier_config['token_file']):
             train_file = classifier_config['train_file']
             val_file = classifier_config['val_file']
             df = pd.read_csv(train_file).sample(frac=1)
