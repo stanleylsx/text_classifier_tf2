@@ -95,7 +95,9 @@ classifier_config = {
     # 多分类使用micro或macro
     'metrics_average': 'micro',
     # 类别样本比例失衡的时候可以考虑使用
-    'use_focal_loss': False,
+    'use_focal_loss': True,
+    # focal loss的各个标签权重
+    'weight': None,
     # 是否使用GAN进行对抗训练
     'use_gan': False,
     # 目前支持FGM和PGD两种方法
