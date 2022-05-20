@@ -6,7 +6,7 @@
 # @Software: PyCharm
 import tensorflow as tf
 from config import classifier_config
-from engines.utils.focal_loss import FocalLoss
+from engines.utils.losses.focal_loss import FocalLoss
 from tensorflow.keras.losses import CategoricalCrossentropy
 
 
