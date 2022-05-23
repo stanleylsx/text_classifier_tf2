@@ -10,10 +10,8 @@ import os
 import pandas as pd
 import tensorflow as tf
 from tqdm import tqdm
-from engines.utils.losses.focal_loss import FocalLoss
 from engines.utils.metrics import cal_metrics
 from config import classifier_config
-from tensorflow.keras.losses import CategoricalCrossentropy
 tf.keras.backend.set_floatx('float32')
 
 
@@ -30,10 +28,21 @@ class Train:
         self.use_gan = classifier_config['use_gan']
         self.gan_method = classifier_config['gan_method']
         self.batch_size = self.data_manager.batch_size
-        self.loss_function = FocalLoss() if classifier_config['use_focal_loss'] else CategoricalCrossentropy()
+
         if classifier_config['use_r_drop']:
             from engines.utils.losses.rdrop_loss import RDropLoss
             self.r_drop_loss = RDropLoss()
+
+        if classifier_config['use_focal_loss']:
+            from engines.utils.losses.focal_loss import FocalLoss
+            self.loss_function = FocalLoss()
+        else:
+            from tensorflow.keras.losses import CategoricalCrossentropy
+            if classifier_config['use_focal_loss']:
+                smooth_factor = classifier_config['smooth_factor']
+                self.loss_function = CategoricalCrossentropy(label_smoothing=smooth_factor)
+            else:
+                self.loss_function = CategoricalCrossentropy()
 
         learning_rate = classifier_config['learning_rate']
         if classifier_config['optimizer'] == 'Adagrad':

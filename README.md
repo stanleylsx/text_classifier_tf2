@@ -133,6 +133,10 @@ classifier_config = {
     'metrics_average': 'micro',
     # 类别样本比例失衡的时候可以考虑使用
     'use_focal_loss': False,
+    # 使用标签平滑
+    # 主要用在预训练模型微调，直接训练小模型使用标签平滑会带来负面效果，慎用
+    'use_label_smoothing': False,
+    'smooth_factor': 0.1,
     # 是否使用GAN进行对抗训练
     'use_gan': False,
     # 目前支持FGM和PGD两种方法

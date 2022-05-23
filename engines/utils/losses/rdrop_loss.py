@@ -6,8 +6,6 @@
 # @Software: PyCharm
 import tensorflow as tf
 from config import classifier_config
-from engines.utils.losses.focal_loss import FocalLoss
-from tensorflow.keras.losses import CategoricalCrossentropy
 
 
 class RDropLoss:
@@ -18,7 +16,16 @@ class RDropLoss:
         super(RDropLoss, self).__init__()
         self.alpha = 4
         self.kl_loss = tf.keras.losses.KLDivergence(reduction=tf.keras.losses.Reduction.NONE, name='kl_divergence')
-        self.loss = FocalLoss() if classifier_config['use_focal_loss'] else CategoricalCrossentropy()
+        if classifier_config['use_focal_loss']:
+            from engines.utils.losses.focal_loss import FocalLoss
+            self.loss = FocalLoss()
+        else:
+            from tensorflow.keras.losses import CategoricalCrossentropy
+            if classifier_config['use_focal_loss']:
+                smooth_factor = classifier_config['smooth_factor']
+                self.loss = CategoricalCrossentropy(label_smoothing=smooth_factor)
+            else:
+                self.loss = CategoricalCrossentropy()
 
     def calculate_loss(self, p, q, y_true):
         loss_1 = self.loss(y_true=y_true, y_pred=p)
