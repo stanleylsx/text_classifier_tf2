@@ -176,6 +176,16 @@ class DataManager:
             sentence = sentence[:self.max_sequence_length]
         return sentence
 
+    def tokenizer_for_sentences(self, sent):
+        tokens = []
+        sent = self.padding(sent)
+        for token in sent:
+            if token in self.token2id:
+                tokens.append(self.token2id[token])
+            else:
+                tokens.append(self.token2id[self.UNKNOWN])
+        return tokens
+
     def prepare_w2v_data(self, sentences, labels):
         """
         输出word2vec做embedding之后的X矩阵和y向量
@@ -184,14 +194,8 @@ class DataManager:
         X, y = [], []
         for record in tqdm(zip(sentences, labels)):
             sentence = self.processing_sentence(record[0], self.stop_words)
-            sentence = self.padding(sentence)
+            tokens = self.tokenizer_for_sentences(sentence)
             label = tf.one_hot(record[1], depth=self.max_label_number)
-            tokens = []
-            for word in sentence:
-                if word in self.word2token:
-                    tokens.append(self.word2token[word])
-                else:
-                    tokens.append(self.word2token[self.PADDING])
             X.append(tokens)
             y.append(label)
         return np.array(X), np.array(y, dtype=np.float32)
@@ -228,14 +232,8 @@ class DataManager:
                 sentence = list(record[0])
                 if self.stop_words:
                     sentence = [char for char in sentence if char not in self.stop_words and char != ' ']
-            sentence = self.padding(sentence)
             label = tf.one_hot(record[1], depth=self.max_label_number)
-            tokens = []
-            for word in sentence:
-                if word in self.token2id:
-                    tokens.append(self.token2id[word])
-                else:
-                    tokens.append(self.token2id[self.UNKNOWN])
+            tokens = self.tokenizer_for_sentences(sentence)
             X.append(tokens)
             y.append(label)
         return np.array(X), np.array(y, dtype=np.float32)
@@ -275,13 +273,7 @@ class DataManager:
         else:
             if self.embedding_method == 'word2vec':
                 sentence = self.w2v_util.processing_sentence(sentence, self.stop_words)
-                sentence = self.padding(sentence)
-                tokens = []
-                for word in sentence:
-                    if word in self.word2token:
-                        tokens.append(self.word2token[word])
-                    else:
-                        tokens.append(self.word2token[self.PADDING])
+                tokens = self.tokenizer_for_sentences(sentence)
                 return np.array([tokens])
             else:
                 if self.token_level == 'word':
@@ -290,11 +282,5 @@ class DataManager:
                     sentence = list(sentence)
                     if self.stop_words:
                         sentence = [char for char in sentence if char not in self.stop_words and char != ' ']
-                sentence = self.padding(sentence)
-                tokens = []
-                for word in sentence:
-                    if word in self.token2id:
-                        tokens.append(self.token2id[word])
-                    else:
-                        tokens.append(self.token2id[self.UNKNOWN])
+                tokens = self.tokenizer_for_sentences(sentence)
                 return np.array([tokens])
