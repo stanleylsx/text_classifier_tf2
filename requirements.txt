@@ -1,4 +1,4 @@
-tensorflow-gpu==2.3.0
+tensorflow-gpu==2.6.4
 tensorflow-addons==0.15.0
 tqdm==4.50.2
 gensim==3.8.3
