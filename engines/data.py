@@ -146,7 +146,7 @@ class DataManager:
                 tokens.extend(chars)
             # 根据词频过滤一部分频率极低的词/字，不加入词表
             count_dict = Counter(tokens)
-            tokens = [k for k, v in count_dict.items() if k != ' ' and filter_char(k)]
+            tokens = [k for k, v in count_dict.items() if filter_char(k)]
         token2id = dict(zip(tokens, range(1, len(tokens) + 1)))
         id2token = dict(zip(range(1, len(tokens) + 1), tokens))
         # 向生成的词表和标签表中加入[PAD]
