@@ -25,4 +25,4 @@ def filter_char(char, remove_sp=True):
         else:
             return False
     else:
-        return False
+        return True
