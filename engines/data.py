@@ -35,6 +35,7 @@ class DataManager:
             self.stop_words = self.w2v_util.get_stop_words()
         else:
             self.stop_words = []
+        self.remove_sp = True if classifier_config['remove_special'] else False
         self.PADDING = '[PAD]'
         self.UNKNOWN = '[UNK]'
 
@@ -146,7 +147,7 @@ class DataManager:
                 tokens.extend(chars)
             # 根据词频过滤一部分频率极低的词/字，不加入词表
             count_dict = Counter(tokens)
-            tokens = [k for k, v in count_dict.items() if filter_char(k)]
+            tokens = [k for k, v in count_dict.items() if filter_char(k, remove_sp=self.remove_sp)]
         token2id = dict(zip(tokens, range(1, len(tokens) + 1)))
         id2token = dict(zip(range(1, len(tokens) + 1), tokens))
         # 向生成的词表和标签表中加入[PAD]
