@@ -91,24 +91,9 @@ class Train:
         elif classifier == 'Transformer':
             from engines.models.Transformer import Transformer
             self.model = Transformer(num_classes, embedding_dim, vocab_size, embeddings_matrix)
-        elif classifier == 'Bert':
-            from engines.models.Bert import BertClassification
-            self.model = BertClassification(num_classes)
-        elif classifier == 'DistilBert':
-            from engines.models.DistilBert import DistilBertClassification
-            self.model = DistilBertClassification(num_classes)
-        elif classifier == 'AlBert':
-            from engines.models.AlBert import AlBertClassification
-            self.model = AlBertClassification(num_classes)
-        elif classifier == 'RoBerta':
-            from engines.models.RoBerta import RoBertaClassification
-            self.model = RoBertaClassification(num_classes)
-        elif classifier == 'Electra':
-            from engines.models.Electra import ElectraClassification
-            self.model = ElectraClassification(num_classes)
-        elif classifier == 'XLNet':
-            from engines.models.XLNet import XLNetClassification
-            self.model = XLNetClassification(num_classes)
+        elif classifier in self.data_manager.support_pretrained_model:
+            from engines.models.PretrainedModel import PretrainedModelClassification
+            self.model = PretrainedModelClassification(num_classes, model_type=classifier)
         else:
             raise Exception('config model is not exist')
 

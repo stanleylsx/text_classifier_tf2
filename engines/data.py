@@ -40,33 +40,7 @@ class DataManager:
         self.UNKNOWN = '[UNK]'
 
         if self.classifier in self.support_pretrained_model:
-            if self.classifier == 'Bert':
-                from transformers import BertTokenizer
-                self.tokenizer = BertTokenizer.from_pretrained(classifier_config['pretrained'])
-                self.embedding_dim = 768
-            elif self.classifier == 'DistilBert':
-                from transformers import DistilBertTokenizer
-                self.tokenizer = DistilBertTokenizer.from_pretrained(classifier_config['pretrained'])
-                self.embedding_dim = 768
-            elif self.classifier == 'AlBert':
-                from transformers import AlbertTokenizer
-                self.tokenizer = AlbertTokenizer.from_pretrained(classifier_config['pretrained'])
-                self.embedding_dim = 768
-            elif self.classifier == 'Electra':
-                from transformers import ElectraTokenizer
-                self.tokenizer = ElectraTokenizer.from_pretrained(classifier_config['pretrained'])
-                self.embedding_dim = 768
-            elif self.classifier == 'RoBerta':
-                from transformers import RobertaTokenizer
-                self.tokenizer = RobertaTokenizer.from_pretrained(classifier_config['pretrained'])
-                self.embedding_dim = 768
-            elif self.classifier == 'XLNet':
-                from transformers import XLNetTokenizer
-                self.tokenizer = XLNetTokenizer.from_pretrained(classifier_config['pretrained'])
-                self.embedding_dim = 768
-            if not os.path.exists(self.token_file):
-                self.logger.info('vocab files not exist, save pretrained model vocab...')
-                self.tokenizer.save_vocabulary(self.token_file)
+            self.tokenizer = self.tokenizer_for_pretrained_model(self.classifier)
             self.vocab_size = len(self.tokenizer)
         else:
             if self.embedding_method == 'word2vec':
@@ -176,6 +150,30 @@ class DataManager:
         else:
             sentence = sentence[:self.max_sequence_length]
         return sentence
+
+    @staticmethod
+    def tokenizer_for_pretrained_model(model_type):
+        if model_type == 'Bert':
+            from transformers import BertTokenizer
+            tokenizer = BertTokenizer.from_pretrained(classifier_config['pretrained'])
+        elif model_type == 'DistilBert':
+            from transformers import DistilBertTokenizer
+            tokenizer = DistilBertTokenizer.from_pretrained(classifier_config['pretrained'])
+        elif model_type == 'AlBert':
+            from transformers import AlbertTokenizer
+            tokenizer = AlbertTokenizer.from_pretrained(classifier_config['pretrained'])
+        elif model_type == 'Electra':
+            from transformers import ElectraTokenizer
+            tokenizer = ElectraTokenizer.from_pretrained(classifier_config['pretrained'])
+        elif model_type == 'RoBerta':
+            from transformers import RobertaTokenizer
+            tokenizer = RobertaTokenizer.from_pretrained(classifier_config['pretrained'])
+        elif model_type == 'XLNet':
+            from transformers import XLNetTokenizer
+            tokenizer = XLNetTokenizer.from_pretrained(classifier_config['pretrained'])
+        else:
+            tokenizer = None
+        return tokenizer
 
     def tokenizer_for_sentences(self, sent):
         tokens = []
