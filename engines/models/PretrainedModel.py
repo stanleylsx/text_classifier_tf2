@@ -33,7 +33,6 @@ class PretrainedModelClassification(tf.keras.Model, ABC):
         elif model_type == 'XLNet':
             from transformers import TFXLNetModel
             self.model = TFXLNetModel.from_pretrained(classifier_config['pretrained'])
-        self.model = TFBertModel.from_pretrained(classifier_config['pretrained'])
         self.dropout = tf.keras.layers.Dropout(classifier_config['dropout_rate'], name='dropout')
         self.dense = tf.keras.layers.Dense(num_classes,
                                            activation='softmax',
