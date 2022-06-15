@@ -42,6 +42,7 @@ class DataManager:
         if self.classifier in self.support_pretrained_model:
             self.tokenizer = self.tokenizer_for_pretrained_model(self.classifier)
             self.vocab_size = len(self.tokenizer)
+            self.embedding_dim = None
         else:
             if self.embedding_method == 'word2vec':
                 self.w2v_model = Word2Vec.load(self.w2v_util.model_path)
