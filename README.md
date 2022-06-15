@@ -186,10 +186,10 @@ mode = 'test'
 批量测试结果     
 ![batch_test](https://img-blog.csdnimg.cn/bd22c813350449ef937b3a50e1f09322.png)   
 
-测试完会给出各个标签混淆的分布  
+批量测试完会给出各个标签混淆的分布  
 ![error_dis](https://img-blog.csdnimg.cn/f50949d5ac574a32aed0b89330e3687c.png)  
 
-同时会给出一份bad_case文件，方便更细致的纠正标签和判断模型效果  
+批量测试完同时会给出一份bad_case文件，方便更细致的纠正标签和判断模型效果    
 ![badcese](https://img-blog.csdnimg.cn/0a70b09cbbb1435f98596cee2c3ac359.png)  
 
 ### 训练word2vec
