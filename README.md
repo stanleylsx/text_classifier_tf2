@@ -186,6 +186,9 @@ mode = 'test'
 批量测试结果    
 ![batch_test](https://img-blog.csdnimg.cn/bd22c813350449ef937b3a50e1f09322.png) 
 
+测试完会给出各个标签混淆的分布
+![error_dis]https://img-blog.csdnimg.cn/f50949d5ac574a32aed0b89330e3687c.png
+
 ### 训练word2vec
 在config.py中的mode中配置好词向量训练的相关参数，并在mode中选择train_word2vec并运行：
 ```
