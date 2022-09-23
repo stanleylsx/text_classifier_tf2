@@ -62,6 +62,7 @@ class Predictor:
             self.logger.info('test dataset does not exist!')
             return
         test_df = pd.read_csv(test_file)
+        test_df = test_df.loc[test_df.label.isin(self.dataManager.classes)]
         test_dataset = self.dataManager.get_dataset(test_df)
         batch_size = self.dataManager.batch_size
         y_true, y_pred, probabilities = np.array([]), np.array([]), np.array([])
