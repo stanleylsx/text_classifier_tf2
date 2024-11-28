@@ -6,7 +6,8 @@
 **公众号文章：[文本分类之Text-CNN/RNN/RCNN算法原理及工程实现](https://mp.weixin.qq.com/s/7fbTt3Ov715ixErYfKR2kA)**  
 **公众号文章：[一篇文章带你走进词向量并掌握Word2Vec](https://mp.weixin.qq.com/s/SAEV6WkbkOxzTCvF6GUz_A)**
 
-此仓库是基于Tensorflow2.3的文本分类任务，通过直接配置可支持:  
+本仓库不再维护欢迎使用功能更全的[text_classifier_torch](https://github.com/stanleylsx/text_classifier_torch)实现任务  
+该项目是基于Tensorflow2.3的文本分类任务，通过直接配置可支持:  
 
 * **TextCNN/TextRNN/TextRCNN/Transformer/Bert/AlBert/DistilBert基本分类模型的训练** 
 * **TextCNN/TextRNN/TextRCNN/Transformer的token可选用词粒度/字粒度** 
